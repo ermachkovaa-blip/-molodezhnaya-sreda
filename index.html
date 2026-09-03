@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Молодёжная среда — карта пространства</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ================= СТАРТОВАЯ КАРТА ПРОСТРАНСТВА (навигационный хаб, вне нумерации 00–07) ================= -->
+<section id="map-view" class="view view--active" aria-label="Карта пространства">
+  <div class="map-stage">
+    <img class="map-image" src="assets/scenes/scene-map.png" alt="Карта пространства «Молодёжная среда»" draggable="false">
+    <div class="map-hotspots" id="map-hotspots"></div>
+  </div>
+
+  <div class="map-tooltip" id="map-tooltip" hidden>
+    <span class="map-tooltip__num" id="map-tooltip-num"></span>
+    <span class="map-tooltip__title" id="map-tooltip-title"></span>
+    <span class="map-tooltip__go">ИДТИ →</span>
+  </div>
+
+  <div class="map-zoom-veil" id="map-zoom-veil"></div>
+</section>
+
+<!-- ================= ПАНОРАМНЫЕ СЦЕНЫ ================= -->
+<section id="scene-view" class="view" aria-label="Сцена пространства">
+  <div class="scene-viewport" id="scene-viewport">
+    <div class="scene-stage" id="scene-stage">
+      <img class="scene-image" id="scene-image" src="" alt="" draggable="false">
+      <div class="scene-hotspots" id="scene-hotspots"></div>
+    </div>
+  </div>
+
+  <button class="map-return" id="map-return" aria-label="Вернуться к карте пространства (клавиша M)" title="Карта пространства (M)">
+    <span>КАРТА</span>
+    <span class="map-return__icon" aria-hidden="true">&#8593;</span>
+  </button>
+</section>
+
+<div class="fade-veil" id="fade-veil"></div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+:root {
+  --bg: #f4efe8;
+  --ink: #1c1a17;
+  --accent: #e0483e;
+  --panel-bg: rgba(28, 26, 23, 0.86);
+  --panel-fg: #f4efe8;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* ---------- views ---------- */
+
+.view {
+  position: fixed;
+  inset: 0;
+  display: none;
+}
+
+.view--active {
+  display: block;
+}
+
+/* ---------- map view ---------- */
+
+#map-view {
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.map-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 700ms cubic-bezier(.65,0,.35,1);
+  will-change: transform;
+}
+
+.map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.map-hotspots {
+  position: absolute;
+  /* left/top/width/height are set in JS to match the actual rendered
+     image content box (object-fit: contain can letterbox the element). */
+  pointer-events: none;
+}
+
+.map-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  min-height: 44px;
+  width: 6%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 70%);
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.map-hotspot::before {
+  content: attr(data-num);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.map-hotspot:hover,
+.map-hotspot:focus-visible,
+.map-hotspot.is-active {
+  transform: translate(-50%, -50%) scale(1.25);
+  background: radial-gradient(circle, var(--dot, var(--accent)) 0%, rgba(255,255,255,0.15) 75%);
+  border-color: #fff;
+  box-shadow: 0 0 0 6px rgba(255,255,255,0.18), 0 4px 14px rgba(0,0,0,0.35);
+}
+
+.map-hotspot.is-selected {
+  border-color: var(--dot, var(--accent));
+  box-shadow: 0 0 0 5px rgba(255,255,255,0.55), 0 0 0 8px var(--dot, var(--accent));
+}
+
+.map-tooltip {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, -140%);
+  transition: opacity 120ms ease;
+}
+
+.map-tooltip[hidden] { display: none; }
+
+.map-tooltip__num {
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.map-tooltip__title {
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.map-tooltip__go {
+  opacity: 0.75;
+  font-size: 0.78rem;
+}
+
+.map-zoom-veil {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 350ms ease;
+  z-index: 5;
+}
+
+.map-zoom-veil.is-visible {
+  opacity: 1;
+}
+
+/* ---------- scene view ---------- */
+
+#scene-view {
+  background: #0d0c0b;
+}
+
+.scene-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.scene-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.scene-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.scene-image {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  max-width: none;
+}
+
+.scene-hotspots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ---------- persistent map-return control ---------- */
+
+.map-return {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px 10px 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.map-return:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.map-return__icon {
+  display: inline-flex;
+  font-size: 0.9rem;
+}
+
+/* ---------- transition veil ---------- */
+
+.fade-veil {
+  position: fixed;
+  inset: 0;
+  background: #0d0c0b;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 350ms ease;
+}
+
+.fade-veil.is-visible {
+  opacity: 1;
+}
+
+/* ---------- mobile ---------- */
+
+@media (hover: none) and (pointer: coarse) {
+  .map-tooltip { display: none !important; }
+}
+
+@media (max-width: 640px) {
+  .map-return span:first-child { display: none; }
+  .map-return { padding: 10px; }
+}
