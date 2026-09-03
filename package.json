@@ -1,0 +1,9 @@
+{
+  "name": "molodezhnaya-sreda",
+  "private": true,
+  "description": "Лендинг архитектурно-проектного хакатона «Молодежная среда» — статический сайт (HTML/CSS/JS, без сборки).",
+  "scripts": {
+    "dev": "serve -l 3000 .",
+    "start": "serve -l 3000 ."
+  }
+}
