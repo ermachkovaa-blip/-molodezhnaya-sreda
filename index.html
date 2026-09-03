@@ -31,7 +31,7 @@
       <a href="#objects">Объекты</a>
       <a href="#program">Программа</a>
       <a href="#team">Кто ты</a>
-      <a href="apply.html" class="nav__cta"><span>Подать заявку</span></a>
+      <a href="apply.html" class="nav__cta" data-magnetic><span>Подать заявку</span></a>
     </nav>
 
     <button class="burger" id="burgerBtn" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
@@ -60,7 +60,7 @@
           <p class="hero__subtitle">процессы / сценарии / пространство</p>
           <p class="hero__lead">5 реальных объектов Татарстана.<br>5 дней работы над будущими молодежными пространствами.</p>
 
-          <a href="apply.html" class="btn btn--primary">
+          <a href="apply.html" class="btn btn--primary" data-magnetic>
             <span>Подать заявку</span>
             <svg class="btn__arrow" width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 7H17M17 7L11 1M17 7L11 13" stroke="currentColor" stroke-width="1.6"/></svg>
           </a>
@@ -107,7 +107,6 @@
   <section class="section about" id="about">
     <div class="container about__layout">
       <div data-reveal>
-        <p class="eyebrow">Идея хакатона</p>
         <h2 class="h2">Сделать место, куда самому хотелось бы приходить</h2>
         <p class="lead">Мы собираем молодых архитекторов, дизайнеров, урбанистов, проектировщиков, визуализаторов и исследователей, чтобы вместе придумать новые молодежные пространства Татарстана.</p>
 
@@ -146,7 +145,6 @@
   <!-- ==================== WHAT YOU GET: STICKY SCENE ==================== -->
   <section class="section" id="benefits">
     <div class="container benefits__intro" data-reveal>
-      <p class="eyebrow">Формат участия</p>
       <h2 class="h2">Что ты получишь за эти 5 дней</h2>
     </div>
 
@@ -204,14 +202,13 @@
   <section class="section" id="showcase">
     <div class="container">
       <div data-reveal>
-        <p class="eyebrow">Уже в работе</p>
         <h2 class="h2">Мы уже делаем такие пространства</h2>
         <p class="lead">Команда Молодежного центра Республики Татарстан занимается развитием и реновацией молодежных пространств.</p>
       </div>
 
       <div class="showcase__grid">
         <article class="showcase-card" data-reveal>
-          <div class="showcase-card__plate">
+          <div class="showcase-card__plate" data-tilt>
             <div class="showcase-card__photo" style="background-image:url('assets/img/atmo-02-lounge.jpg');"></div>
             <span class="tag showcase-card__tag">МЦ «Шатлык» / Наб. Челны</span>
           </div>
@@ -219,7 +216,7 @@
           <p>Набережные Челны</p>
         </article>
         <article class="showcase-card" data-reveal>
-          <div class="showcase-card__plate">
+          <div class="showcase-card__plate" data-tilt>
             <div class="showcase-card__photo" style="background-image:url('assets/img/atmo-03-studio.jpg');"></div>
             <span class="tag showcase-card__tag">МЦ «Нур» / Наб. Челны</span>
           </div>
@@ -229,7 +226,7 @@
       </div>
 
       <p class="lead" data-reveal>Другие реализованные молодежные пространства Республики Татарстан.</p>
-      <a class="btn btn--outline" href="https://mctatarstan.ru" target="_blank" rel="noopener">
+      <a class="btn btn--outline" data-magnetic href="https://mctatarstan.ru" target="_blank" rel="noopener">
         <span>Смотреть все объекты</span>
         <svg class="btn__arrow" width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 7H17M17 7L11 1M17 7L11 13" stroke="currentColor" stroke-width="1.6"/></svg>
       </a>
@@ -247,7 +244,6 @@
   <section class="section" id="objects" style="position:relative; overflow:hidden;">
     <span class="watermark-num" style="top:20px; right:0;" aria-hidden="true">05</span>
     <div class="container objects__intro" data-reveal>
-      <p class="eyebrow">Выбери объект</p>
       <h2 class="h2">5 реальных объектов</h2>
       <p class="lead">Наведи курсор на район в списке или точку на схеме — фотография и описание объекта справа обновятся.</p>
     </div>
@@ -278,13 +274,12 @@
 
       <div class="objects-app__detail">
         <article class="objects-app__panel is-active" data-detail-index="0">
-          <div class="objects-app__plate">
+          <div class="objects-app__plate" data-tilt>
             <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#3B5FE2,#12162a 75%);"></div>
             <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.01 / BUGULMA</span>
             <span class="crosshair" style="bottom:18px; right:18px;"></span>
           </div>
           <div class="objects-app__body">
-            <span class="tag">01 / 05</span>
             <h3>Бугульма</h3>
             <p class="objects-app__loc">Бугульминский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
@@ -294,13 +289,12 @@
         </article>
 
         <article class="objects-app__panel" data-detail-index="1">
-          <div class="objects-app__plate">
+          <div class="objects-app__plate" data-tilt>
             <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#E14FC4,#241227 75%);"></div>
             <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.02 / ELABUGA</span>
             <span class="crosshair" style="bottom:18px; right:18px;"></span>
           </div>
           <div class="objects-app__body">
-            <span class="tag">02 / 05</span>
             <h3>Елабуга</h3>
             <p class="objects-app__loc">Елабужский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
@@ -310,13 +304,12 @@
         </article>
 
         <article class="objects-app__panel" data-detail-index="2">
-          <div class="objects-app__plate">
+          <div class="objects-app__plate" data-tilt>
             <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#F0632F,#2a1608 75%);"></div>
             <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.03 / LAISHEVO</span>
             <span class="crosshair" style="bottom:18px; right:18px;"></span>
           </div>
           <div class="objects-app__body">
-            <span class="tag">03 / 05</span>
             <h3>Лаишево</h3>
             <p class="objects-app__loc">Лаишевский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
@@ -326,13 +319,12 @@
         </article>
 
         <article class="objects-app__panel" data-detail-index="3">
-          <div class="objects-app__plate">
+          <div class="objects-app__plate" data-tilt>
             <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#2E8E52,#0e1f15 75%);"></div>
             <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.04 / SHEMORDAN</span>
             <span class="crosshair" style="bottom:18px; right:18px;"></span>
           </div>
           <div class="objects-app__body">
-            <span class="tag">04 / 05</span>
             <h3>Шеморадан</h3>
             <p class="objects-app__loc">Сабинский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
@@ -342,13 +334,12 @@
         </article>
 
         <article class="objects-app__panel" data-detail-index="4">
-          <div class="objects-app__plate">
+          <div class="objects-app__plate" data-tilt>
             <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#E14FC4,#F0632F 130%);"></div>
             <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.05 / STOLBISHE</span>
             <span class="crosshair" style="bottom:18px; right:18px;"></span>
           </div>
           <div class="objects-app__body">
-            <span class="tag">05 / 05</span>
             <h3>Столбище</h3>
             <p class="objects-app__loc">Лаишевский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
@@ -371,7 +362,6 @@
   <section class="section" id="team">
     <div class="container">
       <div data-reveal>
-        <p class="eyebrow">Кто нужен</p>
         <h2 class="h2">Тебе сюда, если ты…</h2>
       </div>
       <ul class="chip-list" data-reveal>
@@ -391,7 +381,6 @@
   <!-- ==================== PROGRAM: MAIN SCROLL-STORY ==================== -->
   <section class="section" id="program">
     <div class="container story__intro" data-reveal>
-      <p class="eyebrow">Главный интерактив</p>
       <h2 class="h2">От объекта до концепции — за 5 дней</h2>
       <p class="lead">Один проект. Пять дней. Листай вниз и смотри, как реальное здание шаг за шагом превращается в архитектурную концепцию.</p>
     </div>
@@ -425,16 +414,6 @@
               <span class="story__step-num">01 · 17 октября</span>
               <span class="story__step-label">Слушать</span>
             </header>
-            <div class="story__stage-visual">
-              <div class="story__frame sv-photo">
-                <div class="sv-photo__base"></div>
-                <div class="sv-photo__grid grid-plate" style="filter:invert(1);"></div>
-                <span class="tag" style="position:absolute; top:16px; left:16px;">OBJ.05 / СТОЛБИЩЕ</span>
-                <span class="tag" style="position:absolute; top:16px; right:16px;">ЛАИШЕВСКИЙ Р-Н</span>
-                <span class="crosshair" style="top:46%; left:36%;"></span>
-                <span class="tag" style="position:absolute; bottom:16px; left:16px;">ФОТОГРАФИЯ ОБЪЕКТА / ДО</span>
-              </div>
-            </div>
             <div class="story__stage-copy">
               <h3>Открытие и знакомство с объектом</h3>
               <ul>
@@ -453,15 +432,6 @@
               <span class="story__step-num">02 · 18 октября</span>
               <span class="story__step-label">Исследовать</span>
             </header>
-            <div class="story__stage-visual">
-              <div class="story__frame sv-notes">
-                <div class="sv-notes__note" style="top:10%; left:6%; transform:rotate(-4deg);">«Не хватает места для репетиций после школы»</div>
-                <div class="sv-notes__note" style="top:42%; left:32%; transform:rotate(3deg);">«Здесь всегда людно по вечерам»</div>
-                <div class="sv-notes__note" style="top:64%; left:4%; transform:rotate(-2deg);">«Хотим сцену для локальных выступлений»</div>
-                <div class="sv-notes__thumbs" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-                <span class="tag" style="position:absolute; bottom:16px; left:16px; color:var(--ink-faint);">ИНТЕРВЬЮ / НАБЛЮДЕНИЯ / ФОТОФИКСАЦИЯ</span>
-              </div>
-            </div>
             <div class="story__stage-copy">
               <h3>Выезд на объект и сбор запросов</h3>
               <ul>
@@ -482,33 +452,6 @@
               <span class="story__step-num">03 · 19 октября</span>
               <span class="story__step-label">Собирать</span>
             </header>
-            <div class="story__stage-visual">
-              <div class="story__frame sv-diagram">
-                <svg viewBox="0 0 400 300" fill="none">
-                  <g stroke="var(--line-strong)" stroke-width="1.2">
-                    <line x1="90" y1="80" x2="200" y2="150"/>
-                    <line x1="310" y1="70" x2="200" y2="150"/>
-                    <line x1="80" y1="220" x2="200" y2="150"/>
-                    <line x1="200" y1="150" x2="320" y2="230"/>
-                    <line x1="200" y1="150" x2="200" y2="240"/>
-                  </g>
-                  <g>
-                    <circle cx="200" cy="150" r="34" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.6"/>
-                    <text x="200" y="154" text-anchor="middle" class="sv-diagram__node">МЦ</text>
-                    <circle cx="90" cy="80" r="26" fill="var(--paper)" stroke="var(--blue)" stroke-width="1.6"/>
-                    <text x="90" y="84" text-anchor="middle" class="sv-diagram__node">События</text>
-                    <circle cx="310" cy="70" r="26" fill="var(--paper)" stroke="var(--pink)" stroke-width="1.6"/>
-                    <text x="310" y="74" text-anchor="middle" class="sv-diagram__node">Сцена</text>
-                    <circle cx="80" cy="220" r="26" fill="var(--paper)" stroke="var(--orange)" stroke-width="1.6"/>
-                    <text x="80" y="224" text-anchor="middle" class="sv-diagram__node">Коворкинг</text>
-                    <circle cx="320" cy="230" r="26" fill="var(--paper)" stroke="var(--green)" stroke-width="1.6"/>
-                    <text x="320" y="234" text-anchor="middle" class="sv-diagram__node">Мастерская</text>
-                    <circle cx="200" cy="240" r="22" fill="var(--paper)" stroke="var(--ink-faint)" stroke-width="1.6"/>
-                    <text x="200" y="244" text-anchor="middle" class="sv-diagram__node">Кафе</text>
-                  </g>
-                </svg>
-              </div>
-            </div>
             <div class="story__stage-copy">
               <h3>От выводов — к сценариям и программе</h3>
               <ul>
@@ -528,25 +471,6 @@
               <span class="story__step-num">04 · 20 октября</span>
               <span class="story__step-label">Проектировать</span>
             </header>
-            <div class="story__stage-visual">
-              <div class="story__frame sv-plan">
-                <svg viewBox="0 0 400 300" fill="none">
-                  <rect x="24" y="24" width="352" height="252" fill="none" stroke="var(--ink)" stroke-width="1.6"/>
-                  <rect x="24" y="24" width="140" height="120" fill="rgba(59,95,226,.12)" stroke="var(--blue)" stroke-width="1"/>
-                  <rect x="164" y="24" width="212" height="120" fill="rgba(225,79,196,.12)" stroke="var(--pink)" stroke-width="1"/>
-                  <rect x="24" y="144" width="212" height="132" fill="rgba(240,99,47,.12)" stroke="var(--orange)" stroke-width="1"/>
-                  <rect x="236" y="144" width="140" height="132" fill="rgba(46,142,82,.12)" stroke="var(--green)" stroke-width="1"/>
-                  <text x="94" y="88" text-anchor="middle" class="sv-plan__label">Коворкинг</text>
-                  <text x="270" y="88" text-anchor="middle" class="sv-plan__label">Универсальный зал / сцена</text>
-                  <text x="130" y="214" text-anchor="middle" class="sv-plan__label">Мастерские</text>
-                  <text x="306" y="214" text-anchor="middle" class="sv-plan__label">Кафе / холл</text>
-                  <line x1="24" y1="288" x2="376" y2="288" stroke="var(--ink-faint)" stroke-width="1"/>
-                  <line x1="24" y1="284" x2="24" y2="292" stroke="var(--ink-faint)" stroke-width="1"/>
-                  <line x1="376" y1="284" x2="376" y2="292" stroke="var(--ink-faint)" stroke-width="1"/>
-                  <text x="200" y="297" text-anchor="middle" class="sv-plan__label">24.6 м</text>
-                </svg>
-              </div>
-            </div>
             <div class="story__stage-copy">
               <h3>Планировка и архитектурный образ</h3>
               <ul>
@@ -566,14 +490,6 @@
               <span class="story__step-num">05 · 21 октября</span>
               <span class="story__step-label">Защищать</span>
             </header>
-            <div class="story__stage-visual">
-              <div class="story__frame sv-final">
-                <div class="sv-final__base"></div>
-                <span class="tag" style="position:absolute; top:16px; left:16px; color:rgba(255,255,255,.75);">OBJ.05 / СТОЛБИЩЕ</span>
-                <span class="tag" style="position:absolute; top:16px; right:16px; color:rgba(255,255,255,.75);">КОНЦЕПЦИЯ / 21.10.2026</span>
-                <div class="sv-final__stamp">Готово к защите</div>
-              </div>
-            </div>
             <div class="story__stage-copy">
               <h3>Финал и защита проектов</h3>
               <ul>
@@ -600,58 +516,63 @@
     </div>
   </section>
 
-  <!-- ==================== WHAT HAPPENS HERE (dark) ==================== -->
-  <section class="section section--dark">
-    <div class="container" data-reveal>
-      <p class="eyebrow eyebrow--light">Атмосфера</p>
+  <!-- ==================== WHAT HAPPENS HERE — GAME ==================== -->
+  <section class="section section--dark game-section" id="vibe" data-game>
+    <div class="container">
       <h2 class="h2 h2--light">Что будет происходить здесь?</h2>
-      <div class="word-cloud">
-        <span>_работать</span>
-        <span>_репетировать</span>
-        <span>_знакомиться</span>
-        <span>_учиться</span>
-        <span>_делать_выставку</span>
-        <span>_записывать_подкаст</span>
-        <span>_собирать_команду</span>
-        <span>_пить_кофе</span>
-        <span>_общаться</span>
-        <span>_отдыхать</span>
-        <span>_создавать</span>
-        <span>_придумывать</span>
-      </div>
-      <p class="word-cloud__caption">процессы → сценарии → пространство</p>
+      <p class="lead game-section__lead">Лови слова курсором или пальцем — вот из чего складывается день в пространстве.</p>
+    </div>
+
+    <div class="game" data-game-field>
+      <div class="game__glow" data-game-glow aria-hidden="true"></div>
+      <p class="game__counter"><span data-game-count>0</span> / <span data-game-total>12</span> поймано</p>
+
+      <div class="game__word" style="--x:10%; --y:14%; --fdelay:0s;" data-hue="1"><button type="button" data-word><span class="game__word-inner">_работать</span></button></div>
+      <div class="game__word" style="--x:36%; --y:8%; --fdelay:0.6s;" data-hue="2"><button type="button" data-word><span class="game__word-inner">_репетировать</span></button></div>
+      <div class="game__word" style="--x:64%; --y:15%; --fdelay:1.2s;" data-hue="3"><button type="button" data-word><span class="game__word-inner">_знакомиться</span></button></div>
+      <div class="game__word" style="--x:87%; --y:24%; --fdelay:1.8s;" data-hue="4"><button type="button" data-word><span class="game__word-inner">_учиться</span></button></div>
+      <div class="game__word" style="--x:16%; --y:42%; --fdelay:0.3s;" data-hue="3"><button type="button" data-word><span class="game__word-inner">_делать_выставку</span></button></div>
+      <div class="game__word" style="--x:47%; --y:38%; --fdelay:0.9s;" data-hue="1"><button type="button" data-word><span class="game__word-inner">_записывать_подкаст</span></button></div>
+      <div class="game__word" style="--x:76%; --y:46%; --fdelay:1.5s;" data-hue="2"><button type="button" data-word><span class="game__word-inner">_собирать_команду</span></button></div>
+      <div class="game__word" style="--x:9%; --y:68%; --fdelay:0.1s;" data-hue="4"><button type="button" data-word><span class="game__word-inner">_пить_кофе</span></button></div>
+      <div class="game__word" style="--x:37%; --y:64%; --fdelay:0.7s;" data-hue="2"><button type="button" data-word><span class="game__word-inner">_общаться</span></button></div>
+      <div class="game__word" style="--x:62%; --y:72%; --fdelay:1.3s;" data-hue="1"><button type="button" data-word><span class="game__word-inner">_отдыхать</span></button></div>
+      <div class="game__word" style="--x:86%; --y:64%; --fdelay:1.9s;" data-hue="3"><button type="button" data-word><span class="game__word-inner">_создавать</span></button></div>
+      <div class="game__word" style="--x:50%; --y:88%; --fdelay:0.5s;" data-hue="4"><button type="button" data-word><span class="game__word-inner">_придумывать</span></button></div>
+
+      <p class="game__done" data-game-done hidden>Поймал(а) всё. Увидимся 17–21 октября — там уже по-настоящему.</p>
     </div>
 
     <div class="gallery" data-reveal>
-      <figure class="gallery__item">
+      <figure class="gallery__item" data-tilt>
         <div class="gallery__photo" style="background-image:url('assets/img/atmo-01-incubator.jpg');"></div>
         <figcaption class="gallery__caption">
           <span class="tag tag--on-dark">01</span>
           <span>Инкубатор городских инициатив</span>
         </figcaption>
       </figure>
-      <figure class="gallery__item">
+      <figure class="gallery__item" data-tilt>
         <div class="gallery__photo" style="background-image:url('assets/img/atmo-02-lounge.jpg');"></div>
         <figcaption class="gallery__caption">
           <span class="tag tag--on-dark">02</span>
           <span>Лаунж и амфитеатр</span>
         </figcaption>
       </figure>
-      <figure class="gallery__item">
+      <figure class="gallery__item" data-tilt>
         <div class="gallery__photo" style="background-image:url('assets/img/atmo-03-studio.jpg');"></div>
         <figcaption class="gallery__caption">
           <span class="tag tag--on-dark">03</span>
           <span>Творческая студия</span>
         </figcaption>
       </figure>
-      <figure class="gallery__item">
+      <figure class="gallery__item" data-tilt>
         <div class="gallery__photo" style="background-image:url('assets/img/atmo-04-terrace.jpg');"></div>
         <figcaption class="gallery__caption">
           <span class="tag tag--on-dark">04</span>
           <span>Терраса с гамаками</span>
         </figcaption>
       </figure>
-      <figure class="gallery__item">
+      <figure class="gallery__item" data-tilt>
         <div class="gallery__photo" style="background-image:url('assets/img/atmo-05-courtyard.jpg');"></div>
         <figcaption class="gallery__caption">
           <span class="tag tag--on-dark">05</span>
@@ -664,7 +585,6 @@
   <!-- ==================== ORGANIZERS ==================== -->
   <section class="section">
     <div class="container" data-reveal>
-      <p class="eyebrow">Организаторы</p>
       <h2 class="h2">Кто делает хакатон</h2>
       <ul class="org-list">
         <li>Молодежный центр Республики Татарстан</li>
@@ -688,7 +608,7 @@
       <p class="fine-print" style="margin-top:16px;">Количество мест ограничено.</p>
 
       <div class="final-cta__actions">
-        <a href="apply.html" class="btn btn--primary">
+        <a href="apply.html" class="btn btn--primary" data-magnetic>
           <span>Подать заявку</span>
           <svg class="btn__arrow" width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 7H17M17 7L11 1M17 7L11 13" stroke="currentColor" stroke-width="1.6"/></svg>
         </a>
@@ -714,7 +634,7 @@
     <h3 id="modalTitle"></h3>
     <p id="modalLoc" class="objects-app__loc"></p>
     <p>Полный пакет исходных данных объекта — фотографии, существующее состояние, планы — будет предоставлен командам, прошедшим отбор, перед началом хакатона.</p>
-    <a href="apply.html" class="btn btn--outline"><span>Подать заявку</span></a>
+    <a href="apply.html" class="btn btn--outline" data-magnetic><span>Подать заявку</span></a>
   </div>
 </div>
 

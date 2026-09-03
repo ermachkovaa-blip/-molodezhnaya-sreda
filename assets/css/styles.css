@@ -129,6 +129,12 @@ input, textarea, select{ font: inherit; color: inherit; }
   clip: rect(0,0,0,0); white-space:nowrap; border:0;
 }
 
+[data-tilt]{
+  transition: transform .35s var(--ease);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
 /* reveal-on-scroll base state */
 [data-reveal]{
   opacity: 0;
@@ -387,6 +393,8 @@ input, textarea, select{ font: inherit; color: inherit; }
   font-weight:700;
   font-size: 15px;
   text-transform: uppercase;
+  transition: transform .15s ease-out;
+  will-change: transform;
   letter-spacing:.01em;
   border: 1.5px solid var(--ink);
   position: relative;
@@ -937,14 +945,8 @@ input, textarea, select{ font: inherit; color: inherit; }
 .story__stage-head .story__step-label{ font-family:var(--font-display); font-weight:700; text-transform:uppercase; font-size: clamp(24px,5vw,32px); display:block; margin: 2px 0; }
 .story__stage-head .story__step-date{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); }
 
-.story__stage-visual{
-  position:relative;
-  aspect-ratio: 4/3;
-  background: var(--bg);
-  overflow:hidden;
-}
-.story__frame{ position:relative; width:100%; height:100%; }
-
+.story__stage-copy{ max-width: 62ch; }
+.story__stage-copy h3{ font-size: clamp(24px,3.4vw,34px); text-transform:uppercase; margin-bottom:6px; }
 .story__stage-copy ul{ display:flex; flex-direction:column; gap:9px; margin-top:6px; }
 .story__stage-copy li{ padding-left: 18px; position:relative; color: var(--ink-soft); font-size:15px; }
 .story__stage-copy li::before{
@@ -968,62 +970,8 @@ input, textarea, select{ font: inherit; color: inherit; }
 .story__step-date{ display:block; margin-top:2px; }
 .story__step.is-active .story__step-num, .story__step.is-active .story__step-date{ color: var(--ink); }
 
-/* --- stage visual contents --- */
-.sv-photo{ position:absolute; inset:0; }
-.sv-photo__base{
-  position:absolute; inset:0;
-  background: linear-gradient(150deg,#334066,#141821 65%);
-}
-.sv-photo__grid{ position:absolute; inset:0; opacity:.35; }
-.sv-photo .tag, .sv-photo .crosshair{ position:absolute; color: rgba(255,255,255,.75); }
-
-.sv-notes{ position:absolute; inset:0; padding: 22px; }
-.sv-notes__note{
-  position:absolute;
-  background: var(--paper);
-  border: 1px solid var(--line-strong);
-  padding: 12px 14px;
-  font-size: 13px;
-  max-width: 190px;
-  box-shadow: 0 10px 24px rgba(20,20,15,.08);
-}
-.sv-notes__note::before{
-  content:'';
-  position:absolute; top:-5px; left:16px;
-  width:10px; height:10px; border-radius:50%;
-  background: var(--orange);
-}
-.sv-notes__thumbs{
-  position:absolute; right:22px; bottom:22px;
-  display:grid; grid-template-columns: repeat(2,44px); gap:6px;
-}
-.sv-notes__thumbs span{ display:block; aspect-ratio:1; background: var(--line); }
-
-.sv-diagram{ position:absolute; inset:0; }
-.sv-diagram svg{ width:100%; height:100%; }
-.sv-diagram__node{ font-family: var(--font-mono); font-size: 9px; text-transform:uppercase; fill: var(--ink); }
-
-.sv-plan{ position:absolute; inset:0; padding: 24px; }
-.sv-plan svg{ width:100%; height:100%; }
-.sv-plan__label{ font-family: var(--font-mono); font-size: 8px; fill: var(--ink-soft); text-transform:uppercase; }
-
-.sv-final{ position:absolute; inset:0; }
-.sv-final__base{ position:absolute; inset:0; background: linear-gradient(150deg,#334066,#141821 65%); }
-.sv-final__stamp{
-  position:absolute; right: 8%; bottom: 10%;
-  border: 2px solid var(--paper);
-  color: var(--paper);
-  padding: 10px 18px;
-  transform: rotate(-8deg);
-  font-family: var(--font-display);
-  font-weight:700;
-  text-transform:uppercase;
-  font-size: clamp(14px,2vw,20px);
-  letter-spacing:.04em;
-}
-
 @media (min-width: 980px){
-  .story__pin-wrap{ height: 520vh; }
+  .story__pin-wrap{ height: 420vh; }
   .story__pin{
     position:sticky; top:0; height:100vh;
     display:grid;
@@ -1034,13 +982,12 @@ input, textarea, select{ font: inherit; color: inherit; }
   }
   .story__stepper{ display:flex; flex-direction:column; }
 
-  .story__stages{ position:relative; height: min(74vh, 660px); display:block; }
+  .story__stages{ position:relative; height: min(50vh, 420px); display:block; }
   .story__stage{
     position:absolute; inset:0;
-    display:grid !important;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 0 36px;
-    align-items:center;
+    display:flex !important;
+    flex-direction:column;
+    justify-content:center;
     opacity:0;
     transform: translateY(24px);
     transition: opacity .5s var(--ease-soft), transform .6s var(--ease-soft);
@@ -1048,8 +995,6 @@ input, textarea, select{ font: inherit; color: inherit; }
   }
   .story__stage.is-active{ opacity:1; transform:translateY(0); pointer-events:auto; }
   .story__stage-head{ display:none; }
-  .story__stage-visual{ aspect-ratio:unset; height:100%; }
-  .story__stage-copy{ align-self:center; }
 
   .story__progress{ display:block; height:2px; background: var(--line); margin-top: 30px; }
 }
@@ -1058,34 +1003,126 @@ input, textarea, select{ font: inherit; color: inherit; }
   .story__pin{ position:static !important; height:auto !important; display:block !important; }
   .story__stepper{ display:none !important; }
   .story__stages{ display:flex !important; flex-direction:column; height:auto !important; position:relative; }
-  .story__stage{ position:static !important; opacity:1 !important; transform:none !important; display:grid !important; grid-template-columns:1fr !important; margin-bottom:56px; }
+  .story__stage{ position:static !important; opacity:1 !important; transform:none !important; display:block !important; margin-bottom:56px; }
   .story__stage-head{ display:block !important; }
   .story__progress{ display:none !important; }
 }
 
 /* --------------------------------------------------------------------------
-   WORD CLOUD (dark)
+   "ЧТО БУДЕТ ПРОИСХОДИТЬ ЗДЕСЬ" — ловилка слов (dark)
    -------------------------------------------------------------------------- */
-.word-cloud{
-  display:flex; flex-wrap:wrap; gap: 16px 24px;
-  margin-bottom: 30px;
+.game-section{ overflow: hidden; }
+.game-section__lead{ color: rgba(255,255,255,.65); margin-top: 4px; }
+
+.game{
+  position: relative;
+  height: 78vh;
+  min-height: 460px;
+  max-height: 720px;
+  margin-top: 28px;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
-.word-cloud span{
+.game__glow{
+  position:absolute; inset:-10%;
+  background: radial-gradient(480px circle at var(--gx,50%) var(--gy,40%), rgba(240,99,47,.35), rgba(225,79,196,.16) 45%, transparent 70%);
+  transition: opacity .4s ease;
+  pointer-events:none;
+}
+.game__counter{
+  position:absolute; top:0; left: var(--gutter); z-index:3;
+  margin:0;
+  font-family: var(--font-mono);
+  color: rgba(255,255,255,.55);
+  font-size: 13px;
+  letter-spacing:.04em;
+}
+.game__counter span{ color: var(--paper); font-weight:600; }
+
+.game__word{
+  position: absolute;
+  left: clamp(112px, var(--x), calc(100% - 112px));
+  top: clamp(32px, var(--y), calc(100% - 32px));
+  transform: translate3d(-50%,-50%,0);
+  z-index: 2;
+  transition: transform .1s linear;
+}
+.game__word button{
+  position: relative;
+  display:inline-flex;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: none;
   font-family: var(--font-display);
   font-weight:700;
   text-transform:uppercase;
-  font-size: clamp(16px, 3vw, 28px);
-  transition: transform .3s var(--ease), color .3s ease;
-  display:inline-block;
-  cursor:default;
+  font-size: clamp(14px, 2.1vw, 20px);
+  color: var(--paper);
+  white-space:nowrap;
+  cursor: pointer;
+  animation: gameFloat 5s ease-in-out infinite;
+  animation-delay: var(--fdelay, 0s);
 }
-.word-cloud span:hover{ transform: translateY(-4px) rotate(-2deg); color: var(--orange); }
-.word-cloud__caption{
-  color: rgba(255,255,255,.6);
-  font-family: var(--font-mono);
+.game__word[data-hue="1"] button{ background: linear-gradient(135deg, var(--blue), var(--pink)); }
+.game__word[data-hue="2"] button{ background: linear-gradient(135deg, var(--pink), var(--orange)); }
+.game__word[data-hue="3"] button{ background: linear-gradient(135deg, var(--orange), var(--green)); }
+.game__word[data-hue="4"] button{ background: linear-gradient(135deg, var(--green), var(--blue)); }
+.game__word-inner{ position:relative; z-index:1; }
+
+.game__word button:hover, .game__word button:focus-visible{ transform: scale(1.08); }
+.game__word button:active{ transform: scale(.94); }
+
+.game__word.is-caught button{
+  animation: gamePop .5s var(--ease) forwards;
+  pointer-events:none;
+}
+@keyframes gameFloat{
+  0%, 100%{ transform: translateY(0) rotate(0deg); }
+  50%{ transform: translateY(-10px) rotate(-1.5deg); }
+}
+@keyframes gamePop{
+  0%{ transform: scale(1); opacity:1; }
+  60%{ transform: scale(1.3); opacity:1; }
+  100%{ transform: scale(0); opacity:0; }
+}
+
+.game__done{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  text-align:center;
+  padding: 0 10%;
+  margin:0;
+  font-family: var(--font-display);
+  font-weight:700;
   text-transform:uppercase;
-  letter-spacing:.08em;
-  font-size: 13px;
+  font-size: clamp(20px, 3.4vw, 34px);
+  color: var(--paper);
+  background: rgba(20,20,15,.35);
+  z-index: 4;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .5s var(--ease-soft);
+}
+.game__done:not([hidden]){ opacity:1; pointer-events:auto; }
+
+.game-particle{
+  position:absolute; width:8px; height:8px; border-radius:50%;
+  pointer-events:none; z-index:5;
+  animation: gameParticle .6s ease-out forwards;
+}
+@keyframes gameParticle{
+  0%{ transform: translate(0,0) scale(1); opacity:1; }
+  100%{ transform: translate(var(--px), var(--py)) scale(0); opacity:0; }
+}
+
+@media (max-width: 640px){
+  .game{ height: 68vh; min-height: 420px; }
+  .game__word button{ padding: 10px 16px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .game__word button{ animation: none; }
+  .game__word{ transition: none; }
 }
 
 /* ---- atmosphere photo gallery (dark section) ---- */
@@ -1288,4 +1325,58 @@ input:focus, textarea:focus{ outline:none; border-color: var(--ink); }
 @media (max-width: 640px){
   .section{ padding-top: 72px; }
   .section--dark{ padding: 72px 0; margin-top: 72px; }
+}
+
+/* --------------------------------------------------------------------------
+   MOBILE — центрированная композиция
+   Контентные блоки (заголовки, лиды, кнопки, интро-секции) выравниваются
+   по центру. Форма заявки, бейджи с иконками и списки-таймлайны остаются
+   слева — центрировать поля ввода и маркированные списки вредит читаемости.
+   -------------------------------------------------------------------------- */
+@media (max-width: 899px){
+  /* text-align inherits, so centering the section wrapper centers every
+     paragraph/heading/list-item inside it in one go; flex/grid placement
+     is untouched, only inline content alignment. */
+  .hero__grid,
+  .about .container,
+  .benefits__intro,
+  #showcase > .container,
+  .objects__intro,
+  #team > .container,
+  .story__intro,
+  .game-section .container,
+  .site-footer .container,
+  .final-cta > .container,
+  .apply-hero .container,
+  .thank-you{
+    text-align:center;
+  }
+
+  /* re-center block-level children that carry their own max-width/width */
+  .hero__lead, .lead, .fine-print, .game-section__lead,
+  .hero__cta, .final-cta__actions, .apply-hero .info-strip, #showcase .btn{
+    margin-inline:auto;
+  }
+  .hero__title .display__row{ justify-content:center; }
+  .hero__cta, .final-cta__actions{ display:flex; justify-content:center; }
+  #showcase .btn{ display:flex; width:max-content; }
+  .info-strip{ justify-content:center; }
+  .pill-list, .chip-list, .objects-app__list{ justify-content:center; }
+  .triple-caps{ align-items:center; }
+  .triple-caps span:hover{ padding-left:0; }
+  .triple-caps span:hover::before{ content:none; }
+
+  .benefits__stage{ grid-template-columns:1fr; justify-items:center; text-align:center; }
+  .objects-app__body{ text-align:center; }
+  .objects-app__body .link-more{ margin-inline:auto; }
+
+  /* bulleted / left-dot lists keep their own alignment — centering hurts
+     scanability, so this undoes inherited text-align:center for them */
+  .story__stage-copy, .confirm-notes{ text-align:left; margin-inline:auto; max-width:60ch; }
+  .story__stage-head{ text-align:center; }
+  .org-list li{ flex-direction:column; gap:4px; }
+
+  .footer__top{ flex-direction:column; align-items:center; }
+  .footer__nav{ align-items:center; }
+  .footer__links{ justify-content:center; }
 }

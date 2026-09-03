@@ -245,4 +245,168 @@
       if (e.key === 'Escape' && !modal.hidden) closeModal();
     });
   }
+
+  /* ------------------------------------------------------------------ */
+  /* "Что будет происходить здесь" — ловилка слов                       */
+  /* Desktop: слова разбегаются от курсора, клик — "ловит" слово.       */
+  /* Mobile: тап ловит слово напрямую (без физики разбегания).          */
+  /* ------------------------------------------------------------------ */
+  (function wordGame() {
+    var field = document.querySelector('[data-game-field]');
+    if (!field) return;
+    var words = Array.prototype.slice.call(field.querySelectorAll('.game__word'));
+    var glow = field.querySelector('[data-game-glow]');
+    var countEl = document.querySelector('[data-game-count]');
+    var totalEl = document.querySelector('[data-game-total]');
+    var doneEl = document.querySelector('[data-game-done]');
+    var total = words.length;
+    var caught = 0;
+    var motionOn = hoverFineMQ.matches && !reduced();
+
+    if (totalEl) totalEl.textContent = String(total);
+    words.forEach(function (w) { w._cur = { x: 0, y: 0 }; w._target = { x: 0, y: 0 }; });
+
+    var raf = null;
+    var pointerActive = false;
+    var pointerX = 0, pointerY = 0;
+
+    function baseCenter(w) {
+      var fr = field.getBoundingClientRect();
+      var r = w.getBoundingClientRect();
+      return {
+        x: r.left + r.width / 2 - fr.left - w._cur.x,
+        y: r.top + r.height / 2 - fr.top - w._cur.y
+      };
+    }
+
+    function applyTransform(w) {
+      w.style.transform = 'translate3d(-50%,-50%,0) translate(' + w._cur.x.toFixed(1) + 'px,' + w._cur.y.toFixed(1) + 'px)';
+    }
+
+    function loop() {
+      var moving = false;
+      words.forEach(function (w) {
+        if (w.classList.contains('is-caught')) return;
+        if (pointerActive) {
+          var base = baseCenter(w);
+          var dx = base.x - pointerX, dy = base.y - pointerY;
+          var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          var radius = 130;
+          if (dist < radius) {
+            var force = (radius - dist) / radius;
+            w._target.x = (dx / dist) * force * 50;
+            w._target.y = (dy / dist) * force * 50;
+          } else {
+            w._target.x = 0; w._target.y = 0;
+          }
+        } else {
+          w._target.x = 0; w._target.y = 0;
+        }
+        w._cur.x += (w._target.x - w._cur.x) * 0.15;
+        w._cur.y += (w._target.y - w._cur.y) * 0.15;
+        applyTransform(w);
+        if (Math.abs(w._target.x - w._cur.x) > 0.3 || Math.abs(w._cur.x) > 0.3 || Math.abs(w._cur.y) > 0.3) moving = true;
+      });
+      if (moving || pointerActive) {
+        raf = requestAnimationFrame(loop);
+      } else {
+        raf = null;
+      }
+    }
+
+    function ensureLoop() { if (!raf) raf = requestAnimationFrame(loop); }
+
+    if (motionOn) {
+      field.addEventListener('pointermove', function (e) {
+        var fr = field.getBoundingClientRect();
+        pointerX = e.clientX - fr.left;
+        pointerY = e.clientY - fr.top;
+        pointerActive = true;
+        if (glow) {
+          glow.style.setProperty('--gx', pointerX + 'px');
+          glow.style.setProperty('--gy', pointerY + 'px');
+        }
+        ensureLoop();
+      });
+      field.addEventListener('pointerleave', function () {
+        pointerActive = false;
+        ensureLoop();
+      });
+    }
+
+    function burst(x, y, hue) {
+      var palette = {
+        '1': ['#3B5FE2', '#E14FC4'],
+        '2': ['#E14FC4', '#F0632F'],
+        '3': ['#F0632F', '#2E8E52'],
+        '4': ['#2E8E52', '#3B5FE2']
+      };
+      var pair = palette[hue] || palette['1'];
+      for (var i = 0; i < 8; i++) {
+        var p = document.createElement('span');
+        p.className = 'game-particle';
+        var angle = (Math.PI * 2 * i) / 8;
+        var dist = 40 + Math.random() * 30;
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        p.style.background = pair[i % 2];
+        p.style.setProperty('--px', (Math.cos(angle) * dist).toFixed(0) + 'px');
+        p.style.setProperty('--py', (Math.sin(angle) * dist).toFixed(0) + 'px');
+        field.appendChild(p);
+        (function (el) { setTimeout(function () { el.remove(); }, 650); })(p);
+      }
+    }
+
+    words.forEach(function (w) {
+      var btn = w.querySelector('button');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        if (w.classList.contains('is-caught')) return;
+        w.classList.add('is-caught');
+        caught++;
+        if (countEl) countEl.textContent = String(caught);
+        if (!reduced()) {
+          var fr = field.getBoundingClientRect();
+          var r = btn.getBoundingClientRect();
+          burst(r.left + r.width / 2 - fr.left, r.top + r.height / 2 - fr.top, w.getAttribute('data-hue'));
+        }
+        if (caught >= total && doneEl) {
+          setTimeout(function () { doneEl.hidden = false; }, 400);
+        }
+      });
+    });
+  })();
+
+  /* ------------------------------------------------------------------ */
+  /* Magnetic buttons (desktop, fine pointer, motion allowed)            */
+  /* ------------------------------------------------------------------ */
+  (function magneticButtons() {
+    if (!hoverFineMQ.matches || reduced()) return;
+    document.querySelectorAll('[data-magnetic]').forEach(function (el) {
+      var strength = 14;
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        var relX = (e.clientX - r.left) / r.width - 0.5;
+        var relY = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = 'translate(' + (relX * strength).toFixed(1) + 'px,' + (relY * strength).toFixed(1) + 'px)';
+      });
+      el.addEventListener('pointerleave', function () { el.style.transform = ''; });
+    });
+  })();
+
+  /* ------------------------------------------------------------------ */
+  /* Tilt cards (desktop, fine pointer, motion allowed)                  */
+  /* ------------------------------------------------------------------ */
+  (function tiltCards() {
+    if (!hoverFineMQ.matches || reduced()) return;
+    document.querySelectorAll('[data-tilt]').forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        var relX = (e.clientX - r.left) / r.width - 0.5;
+        var relY = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = 'perspective(700px) rotateX(' + (relY * -7).toFixed(2) + 'deg) rotateY(' + (relX * 7).toFixed(2) + 'deg)';
+      });
+      el.addEventListener('pointerleave', function () { el.style.transform = ''; });
+    });
+  })();
 })();
