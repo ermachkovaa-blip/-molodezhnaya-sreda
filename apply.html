@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подать заявку — Молодёжная среда</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="scroll-page">
+
+<header class="site-header" id="site-header">
+  <a class="site-header__logo" href="index.html" aria-label="Молодёжная среда — на главную">
+    <span class="logo-mark" aria-hidden="true">mly</span>
+    <span class="logo-caption">МОЛОДЁЖНЫЙ<br>ЦЕНТР<br>РЕСПУБЛИКИ<br>ТАТАРСТАН</span>
+  </a>
+  <nav class="site-header__nav" id="site-nav" aria-label="Основная навигация"></nav>
+  <div class="site-header__actions">
+    <button class="burger" id="burger-btn" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<nav class="mobile-menu" id="mobile-menu" aria-label="Мобильное меню" hidden></nav>
+
+<main class="apply-page">
+  <div class="apply-shell">
+    <a class="apply-back-link" href="index.html">&#8592; Вернуться в пространство</a>
+
+    <div class="apply-steps" id="apply-steps" role="tablist" aria-label="Шаги заявки"></div>
+
+    <form class="apply-card" id="apply-form" novalidate>
+
+      <section class="apply-step" data-step="1">
+        <h2>01 · О тебе</h2>
+        <p class="apply-hint">Расскажи, как с тобой связаться.</p>
+        <div class="apply-field" data-field="name">
+          <label for="f-name">Имя и фамилия <span class="req">*</span></label>
+          <input type="text" id="f-name" name="name" autocomplete="name" required>
+          <p class="apply-field__error">Укажи имя и фамилию.</p>
+        </div>
+        <div class="apply-field" data-field="email">
+          <label for="f-email">Email <span class="req">*</span></label>
+          <input type="email" id="f-email" name="email" autocomplete="email" required>
+          <p class="apply-field__error">Проверь формат email.</p>
+        </div>
+        <div class="apply-field" data-field="phone">
+          <label for="f-phone">Телефон</label>
+          <input type="tel" id="f-phone" name="phone" autocomplete="tel">
+        </div>
+        <div class="apply-field" data-field="age">
+          <label for="f-age">Возраст <span class="req">*</span></label>
+          <input type="text" id="f-age" name="age" inputmode="numeric" required>
+          <p class="apply-field__error">Укажи возраст.</p>
+        </div>
+      </section>
+
+      <section class="apply-step" data-step="2" hidden>
+        <h2>02 · Профиль</h2>
+        <p class="apply-hint">Кто ты в проекте.</p>
+        <div class="apply-field" data-field="role">
+          <label for="f-role">Роль, с которой хочешь участвовать <span class="req">*</span></label>
+          <select id="f-role" name="role" required>
+            <option value="">Выбери роль</option>
+            <option>Архитектор</option>
+            <option>Дизайнер</option>
+            <option>Урбанист</option>
+            <option>Исследователь</option>
+            <option>Визуализатор</option>
+            <option>Социолог / антрополог</option>
+            <option>Студент профильного вуза или колледжа</option>
+            <option>Другое</option>
+          </select>
+          <p class="apply-field__error">Выбери роль.</p>
+        </div>
+        <div class="apply-field" data-field="place">
+          <label for="f-place">Вуз / колледж / место учёбы или работы</label>
+          <input type="text" id="f-place" name="place">
+        </div>
+      </section>
+
+      <section class="apply-step" data-step="3" hidden>
+        <h2>03 · Инструменты</h2>
+        <p class="apply-hint">Чем пользуешься в работе — можно выбрать несколько.</p>
+        <div class="apply-field" data-field="tools">
+          <div class="apply-checkbox-group" id="tools-group">
+            <label><input type="checkbox" name="tools" value="AutoCAD">AutoCAD</label>
+            <label><input type="checkbox" name="tools" value="Revit">Revit</label>
+            <label><input type="checkbox" name="tools" value="SketchUp">SketchUp</label>
+            <label><input type="checkbox" name="tools" value="Rhino / Grasshopper">Rhino / Grasshopper</label>
+            <label><input type="checkbox" name="tools" value="Figma">Figma</label>
+            <label><input type="checkbox" name="tools" value="Illustrator / Photoshop">Illustrator / Photoshop</label>
+            <label><input type="checkbox" name="tools" value="AI-инструменты">AI-инструменты</label>
+            <label><input type="checkbox" name="tools" value="Ручная графика">Ручная графика</label>
+          </div>
+        </div>
+      </section>
+
+      <section class="apply-step" data-step="4" hidden>
+        <h2>04 · Команда</h2>
+        <p class="apply-hint">Участвуешь один или уже есть команда?</p>
+        <div class="apply-field" data-field="teamStatus">
+          <div class="apply-checkbox-group">
+            <label><input type="radio" name="teamStatus" value="have" required>У меня есть команда</label>
+            <label><input type="radio" name="teamStatus" value="need">Ищу команду / участников</label>
+            <label><input type="radio" name="teamStatus" value="solo">Иду соло</label>
+          </div>
+          <p class="apply-field__error">Отметь один из вариантов.</p>
+        </div>
+        <div class="apply-field" data-field="teamNames">
+          <label for="f-team-names">Имена участников команды (если есть)</label>
+          <textarea id="f-team-names" name="teamNames"></textarea>
+        </div>
+      </section>
+
+      <section class="apply-step" data-step="5" hidden>
+        <h2>05 · Мотивация</h2>
+        <p class="apply-hint">Что хочешь получить от хакатона — выбери до 3 целей.</p>
+        <div class="apply-field" data-field="goals">
+          <div class="apply-checkbox-group" id="goals-group">
+            <label><input type="checkbox" name="goals" value="Опыт реального проекта">Опыт реального проекта</label>
+            <label><input type="checkbox" name="goals" value="Портфолио">Портфолио</label>
+            <label><input type="checkbox" name="goals" value="Знакомство с командой">Знакомство с командой</label>
+            <label><input type="checkbox" name="goals" value="Нетворкинг">Нетворкинг</label>
+            <label><input type="checkbox" name="goals" value="Обратная связь от экспертов">Обратная связь от экспертов</label>
+            <label><input type="checkbox" name="goals" value="Шанс на реализацию идеи">Шанс на реализацию идеи</label>
+          </div>
+          <p class="apply-field__error">Выбери хотя бы одну цель (максимум 3).</p>
+        </div>
+        <div class="apply-field" data-field="motivation">
+          <label for="f-motivation">Расскажи, почему хочешь участвовать <span class="req">*</span></label>
+          <textarea id="f-motivation" name="motivation" required></textarea>
+          <p class="apply-field__error">Расскажи пару предложений о мотивации.</p>
+        </div>
+      </section>
+
+      <section class="apply-step" data-step="6" hidden>
+        <h2>06 · Портфолио</h2>
+        <p class="apply-hint">Ссылка на работы — Behance, Google Drive, сайт, PDF.</p>
+        <div class="apply-field" data-field="portfolio">
+          <label for="f-portfolio">Ссылка на портфолио <span class="req">*</span></label>
+          <input type="url" id="f-portfolio" name="portfolio" placeholder="https://" required>
+          <p class="apply-field__error">Укажи корректную ссылку (начинается с http:// или https://).</p>
+        </div>
+      </section>
+
+      <section class="apply-step" data-step="7" hidden>
+        <h2>07 · Где ты сейчас</h2>
+        <p class="apply-hint">Хакатон проходит очно в Казани, 17–21 октября 2026.</p>
+        <div class="apply-field" data-field="city">
+          <label for="f-city">Город проживания <span class="req">*</span></label>
+          <input type="text" id="f-city" name="city" required>
+          <p class="apply-field__error">Укажи город.</p>
+        </div>
+        <div class="apply-field" data-field="agree">
+          <div class="apply-checkbox-group">
+            <label><input type="checkbox" name="agree" value="yes" required>Понимаю: участие бесплатно, количество мест ограничено; для иногородних проезд и проживание — за свой счёт.</label>
+          </div>
+          <p class="apply-field__error">Нужно подтвердить, что условия понятны.</p>
+        </div>
+      </section>
+
+      <section class="apply-step apply-step--done" data-step="8" hidden>
+        <h2>Заявка готова</h2>
+        <p class="apply-hint">Это прототип интерфейса: данные сохранены только в этом браузере (localStorage), реальная отправка на сервер не подключена.</p>
+        <dl class="apply-summary" id="apply-summary"></dl>
+      </section>
+
+      <div class="apply-nav">
+        <button type="button" class="apply-btn apply-btn--ghost" id="apply-back">Назад</button>
+        <button type="button" class="apply-btn apply-btn--primary" id="apply-next">Далее</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/data.js"></script>
+<script src="js/apply.js"></script>
+</body>
+</html>

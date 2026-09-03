@@ -2,48 +2,208 @@
   'use strict';
 
   var STORAGE_KEY = 'mly_last_zone';
+  var params = new URLSearchParams(location.search);
+  var DEBUG = params.get('debug') === '1';
+  var reduceMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var hoverFineMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
+  function reducedMotion() { return reduceMotionMQ.matches; }
+  function isDesktopPointer() { return hoverFineMQ.matches; }
+
+  // ---------------------------------------------------------------
+  // DOM refs
+  // ---------------------------------------------------------------
 
   var mapView = document.getElementById('map-view');
   var sceneView = document.getElementById('scene-view');
   var mapHotspotsEl = document.getElementById('map-hotspots');
-  var mapTooltip = document.getElementById('map-tooltip');
-  var mapTooltipNum = document.getElementById('map-tooltip-num');
-  var mapTooltipTitle = document.getElementById('map-tooltip-title');
   var mapZoomVeil = document.getElementById('map-zoom-veil');
   var mapStage = document.querySelector('.map-stage');
+  var mapImageEl = document.querySelector('.map-image');
   var fadeVeil = document.getElementById('fade-veil');
 
   var sceneViewport = document.getElementById('scene-viewport');
   var sceneStage = document.getElementById('scene-stage');
   var sceneImage = document.getElementById('scene-image');
   var sceneHotspotsEl = document.getElementById('scene-hotspots');
+  var contentHotspotsEl = document.getElementById('scene-content-hotspots');
   var mapReturnBtn = document.getElementById('map-return');
+
+  var siteNav = document.getElementById('site-nav');
+  var mobileMenu = document.getElementById('mobile-menu');
+  var burgerBtn = document.getElementById('burger-btn');
+
+  var bottomNavRail = document.getElementById('bottom-nav-rail');
+  var bottomNavPrev = document.getElementById('bottom-nav-prev');
+  var bottomNavNext = document.getElementById('bottom-nav-next');
+
+  var ctaCard = document.getElementById('cta-card-07');
+
+  var paperOverlay = document.getElementById('paper-overlay');
+  var paperTitle = document.getElementById('paper-note-title');
+  var paperSubtitle = document.getElementById('paper-note-subtitle');
+  var paperBody = document.getElementById('paper-note-body');
+  var paperClose = document.getElementById('paper-note-close');
+
+  var dossierOverlay = document.getElementById('dossier-overlay');
+  var dossierNum = document.getElementById('dossier-num');
+  var dossierTitle = document.getElementById('dossier-title');
+  var dossierChecklist = document.getElementById('dossier-checklist');
+  var dossierClose = document.getElementById('dossier-close');
+
+  var rolePopover = document.getElementById('role-popover');
+  var rolePopoverTitle = document.getElementById('role-popover-title');
+  var rolePopoverDesc = document.getElementById('role-popover-desc');
+
+  var toastEl = document.getElementById('toast');
+  var cursorBadge = document.getElementById('cursor-badge');
+  var cursorBadgeText = document.getElementById('cursor-badge-text');
+  var debugHud = document.getElementById('debug-hud');
 
   var state = {
     currentZoneId: null,
     currentScene: null,
+    presetScale: 1,
+    zoomFactor: 1,
     scale: 1,
     minScale: 1,
     maxScale: 3,
     tx: 0,
     ty: 0,
     dragging: false,
+    dragMoved: false,
     dragStartX: 0,
     dragStartY: 0,
     dragStartTx: 0,
-    dragStartTy: 0
+    dragStartTy: 0,
+    touchStartX: 0,
+    touchStartY: 0,
+    touchStartTime: 0,
+    parallaxX: 0,
+    parallaxY: 0,
+    parallaxTargetX: 0,
+    parallaxTargetY: 0,
+    lastFocusedEl: null
   };
 
   // ---------------------------------------------------------------
-  // MAP: build hotspots
+  // small utils
   // ---------------------------------------------------------------
 
-  var mapImageEl = document.querySelector('.map-image');
+  function whenImageReady(img, cb) {
+    if (img.complete && img.naturalWidth) { cb(); return; }
+    img.onload = cb;
+  }
 
-  // .map-image uses object-fit:contain, so it can be letterboxed inside
-  // .map-stage (especially on narrow mobile screens). Hotspots are
-  // positioned in % of the *visible image content box*, not the element
-  // box, so we compute and apply that box on load/resize.
+  function logHotspot(id) {
+    // eslint-disable-next-line no-console
+    console.log('HOTSPOT CLICKED:', id);
+  }
+
+  var toastTimer = null;
+  function showToast(msg, ms) {
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    requestAnimationFrame(function () { toastEl.classList.add('is-visible'); });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('is-visible');
+      setTimeout(function () { toastEl.hidden = true; }, 220);
+    }, ms || 2600);
+  }
+
+  function showCursorBadge(text, evt) {
+    if (!isDesktopPointer()) return;
+    cursorBadgeText.textContent = text;
+    cursorBadge.hidden = false;
+    if (evt) {
+      cursorBadge.style.left = evt.clientX + 'px';
+      cursorBadge.style.top = evt.clientY + 'px';
+    }
+  }
+  function moveCursorBadge(evt) {
+    if (cursorBadge.hidden) return;
+    cursorBadge.style.left = evt.clientX + 'px';
+    cursorBadge.style.top = evt.clientY + 'px';
+  }
+  function hideCursorBadge() { cursorBadge.hidden = true; }
+
+  function attachCursorHint(el, text) {
+    el.addEventListener('mouseenter', function (e) { showCursorBadge(text, e); });
+    el.addEventListener('mousemove', moveCursorBadge);
+    el.addEventListener('mouseleave', hideCursorBadge);
+  }
+
+  function openExternalLibrary() {
+    if (CONFIG.externalLibraryUrl) {
+      window.open(CONFIG.externalLibraryUrl, '_blank', 'noopener');
+    } else {
+      showToast('Ссылка на библиотеку объектов появится позже');
+    }
+  }
+
+  // focus trap + open/close helpers for modal overlays
+  function focusablesIn(container) {
+    return Array.prototype.slice.call(
+      container.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+    ).filter(function (el) { return !el.disabled && el.offsetParent !== null; });
+  }
+
+  function openModal(overlayEl, focusEl) {
+    state.lastFocusedEl = document.activeElement;
+    overlayEl.hidden = false;
+    requestAnimationFrame(function () {
+      (focusEl || overlayEl.querySelector('button, [tabindex]')).focus();
+    });
+  }
+
+  function closeModal(overlayEl) {
+    if (overlayEl.hidden) return;
+    overlayEl.hidden = true;
+    if (state.lastFocusedEl && document.body.contains(state.lastFocusedEl)) {
+      state.lastFocusedEl.focus();
+    }
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab') return;
+    var openOverlay = [paperOverlay, dossierOverlay].filter(function (o) { return !o.hidden; })[0];
+    if (!openOverlay) return;
+    var focusables = focusablesIn(openOverlay);
+    if (!focusables.length) return;
+    var first = focusables[0], last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
+  // ---------------------------------------------------------------
+  // HEADER
+  // ---------------------------------------------------------------
+
+  function renderHeader() {
+    HEADER_NAV.forEach(function (item) {
+      var a = document.createElement('a');
+      a.href = item.href;
+      a.textContent = item.label;
+      siteNav.appendChild(a.cloneNode(true));
+      mobileMenu.appendChild(a);
+    });
+    var applyLink = document.createElement('a');
+    applyLink.href = CONFIG.applyUrl;
+    applyLink.className = 'cta-apply';
+    applyLink.innerHTML = 'ПОДАТЬ ЗАЯВКУ <span aria-hidden="true">↗</span>';
+    mobileMenu.appendChild(applyLink);
+  }
+
+  burgerBtn.addEventListener('click', function () {
+    var expanded = burgerBtn.getAttribute('aria-expanded') === 'true';
+    burgerBtn.setAttribute('aria-expanded', String(!expanded));
+    mobileMenu.hidden = expanded;
+  });
+
+  // ---------------------------------------------------------------
+  // MAP: layout + hotspots
+  // ---------------------------------------------------------------
+
   function layoutMapFrame() {
     var stageRect = mapStage.getBoundingClientRect();
     var iw = mapImageEl.naturalWidth;
@@ -88,38 +248,15 @@
       dot.style.setProperty('--dot', zone.color);
       dot.setAttribute('aria-label', zoneId + ' ' + zone.title + ' — идти');
 
-      dot.addEventListener('mouseenter', function (e) { showTooltip(zone, e); });
-      dot.addEventListener('mousemove', function (e) { positionTooltip(e); });
-      dot.addEventListener('mouseleave', hideTooltip);
-      dot.addEventListener('focus', function () { showTooltip(zone, null, dot); });
-      dot.addEventListener('blur', hideTooltip);
-      dot.addEventListener('click', function () { goToZoneFromMap(zoneId); });
+      attachCursorHint(dot, zoneId + ' ' + zone.title + ' · ИДТИ →');
+      dot.addEventListener('click', function () {
+        logHotspot('map:' + zoneId);
+        goToZoneFromMap(zoneId);
+      });
 
       mapHotspotsEl.appendChild(dot);
     });
     restoreSelectedZone();
-  }
-
-  function showTooltip(zone, evt, el) {
-    mapTooltipNum.textContent = zone.id;
-    mapTooltipTitle.textContent = zone.title;
-    mapTooltip.hidden = false;
-    if (evt) {
-      positionTooltip(evt);
-    } else if (el) {
-      var r = el.getBoundingClientRect();
-      mapTooltip.style.left = (r.left + r.width / 2) + 'px';
-      mapTooltip.style.top = r.top + 'px';
-    }
-  }
-
-  function positionTooltip(evt) {
-    mapTooltip.style.left = evt.clientX + 'px';
-    mapTooltip.style.top = evt.clientY + 'px';
-  }
-
-  function hideTooltip() {
-    mapTooltip.hidden = true;
   }
 
   function restoreSelectedZone() {
@@ -130,9 +267,7 @@
 
   function highlightMapZone(zoneId) {
     var dots = mapHotspotsEl.querySelectorAll('.map-hotspot');
-    dots.forEach(function (d) {
-      d.classList.toggle('is-selected', d.dataset.zone === zoneId);
-    });
+    dots.forEach(function (d) { d.classList.toggle('is-selected', d.dataset.zone === zoneId); });
   }
 
   // ---------------------------------------------------------------
@@ -143,9 +278,8 @@
     var zone = ZONES[zoneId];
     localStorage.setItem(STORAGE_KEY, zoneId);
     highlightMapZone(zoneId);
-    hideTooltip();
+    hideCursorBadge();
 
-    // 1. slight zoom into the clicked area of the map
     var frameLeft = parseFloat(mapHotspotsEl.style.left) || 0;
     var frameTop = parseFloat(mapHotspotsEl.style.top) || 0;
     var frameW = parseFloat(mapHotspotsEl.style.width) || mapStage.clientWidth;
@@ -153,18 +287,51 @@
     var originX = (frameLeft + (zone.map.x / 100) * frameW) + 'px';
     var originY = (frameTop + (zone.map.y / 100) * frameH) + 'px';
     mapStage.style.transformOrigin = originX + ' ' + originY;
+
+    if (reducedMotion()) {
+      openScene(zoneId, true);
+      return;
+    }
+
     mapStage.style.transform = 'scale(1.35)';
     mapZoomVeil.classList.add('is-visible');
 
-    // 2. after the zoom-in settles, fade to the scene
     setTimeout(function () {
       openScene(zoneId, true);
-      // reset map transform for next time (invisible, view is hidden already)
       setTimeout(function () {
         mapStage.style.transform = 'scale(1)';
         mapZoomVeil.classList.remove('is-visible');
       }, 50);
     }, 380);
+  }
+
+  // ---------------------------------------------------------------
+  // Unified zone navigation entry point
+  // (used by bottom nav, in-scene neighbour hotspots, swipe)
+  // ---------------------------------------------------------------
+
+  function goToZone(zoneId) {
+    if (zoneId === state.currentZoneId && sceneView.classList.contains('view--active')) return;
+    if (mapView.classList.contains('view--active')) { goToZoneFromMap(zoneId); return; }
+
+    var zone = ZONES[zoneId];
+    var sameScene = state.currentScene === zone.scene;
+    localStorage.setItem(STORAGE_KEY, zoneId);
+
+    if (sameScene) {
+      switchZoneWithinScene(zoneId);
+    } else {
+      openScene(zoneId, true);
+    }
+  }
+
+  function switchZoneWithinScene(zoneId) {
+    var zone = ZONES[zoneId];
+    state.currentZoneId = zoneId;
+    localStorage.setItem(STORAGE_KEY, zoneId);
+    state.zoomFactor = 1;
+    setCameraTo(zone.camera, !reducedMotion());
+    updateSceneChrome(zoneId);
   }
 
   // ---------------------------------------------------------------
@@ -175,43 +342,47 @@
     var zone = ZONES[zoneId];
     var sceneId = zone.scene;
     var sceneDef = SCENES[sceneId];
+    var isNewImage = sceneImage.getAttribute('src') !== sceneDef.file;
 
     state.currentZoneId = zoneId;
     state.currentScene = sceneId;
+    state.zoomFactor = 1;
 
     function activate() {
-      if (sceneImage.getAttribute('src') !== sceneDef.file) {
-        sceneImage.src = sceneDef.file;
-      }
+      if (isNewImage) sceneImage.src = sceneDef.file;
       sceneImage.alt = 'Панорама: ' + sceneDef.zones.map(function (z) { return ZONES[z].id + ' ' + ZONES[z].title; }).join(' / ');
 
-      buildSceneHotspots(sceneDef);
+      buildSceneSwitchHotspots(sceneDef);
+      buildContentHotspots(sceneId);
 
       mapView.classList.remove('view--active');
       sceneView.classList.add('view--active');
+      closeAllOverlays();
 
-      // camera positioning happens once image metrics are known
-      whenImageReady(sceneImage, function () {
-        setCameraTo(zone.camera, false);
-      });
+      whenImageReady(sceneImage, function () { setCameraTo(zone.camera, false); });
 
+      updateSceneChrome(zoneId);
       fadeVeil.classList.remove('is-visible');
     }
 
-    if (animated) {
+    if (animated && !reducedMotion()) {
       fadeVeil.classList.add('is-visible');
-      setTimeout(activate, 320);
+      setTimeout(activate, 260);
     } else {
       activate();
     }
   }
 
-  function whenImageReady(img, cb) {
-    if (img.complete && img.naturalWidth) { cb(); return; }
-    img.onload = cb;
+  function updateSceneChrome(zoneId) {
+    var zone = ZONES[zoneId];
+    renderBottomNav(zoneId);
+    highlightSwitchHotspot(zoneId);
+    ctaCard.hidden = zoneId !== '07';
+    document.documentElement.style.setProperty('--zone-color', zone.color);
+    updateDebugHud();
   }
 
-  function buildSceneHotspots(sceneDef) {
+  function buildSceneSwitchHotspots(sceneDef) {
     sceneHotspotsEl.innerHTML = '';
     sceneDef.zones.forEach(function (zoneId) {
       var zone = ZONES[zoneId];
@@ -219,21 +390,24 @@
       dot.className = 'map-hotspot';
       dot.type = 'button';
       dot.dataset.num = zone.id;
+      dot.dataset.zone = zoneId;
       dot.style.left = zone.camera.x + '%';
       dot.style.top = zone.camera.y + '%';
       dot.style.setProperty('--dot', zone.color);
       dot.setAttribute('aria-label', zone.id + ' ' + zone.title);
-      if (zoneId === state.currentZoneId) dot.classList.add('is-selected');
+      attachCursorHint(dot, zone.id + ' ' + zone.title);
       dot.addEventListener('click', function () {
-        state.currentZoneId = zoneId;
-        localStorage.setItem(STORAGE_KEY, zoneId);
-        setCameraTo(zone.camera, true);
-        var siblings = sceneHotspotsEl.querySelectorAll('.map-hotspot');
-        siblings.forEach(function (s) { s.classList.remove('is-selected'); });
-        dot.classList.add('is-selected');
+        logHotspot('scene-switch:' + zoneId);
+        switchZoneWithinScene(zoneId);
       });
       sceneHotspotsEl.appendChild(dot);
     });
+    highlightSwitchHotspot(state.currentZoneId);
+  }
+
+  function highlightSwitchHotspot(zoneId) {
+    var siblings = sceneHotspotsEl.querySelectorAll('.map-hotspot');
+    siblings.forEach(function (s) { s.classList.toggle('is-selected', s.dataset.zone === zoneId); });
   }
 
   function getCoverScale() {
@@ -246,7 +420,9 @@
   }
 
   function applyStageTransform() {
-    sceneStage.style.transform = 'translate(' + state.tx + 'px,' + state.ty + 'px) scale(' + state.scale + ')';
+    var px = reducedMotion() ? 0 : state.parallaxX;
+    var py = reducedMotion() ? 0 : state.parallaxY;
+    sceneStage.style.transform = 'translate(' + (state.tx + px) + 'px,' + (state.ty + py) + 'px) scale(' + state.scale + ')';
   }
 
   function clampTranslate() {
@@ -254,10 +430,8 @@
     var vh = sceneViewport.clientHeight;
     var iw = sceneImage.naturalWidth * state.scale;
     var ih = sceneImage.naturalHeight * state.scale;
-
     var minTx = Math.min(0, vw - iw);
     var minTy = Math.min(0, vh - ih);
-
     state.tx = Math.max(minTx, Math.min(0, state.tx));
     state.ty = Math.max(minTy, Math.min(0, state.ty));
   }
@@ -266,30 +440,33 @@
     var base = getCoverScale();
     state.minScale = base;
     state.maxScale = base * 2.6;
-    var targetScale = Math.min(state.maxScale, Math.max(state.minScale, base * (focus.scale || 1)));
-
-    state.scale = targetScale;
+    var presetScale = Math.min(state.maxScale, Math.max(state.minScale, base * (focus.scale || 1)));
+    state.presetScale = presetScale;
+    state.zoomFactor = 1;
+    state.scale = presetScale;
 
     var vw = sceneViewport.clientWidth;
     var vh = sceneViewport.clientHeight;
-    var focusX = (focus.x / 100) * sceneImage.naturalWidth * targetScale;
-    var focusY = (focus.y / 100) * sceneImage.naturalHeight * targetScale;
+    var focusX = (focus.x / 100) * sceneImage.naturalWidth * presetScale;
+    var focusY = (focus.y / 100) * sceneImage.naturalHeight * presetScale;
 
     state.tx = vw / 2 - focusX;
     state.ty = vh / 2 - focusY;
     clampTranslate();
 
     if (animated) {
-      sceneStage.style.transition = 'transform 650ms cubic-bezier(.65,0,.35,1)';
-      setTimeout(function () { sceneStage.style.transition = ''; }, 700);
+      sceneStage.style.transition = 'transform 700ms cubic-bezier(.65,0,.35,1)';
+      setTimeout(function () { sceneStage.style.transition = ''; }, 750);
     }
     applyStageTransform();
+    updateDebugHud();
   }
 
-  // ---- drag to pan ----
+  // ---- drag to pan (desktop mouse + touch) ----
 
   function onDragStart(clientX, clientY) {
     state.dragging = true;
+    state.dragMoved = false;
     state.dragStartX = clientX;
     state.dragStartY = clientY;
     state.dragStartTx = state.tx;
@@ -299,8 +476,11 @@
 
   function onDragMove(clientX, clientY) {
     if (!state.dragging) return;
-    state.tx = state.dragStartTx + (clientX - state.dragStartX);
-    state.ty = state.dragStartTy + (clientY - state.dragStartY);
+    var dx = clientX - state.dragStartX;
+    var dy = clientY - state.dragStartY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) state.dragMoved = true;
+    state.tx = state.dragStartTx + dx;
+    state.ty = state.dragStartTy + dy;
     clampTranslate();
     applyStageTransform();
   }
@@ -311,23 +491,65 @@
   }
 
   sceneViewport.addEventListener('mousedown', function (e) {
+    if (e.button !== 0) return;
     onDragStart(e.clientX, e.clientY);
-    e.preventDefault();
   });
-  window.addEventListener('mousemove', function (e) { onDragMove(e.clientX, e.clientY); });
+  window.addEventListener('mousemove', function (e) {
+    onDragMove(e.clientX, e.clientY);
+    if (!sceneView.classList.contains('view--active')) return;
+    if (!isDesktopPointer() || reducedMotion() || state.dragging) return;
+    var rect = sceneViewport.getBoundingClientRect();
+    if (!rect.width) return;
+    var nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    var ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    var AMP = 9;
+    state.parallaxTargetX = -nx * AMP;
+    state.parallaxTargetY = -ny * AMP;
+  });
   window.addEventListener('mouseup', onDragEnd);
+  sceneViewport.addEventListener('mouseleave', function () {
+    state.parallaxTargetX = 0;
+    state.parallaxTargetY = 0;
+  });
 
+  // touch: pan + swipe-to-neighbour
   sceneViewport.addEventListener('touchstart', function (e) {
     var t = e.touches[0];
     onDragStart(t.clientX, t.clientY);
+    state.touchStartX = t.clientX;
+    state.touchStartY = t.clientY;
+    state.touchStartTime = Date.now();
   }, { passive: true });
+
   sceneViewport.addEventListener('touchmove', function (e) {
     var t = e.touches[0];
     onDragMove(t.clientX, t.clientY);
   }, { passive: true });
-  sceneViewport.addEventListener('touchend', onDragEnd);
 
-  // ---- wheel to zoom, centered on cursor ----
+  sceneViewport.addEventListener('touchend', function (e) {
+    onDragEnd();
+    var touch = e.changedTouches && e.changedTouches[0];
+    if (!touch) return;
+    var totalDx = touch.clientX - state.touchStartX;
+    var totalDy = touch.clientY - state.touchStartY;
+    var dt = Date.now() - state.touchStartTime;
+    if (Math.abs(totalDx) > 60 && Math.abs(totalDx) > Math.abs(totalDy) * 1.4 && dt < 700) {
+      var sceneDef = SCENES[state.currentScene];
+      if (sceneDef && sceneDef.zones.length === 2) {
+        var idx = sceneDef.zones.indexOf(state.currentZoneId);
+        var targetIdx = totalDx < 0 ? idx + 1 : idx - 1;
+        var targetZone = sceneDef.zones[targetIdx];
+        if (targetZone) {
+          logHotspot('swipe:' + targetZone);
+          switchZoneWithinScene(targetZone);
+        }
+      }
+    }
+  });
+
+  // ---- wheel: subtle zoom on top of the camera preset (1.00–1.08) ----
+
+  var MAX_ZOOM_FACTOR = 1.08;
 
   sceneViewport.addEventListener('wheel', function (e) {
     e.preventDefault();
@@ -338,50 +560,338 @@
     var imgX = (cx - state.tx) / state.scale;
     var imgY = (cy - state.ty) / state.scale;
 
-    var delta = -e.deltaY * 0.0015;
-    var newScale = Math.min(state.maxScale, Math.max(state.minScale, state.scale * (1 + delta)));
+    var delta = -e.deltaY * 0.0012;
+    var newZoomFactor = Math.min(MAX_ZOOM_FACTOR, Math.max(1, state.zoomFactor * (1 + delta)));
+    var newScale = state.presetScale * newZoomFactor;
 
     state.tx = cx - imgX * newScale;
     state.ty = cy - imgY * newScale;
+    state.zoomFactor = newZoomFactor;
     state.scale = newScale;
 
     clampTranslate();
     applyStageTransform();
+    updateDebugHud();
   }, { passive: false });
 
+  // ---- gentle parallax ticker ----
+
+  function parallaxTick() {
+    if (sceneView.classList.contains('view--active') && !reducedMotion()) {
+      state.parallaxX += (state.parallaxTargetX - state.parallaxX) * 0.08;
+      state.parallaxY += (state.parallaxTargetY - state.parallaxY) * 0.08;
+      applyStageTransform();
+    }
+    requestAnimationFrame(parallaxTick);
+  }
+  requestAnimationFrame(parallaxTick);
+
+  // generic "ПЕРЕТАЩИТЬ ↔" cursor hint for the pannable area itself
+  // (hotspots set their own more specific hint; this only fills the gaps)
+  var HOTSPOT_SELECTOR = '.map-hotspot, .content-hotspot, .archive-drawer, .team-role, .gallery-hotspot';
+  sceneViewport.addEventListener('mousemove', function (e) {
+    if (!isDesktopPointer() || state.dragging) return;
+    if (e.target.closest(HOTSPOT_SELECTOR)) return;
+    showCursorBadge('ПЕРЕТАЩИТЬ ↔', e);
+  });
+  sceneViewport.addEventListener('mouseleave', hideCursorBadge);
+
   window.addEventListener('resize', function () {
+    layoutMapFrame();
     if (state.currentZoneId && sceneView.classList.contains('view--active')) {
       setCameraTo(ZONES[state.currentZoneId].camera, false);
     }
   });
+
+  // ---- alt+click: copy % coordinates (debug helper) ----
+
+  sceneViewport.addEventListener('click', function (e) {
+    if (!e.altKey) return;
+    var iw = sceneImage.naturalWidth, ih = sceneImage.naturalHeight;
+    var imgX = (e.clientX - sceneViewport.getBoundingClientRect().left - state.tx) / state.scale;
+    var imgY = (e.clientY - sceneViewport.getBoundingClientRect().top - state.ty) / state.scale;
+    var pctX = (imgX / iw * 100).toFixed(1);
+    var pctY = (imgY / ih * 100).toFixed(1);
+    var coord = 'x: ' + pctX + '%, y: ' + pctY + '%';
+    // eslint-disable-next-line no-console
+    console.log('COORD:', coord);
+    if (navigator.clipboard) navigator.clipboard.writeText(coord).catch(function () {});
+    showToast('Скопировано: ' + coord, 1800);
+  });
+
+  // ---------------------------------------------------------------
+  // CONTENT HOTSPOTS per scene
+  // ---------------------------------------------------------------
+
+  function pctBox(item) {
+    return {
+      left: item.left + '%',
+      top: item.top + '%',
+      width: (item.right - item.left) + '%',
+      height: (item.bottom - item.top) + '%'
+    };
+  }
+
+  function buildContentHotspots(sceneId) {
+    contentHotspotsEl.innerHTML = '';
+    if (sceneId === 'scene-02-03') {
+      HOTSPOTS_02.concat(HOTSPOTS_03).forEach(buildPaperHotspot);
+    } else if (sceneId === 'scene-04-05') {
+      ARCHIVE_ITEMS.forEach(buildArchiveDrawer);
+      GALLERY_HOTSPOTS.forEach(buildGalleryHotspot);
+    } else if (sceneId === 'scene-06-07') {
+      TEAM_ROLES.forEach(buildTeamRole);
+    }
+  }
+
+  function buildPaperHotspot(item) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'content-hotspot';
+    btn.style.left = item.x + '%';
+    btn.style.top = item.y + '%';
+    btn.setAttribute('aria-label', item.title + (item.subtitle ? ' — ' + item.subtitle : ''));
+    btn.innerHTML = '<span class="content-hotspot__dot">+</span>';
+    attachCursorHint(btn, 'ОТКРЫТЬ +');
+    btn.addEventListener('click', function () {
+      logHotspot(item.id);
+      paperSubtitle.textContent = item.subtitle || '';
+      paperTitle.textContent = item.title;
+      paperBody.textContent = item.body;
+      openModal(paperOverlay, paperClose);
+    });
+    contentHotspotsEl.appendChild(btn);
+  }
+
+  function buildArchiveDrawer(item) {
+    var box = pctBox(item);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'archive-drawer';
+    btn.style.left = box.left; btn.style.top = box.top;
+    btn.style.width = box.width; btn.style.height = box.height;
+    btn.setAttribute('aria-label', 'Ящик ' + item.num + ' — ' + item.city);
+    attachCursorHint(btn, 'ОТКРЫТЬ +');
+    btn.addEventListener('click', function () {
+      logHotspot('archive:' + item.num);
+      btn.classList.add('is-open');
+      setTimeout(function () {
+        dossierNum.textContent = item.num;
+        dossierTitle.textContent = item.city;
+        dossierChecklist.innerHTML = '';
+        ARCHIVE_DOSSIER_CHECKLIST.forEach(function (c) {
+          var li = document.createElement('li');
+          li.textContent = c;
+          dossierChecklist.appendChild(li);
+        });
+        openModal(dossierOverlay, dossierClose);
+        btn.classList.remove('is-open');
+      }, reducedMotion() ? 0 : 260);
+    });
+    contentHotspotsEl.appendChild(btn);
+  }
+
+  function buildGalleryHotspot(item) {
+    var box = pctBox(item);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'gallery-hotspot';
+    btn.style.left = box.left; btn.style.top = box.top;
+    btn.style.width = box.width; btn.style.height = box.height;
+    btn.setAttribute('aria-label', item.label);
+    attachCursorHint(btn, 'ПЕРЕЙТИ ↗');
+    btn.addEventListener('click', function () {
+      logHotspot(item.id);
+      openExternalLibrary();
+    });
+    contentHotspotsEl.appendChild(btn);
+  }
+
+  function buildTeamRole(role) {
+    var box = pctBox(role);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'team-role';
+    btn.style.left = box.left; btn.style.top = box.top;
+    btn.style.width = box.width; btn.style.height = box.height;
+    btn.setAttribute('aria-label', role.title + ' — ' + role.desc);
+
+    function show() {
+      rolePopoverTitle.textContent = role.title;
+      rolePopoverDesc.textContent = role.desc;
+      rolePopover.hidden = false;
+      var r = btn.getBoundingClientRect();
+      var top = Math.max(70, r.top - 10);
+      var left = Math.min(window.innerWidth - 300, r.right + 12);
+      if (left < 10) left = 10;
+      rolePopover.style.top = top + 'px';
+      rolePopover.style.left = left + 'px';
+      btn.classList.add('is-active');
+    }
+    function hide() {
+      rolePopover.hidden = true;
+      btn.classList.remove('is-active');
+    }
+
+    if (isDesktopPointer()) {
+      btn.addEventListener('mouseenter', show);
+      btn.addEventListener('mouseleave', hide);
+      btn.addEventListener('focus', show);
+      btn.addEventListener('blur', hide);
+    }
+    btn.addEventListener('click', function () {
+      logHotspot('team:' + role.id);
+      if (rolePopover.hidden) show(); else hide();
+    });
+    contentHotspotsEl.appendChild(btn);
+  }
+
+  document.addEventListener('click', function (e) {
+    if (rolePopover.hidden) return;
+    if (e.target.closest('.team-role') || e.target.closest('.role-popover')) return;
+    rolePopover.hidden = true;
+    document.querySelectorAll('.team-role.is-active').forEach(function (b) { b.classList.remove('is-active'); });
+  });
+
+  // ---------------------------------------------------------------
+  // Overlays: close handlers
+  // ---------------------------------------------------------------
+
+  paperClose.addEventListener('click', function () { closeModal(paperOverlay); });
+  dossierClose.addEventListener('click', function () { closeModal(dossierOverlay); });
+  paperOverlay.addEventListener('click', function (e) { if (e.target === paperOverlay) closeModal(paperOverlay); });
+  dossierOverlay.addEventListener('click', function (e) { if (e.target === dossierOverlay) closeModal(dossierOverlay); });
+
+  function closeAllOverlays() {
+    closeModal(paperOverlay);
+    closeModal(dossierOverlay);
+    rolePopover.hidden = true;
+  }
+
+  // ---------------------------------------------------------------
+  // BOTTOM NAVIGATION 00–07
+  // ---------------------------------------------------------------
+
+  function renderBottomNav(activeZoneId) {
+    if (bottomNavRail.childElementCount === 0) {
+      ZONE_ORDER.forEach(function (zoneId) {
+        var zone = ZONES[zoneId];
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bottom-nav__item';
+        btn.dataset.zone = zoneId;
+        btn.style.setProperty('--zone-color', zone.color);
+        btn.innerHTML = '<span>' + zoneId + '</span><span>' + zone.title.split(' / ')[0] + '</span>';
+        btn.setAttribute('aria-label', zoneId + ' ' + zone.title);
+        btn.addEventListener('click', function () {
+          logHotspot('bottom-nav:' + zoneId);
+          goToZone(zoneId);
+        });
+        bottomNavRail.appendChild(btn);
+      });
+    }
+    var items = bottomNavRail.querySelectorAll('.bottom-nav__item');
+    items.forEach(function (b) {
+      var active = b.dataset.zone === activeZoneId;
+      b.classList.toggle('is-active', active);
+      b.setAttribute('aria-current', active ? 'true' : 'false');
+    });
+    var idx = ZONE_ORDER.indexOf(activeZoneId);
+    bottomNavPrev.disabled = idx <= 0;
+    bottomNavNext.disabled = idx >= ZONE_ORDER.length - 1;
+    scrollActiveIntoView(activeZoneId);
+  }
+
+  function scrollActiveIntoView(zoneId) {
+    var el = bottomNavRail.querySelector('[data-zone="' + zoneId + '"]');
+    if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+
+  bottomNavPrev.addEventListener('click', function () {
+    var idx = ZONE_ORDER.indexOf(state.currentZoneId);
+    if (idx > 0) goToZone(ZONE_ORDER[idx - 1]);
+  });
+  bottomNavNext.addEventListener('click', function () {
+    var idx = ZONE_ORDER.indexOf(state.currentZoneId);
+    if (idx < ZONE_ORDER.length - 1) goToZone(ZONE_ORDER[idx + 1]);
+  });
+
+  // ---------------------------------------------------------------
+  // CTA card (07) — real authoritative dates, never invented
+  // ---------------------------------------------------------------
+
+  document.getElementById('cta-date-event').textContent = CONFIG.dates.event;
+  document.getElementById('cta-date-apply').textContent = CONFIG.dates.apply;
+  document.getElementById('cta-date-results').textContent = CONFIG.dates.results;
 
   // ---------------------------------------------------------------
   // SCENE -> MAP return
   // ---------------------------------------------------------------
 
   function returnToMap() {
+    closeAllOverlays();
     if (!mapView.classList.contains('view--active')) {
+      if (reducedMotion()) {
+        sceneView.classList.remove('view--active');
+        mapView.classList.add('view--active');
+        if (state.currentZoneId) highlightMapZone(state.currentZoneId);
+        return;
+      }
       fadeVeil.classList.add('is-visible');
       setTimeout(function () {
         sceneView.classList.remove('view--active');
         mapView.classList.add('view--active');
         if (state.currentZoneId) highlightMapZone(state.currentZoneId);
         fadeVeil.classList.remove('is-visible');
-      }, 320);
+      }, 260);
     }
   }
 
   mapReturnBtn.addEventListener('click', returnToMap);
+  document.getElementById('bottom-nav-map').addEventListener('click', returnToMap);
 
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      if (!paperOverlay.hidden) { closeModal(paperOverlay); return; }
+      if (!dossierOverlay.hidden) { closeModal(dossierOverlay); return; }
+      if (!rolePopover.hidden) { rolePopover.hidden = true; return; }
+      if (!mobileMenu.hidden) { mobileMenu.hidden = true; burgerBtn.setAttribute('aria-expanded', 'false'); return; }
+      return;
+    }
     if (e.key === 'm' || e.key === 'M' || e.key === 'ь' || e.key === 'Ь') {
       returnToMap();
     }
   });
 
   // ---------------------------------------------------------------
+  // DEBUG HUD (?debug=1)
+  // ---------------------------------------------------------------
+
+  if (DEBUG) {
+    document.body.classList.add('debug-mode');
+    debugHud.hidden = false;
+  }
+
+  function updateDebugHud() {
+    if (!DEBUG) return;
+    var lines = [
+      'scene: ' + (state.currentScene || '—'),
+      'zone: ' + (state.currentZoneId || '—'),
+      'camera x/y: ' + (ZONES[state.currentZoneId] ? ZONES[state.currentZoneId].camera.x + ' / ' + ZONES[state.currentZoneId].camera.y : '—'),
+      'scale: ' + state.scale.toFixed(3) + ' (zoomFactor ' + state.zoomFactor.toFixed(3) + ')',
+      'bbox: ' + sceneImage.naturalWidth + '×' + sceneImage.naturalHeight,
+      'viewport: ' + sceneViewport.clientWidth + '×' + sceneViewport.clientHeight,
+      'DPR: ' + window.devicePixelRatio
+    ];
+    debugHud.textContent = lines.join('\n');
+  }
+  window.addEventListener('resize', updateDebugHud);
+  setInterval(updateDebugHud, 400);
+
+  // ---------------------------------------------------------------
   // init
   // ---------------------------------------------------------------
 
+  renderHeader();
   buildMapHotspots();
 })();

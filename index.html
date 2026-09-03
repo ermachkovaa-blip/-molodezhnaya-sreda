@@ -3,10 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Молодёжная среда — карта пространства</title>
+<title>Молодёжная среда — цифровое пространство</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<!-- ================= HEADER (глобальный, поверх карты и сцен) ================= -->
+<header class="site-header" id="site-header">
+  <a class="site-header__logo" href="index.html" aria-label="Молодёжная среда — на главную">
+    <span class="logo-mark" aria-hidden="true">mly</span>
+    <span class="logo-caption">МОЛОДЁЖНЫЙ<br>ЦЕНТР<br>РЕСПУБЛИКИ<br>ТАТАРСТАН</span>
+  </a>
+
+  <nav class="site-header__nav" id="site-nav" aria-label="Основная навигация">
+    <!-- пункты рендерятся из HEADER_NAV в main.js -->
+  </nav>
+
+  <div class="site-header__actions">
+    <a class="cta-apply" id="cta-apply-header" href="apply.html">ПОДАТЬ ЗАЯВКУ <span aria-hidden="true">↗</span></a>
+    <button class="burger" id="burger-btn" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<nav class="mobile-menu" id="mobile-menu" aria-label="Мобильное меню" hidden>
+  <!-- пункты рендерятся из HEADER_NAV в main.js -->
+</nav>
 
 <!-- ================= СТАРТОВАЯ КАРТА ПРОСТРАНСТВА (навигационный хаб, вне нумерации 00–07) ================= -->
 <section id="map-view" class="view view--active" aria-label="Карта пространства">
@@ -15,31 +38,87 @@
     <div class="map-hotspots" id="map-hotspots"></div>
   </div>
 
-  <div class="map-tooltip" id="map-tooltip" hidden>
-    <span class="map-tooltip__num" id="map-tooltip-num"></span>
-    <span class="map-tooltip__title" id="map-tooltip-title"></span>
-    <span class="map-tooltip__go">ИДТИ →</span>
-  </div>
-
   <div class="map-zoom-veil" id="map-zoom-veil"></div>
 </section>
 
-<!-- ================= ПАНОРАМНЫЕ СЦЕНЫ ================= -->
+<!-- ================= ПАНОРАМНЫЕ СЦЕНЫ 00–07 ================= -->
 <section id="scene-view" class="view" aria-label="Сцена пространства">
   <div class="scene-viewport" id="scene-viewport">
     <div class="scene-stage" id="scene-stage">
       <img class="scene-image" id="scene-image" src="" alt="" draggable="false">
       <div class="scene-hotspots" id="scene-hotspots"></div>
+      <div class="scene-hotspots scene-hotspots--content" id="scene-content-hotspots"></div>
     </div>
   </div>
 
-  <button class="map-return" id="map-return" aria-label="Вернуться к карте пространства (клавиша M)" title="Карта пространства (M)">
-    <span>КАРТА</span>
-    <span class="map-return__icon" aria-hidden="true">&#8593;</span>
-  </button>
+  <!-- 07 АМФИТЕАТР: постоянная CTA-карточка с достоверными датами (не встроена в pan/zoom canvas — всегда читаема) -->
+  <aside class="cta-card" id="cta-card-07" hidden>
+    <p class="cta-card__eyebrow">Архитектурно-проектный хакатон</p>
+    <p class="cta-card__title">Возможно, именно твой проект станет новым молодёжным пространством Татарстана.</p>
+    <dl class="cta-card__dates">
+      <div><dt>Даты хакатона</dt><dd id="cta-date-event"></dd></div>
+      <div><dt>Приём заявок</dt><dd id="cta-date-apply"></dd></div>
+      <div><dt>Результаты</dt><dd id="cta-date-results"></dd></div>
+    </dl>
+    <p class="cta-card__note">Участие бесплатно. Количество мест ограничено.<br>Для участников из других городов проезд до Казани, обратная дорога и проживание — за свой счёт.</p>
+    <a class="cta-card__button" id="cta-apply-scene" href="apply.html">ПОДАТЬ ЗАЯВКУ <span aria-hidden="true">→</span></a>
+  </aside>
+
+  <div class="scene-topbar">
+    <button class="map-return" id="map-return" aria-label="Вернуться к карте пространства (клавиша M)" title="Карта пространства (M)">
+      <span>КАРТА</span>
+      <span class="map-return__icon" aria-hidden="true">&#8593;</span>
+    </button>
+  </div>
+
+  <!-- ================= НИЖНЯЯ НАВИГАЦИЯ 00–07 ================= -->
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Навигация по зонам пространства">
+    <button class="bottom-nav__arrow" id="bottom-nav-prev" type="button" aria-label="Предыдущая зона">&#8592;</button>
+    <div class="bottom-nav__rail" id="bottom-nav-rail"></div>
+    <button class="bottom-nav__arrow" id="bottom-nav-next" type="button" aria-label="Следующая зона">&#8594;</button>
+    <button class="bottom-nav__map" id="bottom-nav-map" type="button" aria-label="Карта пространства (клавиша M)" title="Карта пространства (M)">&#8593;</button>
+  </nav>
 </section>
 
+<!-- ================= ГЛОБАЛЬНЫЕ OVERLAY-Ы ================= -->
+
+<!-- бумажная заметка / калька — переиспользуется для 02 и 03 -->
+<div class="overlay-backdrop" id="paper-overlay" hidden>
+  <div class="paper-note" role="dialog" aria-modal="true" aria-labelledby="paper-note-title">
+    <button class="paper-note__close" id="paper-note-close" type="button" aria-label="Закрыть">&times;</button>
+    <p class="paper-note__eyebrow" id="paper-note-subtitle"></p>
+    <h3 class="paper-note__title" id="paper-note-title"></h3>
+    <p class="paper-note__body" id="paper-note-body"></p>
+  </div>
+</div>
+
+<!-- архивное досье — 04 -->
+<div class="overlay-backdrop" id="dossier-overlay" hidden>
+  <div class="dossier" role="dialog" aria-modal="true" aria-labelledby="dossier-title">
+    <button class="dossier__close" id="dossier-close" type="button" aria-label="Закрыть">&times;</button>
+    <p class="dossier__num" id="dossier-num"></p>
+    <h3 class="dossier__title" id="dossier-title"></h3>
+    <ul class="dossier__checklist" id="dossier-checklist"></ul>
+    <p class="dossier__placeholder">Материалы по объекту скоро появятся здесь.</p>
+  </div>
+</div>
+
+<!-- popover роли команды — 06 -->
+<div class="role-popover" id="role-popover" hidden role="dialog" aria-modal="false" aria-labelledby="role-popover-title">
+  <p class="role-popover__title" id="role-popover-title"></p>
+  <p class="role-popover__desc" id="role-popover-desc"></p>
+</div>
+
+<!-- лёгкий toast для случаев "ссылка ещё не подключена" и т.п. -->
+<div class="toast" id="toast" hidden></div>
+
+<!-- курсор-подсказка (десктоп): ИДТИ → / ПЕРЕТАЩИТЬ ↔ / ОТКРЫТЬ + / ПЕРЕЙТИ ↗ -->
+<div class="cursor-badge" id="cursor-badge" hidden><span id="cursor-badge-text"></span></div>
+
 <div class="fade-veil" id="fade-veil"></div>
+
+<!-- debug HUD (?debug=1) -->
+<div class="debug-hud" id="debug-hud" hidden></div>
 
 <script src="js/data.js"></script>
 <script src="js/main.js"></script>
