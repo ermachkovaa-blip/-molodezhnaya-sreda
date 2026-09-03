@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Молодежная среда — архитектурно-проектный хакатон</title>
 <meta name="description" content="«Молодежная среда: процессы / сценарии / пространство» — архитектурно-проектный хакатон, 17–21 октября 2026, Казань. 5 реальных объектов Татарстана. Прием заявок 10–25 сентября 2026.">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjMTQxNDBGIi8+PHJlY3QgeD0iNCIgeT0iMjQiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMyRThFNTIiLz48cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI4IiBoZWlnaHQ9IjE4IiBmaWxsPSIjMkU4RTUyIi8+PHJlY3QgeD0iMjQiIHk9IjQiIHdpZHRoPSI4IiBoZWlnaHQ9IjI4IiBmaWxsPSIjMkU4RTUyIi8+PC9zdmc+">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -16,10 +17,10 @@
   <div class="container header__row">
     <a href="#top" class="logo" aria-label="Молодежная среда — на главную">
       <span class="logo__mark" aria-hidden="true">
-        <svg viewBox="0 0 40 40" width="34" height="34" fill="none">
-          <rect x="0" y="24" width="8" height="8" fill="#3FAE5C"/>
-          <rect x="10" y="14" width="8" height="18" fill="#3FAE5C"/>
-          <rect x="20" y="4" width="8" height="28" fill="#3FAE5C"/>
+        <svg viewBox="0 0 40 40" width="30" height="30" fill="none">
+          <rect x="0" y="24" width="8" height="8" fill="#2E8E52"/>
+          <rect x="10" y="14" width="8" height="18" fill="#2E8E52"/>
+          <rect x="20" y="4" width="8" height="28" fill="#2E8E52"/>
         </svg>
       </span>
       <span class="logo__text">молодежная<br>среда</span>
@@ -30,7 +31,7 @@
       <a href="#objects">Объекты</a>
       <a href="#program">Программа</a>
       <a href="#team">Кто ты</a>
-      <a href="#apply" class="nav__cta">Подать заявку</a>
+      <a href="apply.html" class="nav__cta"><span>Подать заявку</span></a>
     </nav>
 
     <button class="burger" id="burgerBtn" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
@@ -41,36 +42,59 @@
 
 <main id="top">
 
-  <!-- HERO -->
+  <!-- ==================== HERO ==================== -->
   <section class="hero">
-    <div class="hero__blobs" aria-hidden="true">
-      <span class="blob blob--pink-fill"></span>
-      <span class="blob blob--pink-outline"></span>
-      <span class="blob blob--orange-fill"></span>
-    </div>
-    <div class="container">
-      <p class="eyebrow">Архитектурно-проектный хакатон</p>
-      <h1 class="display">
-        <span class="display__line display__line--blue">МОЛОДЕЖНАЯ</span>
-        <span class="display__line display__line--pink">СРЕДА</span>
+    <div class="container hero__grid">
+      <div class="hero__kicker-row">
+        <p class="eyebrow">Архитектурно-проектный хакатон</p>
+        <p class="tag">KAZAN — RT / 17–21.10.2026</p>
+      </div>
+
+      <h1 class="hero__title">
+        <span class="display h1 display__row"><span class="display__word display__word--blue">Молодежная</span></span>
+        <span class="display h1 display__row"><span class="display__word display__word--pink">среда</span><span class="display__word display__word--outline">2026</span></span>
       </h1>
-      <p class="hero__subtitle">процессы / сценарии / пространство</p>
 
-      <p class="hero__lead">5 реальных объектов Татарстана.<br>5 дней работы над будущими молодежными пространствами.</p>
+      <div class="hero__scene">
+        <div class="hero__copy">
+          <p class="hero__subtitle">процессы / сценарии / пространство</p>
+          <p class="hero__lead">5 реальных объектов Татарстана.<br>5 дней работы над будущими молодежными пространствами.</p>
 
-      <div class="hero__cta">
-        <a href="#apply" class="btn btn--primary">Подать заявку →</a>
-      </div>
+          <a href="apply.html" class="btn btn--primary">
+            <span>Подать заявку</span>
+            <svg class="btn__arrow" width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 7H17M17 7L11 1M17 7L11 13" stroke="currentColor" stroke-width="1.6"/></svg>
+          </a>
 
-      <div class="info-strip">
-        <div class="info-strip__item"><span>17–21 октября 2026</span><small>Казань</small></div>
-        <div class="info-strip__item"><span>10–25 сентября 2026</span><small>приём заявок</small></div>
-        <div class="info-strip__item"><span>до 3 октября 2026</span><small>результаты отбора</small></div>
-        <div class="info-strip__item"><span>Бесплатно</span><small>количество мест ограничено</small></div>
+          <div class="info-strip">
+            <div class="info-strip__item"><span>17–21 октября 2026</span><small>Казань</small></div>
+            <div class="info-strip__item"><span>10–25 сентября 2026</span><small>приём заявок</small></div>
+            <div class="info-strip__item"><span>до 3 октября 2026</span><small>результаты отбора</small></div>
+            <div class="info-strip__item"><span>Бесплатно</span><small>мест ограничено</small></div>
+          </div>
+        </div>
+
+        <div class="hero__plate" aria-hidden="true">
+          <div class="hero__plate-photo"></div>
+          <svg class="hero__plate-blueprint" viewBox="0 0 400 500" preserveAspectRatio="none">
+            <g stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none">
+              <rect x="34" y="50" width="332" height="400"/>
+              <line x1="34" y1="230" x2="366" y2="230"/>
+              <line x1="200" y1="50" x2="200" y2="450"/>
+              <line x1="34" y1="340" x2="200" y2="340"/>
+              <circle cx="118" cy="150" r="34"/>
+              <path d="M240,300 L320,300 L320,400 L240,400 Z"/>
+            </g>
+          </svg>
+          <div class="hero__plate-tags">
+            <span class="tag" style="position:absolute; top:16px; left:16px;">OBJ.00 / KAZAN</span>
+            <span class="tag" style="position:absolute; bottom:16px; right:16px;">55.7887° N · 49.1221° E</span>
+            <span class="crosshair" style="top:42%; left:28%;"></span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="marquee marquee--orange">
+    <div class="marquee marquee--orange" style="--marquee-duration:24s;">
       <div class="marquee__track">
         <span>_СЛУШАТЬ_ИССЛЕДОВАТЬ_ПРОЕКТИРОВАТЬ_СОЗДАВАТЬ_&nbsp;</span>
         <span>_СЛУШАТЬ_ИССЛЕДОВАТЬ_ПРОЕКТИРОВАТЬ_СОЗДАВАТЬ_&nbsp;</span>
@@ -78,35 +102,39 @@
     </div>
   </section>
 
-  <!-- ABOUT -->
-  <section class="section" id="about">
-    <div class="container">
-      <h2 class="h2">Сделать место, куда самому хотелось бы приходить</h2>
-      <p class="lead">Мы собираем молодых архитекторов, дизайнеров, урбанистов, проектировщиков, визуализаторов и исследователей, чтобы вместе придумать новые молодежные пространства Татарстана.</p>
+  <!-- ==================== ABOUT ==================== -->
+  <section class="section about" id="about">
+    <div class="container about__layout">
+      <div data-reveal>
+        <p class="eyebrow">Идея хакатона</p>
+        <h2 class="h2">Сделать место, куда самому хотелось бы приходить</h2>
+        <p class="lead">Мы собираем молодых архитекторов, дизайнеров, урбанистов, проектировщиков, визуализаторов и исследователей, чтобы вместе придумать новые молодежные пространства Татарстана.</p>
 
-      <div class="triple-caps">
-        <span>Реальные здания.</span>
-        <span>Реальные люди.</span>
-        <span>Реальные задачи.</span>
+        <div class="triple-caps">
+          <span>Реальные здания.</span>
+          <span>Реальные люди.</span>
+          <span>Реальные задачи.</span>
+        </div>
+
+        <p class="lead">Команды исследуют объекты и запросы молодежи, собирают программу места и превращают ее в архитектуру, сценарии, планировку и визуальный образ.</p>
       </div>
 
-      <p class="lead">Команды исследуют объекты и запросы молодежи, собирают программу места и превращают ее в архитектуру, сценарии, планировку и визуальный образ.</p>
-
-      <p class="hero__subtitle hero__subtitle--accent">Молодые проектируют для молодых.</p>
-
-      <ul class="pill-list" aria-label="Чем можно заниматься в пространстве">
-        <li>встречаться</li>
-        <li>работать</li>
-        <li>создавать</li>
-        <li>учиться</li>
-        <li>репетировать</li>
-        <li>общаться</li>
-        <li>отдыхать</li>
-        <li>придумывать</li>
-      </ul>
+      <div data-reveal>
+        <p class="hero__subtitle hero__subtitle--accent">Молодые проектируют для молодых.</p>
+        <ul class="pill-list" aria-label="Чем можно заниматься в пространстве">
+          <li>встречаться</li>
+          <li>работать</li>
+          <li>создавать</li>
+          <li>учиться</li>
+          <li>репетировать</li>
+          <li>общаться</li>
+          <li>отдыхать</li>
+          <li>придумывать</li>
+        </ul>
+      </div>
     </div>
 
-    <div class="marquee marquee--blue">
+    <div class="marquee marquee--blue" style="margin-top:56px; --marquee-duration:20s; --marquee-dir:reverse;">
       <div class="marquee__track">
         <span>_СЛУШАТЬ_НАБЛЮДАТЬ_СПРАШИВАТЬ_ПОНИМАТЬ_&nbsp;</span>
         <span>_СЛУШАТЬ_НАБЛЮДАТЬ_СПРАШИВАТЬ_ПОНИМАТЬ_&nbsp;</span>
@@ -114,36 +142,56 @@
     </div>
   </section>
 
-  <!-- WHAT YOU GET -->
-  <section class="section">
-    <div class="container">
+  <!-- ==================== WHAT YOU GET: STICKY SCENE ==================== -->
+  <section class="section" id="benefits">
+    <div class="container benefits__intro" data-reveal>
+      <p class="eyebrow">Формат участия</p>
       <h2 class="h2">Что ты получишь за эти 5 дней</h2>
+    </div>
 
-      <div class="grid grid--2">
-        <article class="numbered-card">
-          <span class="numbered-card__num numbered-card__num--blue">01</span>
-          <h3>Реальный объект</h3>
-          <p>Работа с настоящим зданием, пользователями, заказчиком и реальными ограничениями.</p>
-        </article>
-        <article class="numbered-card">
-          <span class="numbered-card__num numbered-card__num--pink">02</span>
-          <h3>Команда</h3>
-          <p>Архитекторы, дизайнеры, урбанисты, исследователи и визуализаторы соединяют свои сильные стороны в одном проекте.</p>
-        </article>
-        <article class="numbered-card">
-          <span class="numbered-card__num numbered-card__num--orange">03</span>
-          <h3>Инструменты</h3>
-          <p>Исследование пользователей, работа с территорией, сценарное проектирование, функциональное зонирование, программа места, планировочные решения, визуализация, AI-инструменты, презентация и защита проекта.</p>
-        </article>
-        <article class="numbered-card">
-          <span class="numbered-card__num numbered-card__num--green">04</span>
-          <h3>Продолжение</h3>
-          <p>Возможность войти в команду дальнейшей доработки проекта. Участники также смогут попасть в профессиональный пул архитекторов и специалистов, которым в дальнейшем могут быть предложены новые проекты объектов молодежной политики Республики Татарстан.</p>
-        </article>
+    <div class="container benefits__pin-wrap" data-scene="benefits">
+      <div class="benefits__pin">
+        <div class="benefits__stage-list">
+          <button class="benefits__tick is-active" type="button" tabindex="-1">01 / Объект</button>
+          <button class="benefits__tick" type="button" tabindex="-1">02 / Команда</button>
+          <button class="benefits__tick" type="button" tabindex="-1">03 / Инструменты</button>
+          <button class="benefits__tick" type="button" tabindex="-1">04 / Продолжение</button>
+        </div>
+
+        <div class="benefits__stages">
+          <article class="benefits__stage is-active">
+            <span class="benefits__stage-num benefits__stage-num--blue">01</span>
+            <div>
+              <h3>Реальный объект</h3>
+              <p>Работа с настоящим зданием, пользователями, заказчиком и реальными ограничениями.</p>
+            </div>
+          </article>
+          <article class="benefits__stage">
+            <span class="benefits__stage-num benefits__stage-num--pink">02</span>
+            <div>
+              <h3>Команда</h3>
+              <p>Архитекторы, дизайнеры, урбанисты, исследователи и визуализаторы соединяют свои сильные стороны в одном проекте.</p>
+            </div>
+          </article>
+          <article class="benefits__stage">
+            <span class="benefits__stage-num benefits__stage-num--orange">03</span>
+            <div>
+              <h3>Инструменты</h3>
+              <p>Исследование пользователей, работа с территорией, сценарное проектирование, функциональное зонирование, программа места, планировочные решения, визуализация, AI-инструменты, презентация и защита проекта.</p>
+            </div>
+          </article>
+          <article class="benefits__stage">
+            <span class="benefits__stage-num benefits__stage-num--green">04</span>
+            <div>
+              <h3>Продолжение</h3>
+              <p>Возможность войти в команду дальнейшей доработки проекта. Участники также смогут попасть в профессиональный пул архитекторов и специалистов, которым в дальнейшем могут быть предложены новые проекты объектов молодежной политики Республики Татарстан.</p>
+            </div>
+          </article>
+        </div>
       </div>
     </div>
 
-    <div class="marquee marquee--pink">
+    <div class="marquee marquee--pink" style="--marquee-duration:23s;">
       <div class="marquee__track">
         <span>_ЗДАНИЕ_ТЕРРИТОРИЯ_ЛЮДИ_ЗАПРОСЫ_ВОЗМОЖНОСТИ_&nbsp;</span>
         <span>_ЗДАНИЕ_ТЕРРИТОРИЯ_ЛЮДИ_ЗАПРОСЫ_ВОЗМОЖНОСТИ_&nbsp;</span>
@@ -151,30 +199,42 @@
     </div>
   </section>
 
-  <!-- ALREADY DOING -->
-  <section class="section">
+  <!-- ==================== ALREADY DOING ==================== -->
+  <section class="section" id="showcase">
     <div class="container">
-      <h2 class="h2">Мы уже делаем такие пространства</h2>
-      <p class="lead">Команда Молодежного центра Республики Татарстан занимается развитием и реновацией молодежных пространств.</p>
+      <div data-reveal>
+        <p class="eyebrow">Уже в работе</p>
+        <h2 class="h2">Мы уже делаем такие пространства</h2>
+        <p class="lead">Команда Молодежного центра Республики Татарстан занимается развитием и реновацией молодежных пространств.</p>
+      </div>
 
-      <div class="grid grid--2 grid--showcase">
-        <article class="showcase-card">
-          <div class="showcase-card__img showcase-card__img--a" aria-hidden="true"><span>МЦ «Шатлык»</span></div>
+      <div class="showcase__grid">
+        <article class="showcase-card" data-reveal>
+          <div class="showcase-card__plate">
+            <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(160deg,#3B5FE2,#181f3d 75%);"></div>
+            <span class="tag showcase-card__tag">МЦ «Шатлык» / Наб. Челны</span>
+          </div>
           <h3>МЦ «Шатлык»</h3>
           <p>Набережные Челны</p>
         </article>
-        <article class="showcase-card">
-          <div class="showcase-card__img showcase-card__img--b" aria-hidden="true"><span>МЦ «Нур»</span></div>
+        <article class="showcase-card" data-reveal>
+          <div class="showcase-card__plate">
+            <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(160deg,#F0632F,#3a1a0d 75%);"></div>
+            <span class="tag showcase-card__tag">МЦ «Нур» / Наб. Челны</span>
+          </div>
           <h3>МЦ «Нур»</h3>
           <p>Набережные Челны</p>
         </article>
       </div>
 
-      <p class="lead">Другие реализованные молодежные пространства Республики Татарстан.</p>
-      <a class="btn btn--outline" href="https://mctatarstan.ru" target="_blank" rel="noopener">Смотреть все объекты →</a>
+      <p class="lead" data-reveal>Другие реализованные молодежные пространства Республики Татарстан.</p>
+      <a class="btn btn--outline" href="https://mctatarstan.ru" target="_blank" rel="noopener">
+        <span>Смотреть все объекты</span>
+        <svg class="btn__arrow" width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 7H17M17 7L11 1M17 7L11 13" stroke="currentColor" stroke-width="1.6"/></svg>
+      </a>
     </div>
 
-    <div class="marquee marquee--orange">
+    <div class="marquee marquee--orange" style="margin-top:56px; --marquee-duration:25s; --marquee-dir:reverse;">
       <div class="marquee__track">
         <span>_ТВОРЧЕСТВО_РАЗВИТИЕ_РЕАЛИЗАЦИЯ_БУДУЩЕЕ_&nbsp;</span>
         <span>_ТВОРЧЕСТВО_РАЗВИТИЕ_РЕАЛИЗАЦИЯ_БУДУЩЕЕ_&nbsp;</span>
@@ -182,75 +242,123 @@
     </div>
   </section>
 
-  <!-- 5 OBJECTS -->
-  <section class="section" id="objects">
-    <div class="container">
+  <!-- ==================== 5 OBJECTS — INTERACTIVE ==================== -->
+  <section class="section" id="objects" style="position:relative; overflow:hidden;">
+    <span class="watermark-num" style="top:20px; right:0;" aria-hidden="true">05</span>
+    <div class="container objects__intro" data-reveal>
+      <p class="eyebrow">Выбери объект</p>
       <h2 class="h2">5 реальных объектов</h2>
+      <p class="lead">Наведи курсор на район в списке или точку на схеме — фотография и описание объекта справа обновятся.</p>
+    </div>
 
-      <div class="objects-list">
-        <article class="object-card">
-          <div class="object-card__img object-card__img--1" aria-hidden="true"></div>
-          <div class="object-card__body">
-            <span class="object-card__num">01</span>
+    <div class="container objects-app" data-objects-app>
+      <ul class="objects-app__list" role="listbox" aria-label="Список объектов">
+        <li><button class="objects-app__item is-active" type="button" data-object-index="0" role="option" aria-selected="true"><span class="objects-app__item-num">01</span><span class="objects-app__item-name">Бугульма</span></button></li>
+        <li><button class="objects-app__item" type="button" data-object-index="1" role="option" aria-selected="false"><span class="objects-app__item-num">02</span><span class="objects-app__item-name">Елабуга</span></button></li>
+        <li><button class="objects-app__item" type="button" data-object-index="2" role="option" aria-selected="false"><span class="objects-app__item-num">03</span><span class="objects-app__item-name">Лаишево</span></button></li>
+        <li><button class="objects-app__item" type="button" data-object-index="3" role="option" aria-selected="false"><span class="objects-app__item-num">04</span><span class="objects-app__item-name">Шеморадан</span></button></li>
+        <li><button class="objects-app__item" type="button" data-object-index="4" role="option" aria-selected="false"><span class="objects-app__item-num">05</span><span class="objects-app__item-name">Столбище</span></button></li>
+      </ul>
+
+      <div class="objects-app__map" aria-hidden="true">
+        <svg class="objects-app__map-svg" viewBox="0 0 400 300">
+          <path class="objects-app__map-outline" d="M60,90 C40,40 120,10 180,20 C260,5 360,40 380,110 C400,170 370,230 300,260 C230,290 130,280 80,230 C30,190 30,140 60,90 Z"/>
+          <circle cx="170" cy="150" r="3" fill="var(--ink-faint)"/>
+          <text x="178" y="147" class="objects-app__map-label">Казань</text>
+          <g class="objects-app__map-points">
+            <circle class="objects-app__map-point is-active" data-map-point="0" cx="330" cy="235" r="6"/>
+            <circle class="objects-app__map-point" data-map-point="1" cx="315" cy="95" r="6"/>
+            <circle class="objects-app__map-point" data-map-point="2" cx="205" cy="190" r="6"/>
+            <circle class="objects-app__map-point" data-map-point="3" cx="150" cy="65" r="6"/>
+            <circle class="objects-app__map-point" data-map-point="4" cx="185" cy="168" r="6"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="objects-app__detail">
+        <article class="objects-app__panel is-active" data-detail-index="0">
+          <div class="objects-app__plate">
+            <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#3B5FE2,#12162a 75%);"></div>
+            <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.01 / BUGULMA</span>
+            <span class="crosshair" style="bottom:18px; right:18px;"></span>
+          </div>
+          <div class="objects-app__body">
+            <span class="tag">01 / 05</span>
             <h3>Бугульма</h3>
-            <p class="object-card__loc">Бугульминский муниципальный район</p>
+            <p class="objects-app__loc">Бугульминский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
-            <p class="object-card__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
-            <button class="link-more" data-object="Бугульма" data-loc="Бугульминский муниципальный район">Подробнее →</button>
+            <p class="objects-app__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
+            <button class="text-link link-more" type="button" data-object="Бугульма" data-loc="Бугульминский муниципальный район"><span>Подробнее</span><span class="text-link__arrow">→</span></button>
           </div>
         </article>
 
-        <article class="object-card">
-          <div class="object-card__img object-card__img--2" aria-hidden="true"></div>
-          <div class="object-card__body">
-            <span class="object-card__num">02</span>
+        <article class="objects-app__panel" data-detail-index="1">
+          <div class="objects-app__plate">
+            <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#E14FC4,#241227 75%);"></div>
+            <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.02 / ELABUGA</span>
+            <span class="crosshair" style="bottom:18px; right:18px;"></span>
+          </div>
+          <div class="objects-app__body">
+            <span class="tag">02 / 05</span>
             <h3>Елабуга</h3>
-            <p class="object-card__loc">Елабужский муниципальный район</p>
+            <p class="objects-app__loc">Елабужский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
-            <p class="object-card__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
-            <button class="link-more" data-object="Елабуга" data-loc="Елабужский муниципальный район">Подробнее →</button>
+            <p class="objects-app__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
+            <button class="text-link link-more" type="button" data-object="Елабуга" data-loc="Елабужский муниципальный район"><span>Подробнее</span><span class="text-link__arrow">→</span></button>
           </div>
         </article>
 
-        <article class="object-card">
-          <div class="object-card__img object-card__img--3" aria-hidden="true"></div>
-          <div class="object-card__body">
-            <span class="object-card__num">03</span>
+        <article class="objects-app__panel" data-detail-index="2">
+          <div class="objects-app__plate">
+            <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#F0632F,#2a1608 75%);"></div>
+            <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.03 / LAISHEVO</span>
+            <span class="crosshair" style="bottom:18px; right:18px;"></span>
+          </div>
+          <div class="objects-app__body">
+            <span class="tag">03 / 05</span>
             <h3>Лаишево</h3>
-            <p class="object-card__loc">Лаишевский муниципальный район</p>
+            <p class="objects-app__loc">Лаишевский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
-            <p class="object-card__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
-            <button class="link-more" data-object="Лаишево" data-loc="Лаишевский муниципальный район">Подробнее →</button>
+            <p class="objects-app__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
+            <button class="text-link link-more" type="button" data-object="Лаишево" data-loc="Лаишевский муниципальный район"><span>Подробнее</span><span class="text-link__arrow">→</span></button>
           </div>
         </article>
 
-        <article class="object-card">
-          <div class="object-card__img object-card__img--4" aria-hidden="true"></div>
-          <div class="object-card__body">
-            <span class="object-card__num">04</span>
+        <article class="objects-app__panel" data-detail-index="3">
+          <div class="objects-app__plate">
+            <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#2E8E52,#0e1f15 75%);"></div>
+            <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.04 / SHEMORDAN</span>
+            <span class="crosshair" style="bottom:18px; right:18px;"></span>
+          </div>
+          <div class="objects-app__body">
+            <span class="tag">04 / 05</span>
             <h3>Шеморадан</h3>
-            <p class="object-card__loc">Сабинский муниципальный район</p>
+            <p class="objects-app__loc">Сабинский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
-            <p class="object-card__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
-            <button class="link-more" data-object="Шеморадан" data-loc="Сабинский муниципальный район">Подробнее →</button>
+            <p class="objects-app__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
+            <button class="text-link link-more" type="button" data-object="Шеморадан" data-loc="Сабинский муниципальный район"><span>Подробнее</span><span class="text-link__arrow">→</span></button>
           </div>
         </article>
 
-        <article class="object-card">
-          <div class="object-card__img object-card__img--5" aria-hidden="true"></div>
-          <div class="object-card__body">
-            <span class="object-card__num">05</span>
+        <article class="objects-app__panel" data-detail-index="4">
+          <div class="objects-app__plate">
+            <div class="grid-plate" style="position:absolute;inset:0;background:linear-gradient(150deg,#E14FC4,#F0632F 130%);"></div>
+            <span class="tag" style="position:absolute; top:14px; left:14px;">OBJ.05 / STOLBISHE</span>
+            <span class="crosshair" style="bottom:18px; right:18px;"></span>
+          </div>
+          <div class="objects-app__body">
+            <span class="tag">05 / 05</span>
             <h3>Столбище</h3>
-            <p class="object-card__loc">Лаишевский муниципальный район</p>
+            <p class="objects-app__loc">Лаишевский муниципальный район</p>
             <p>Реальный объект молодежной инфраструктуры Республики Татарстан.</p>
-            <p class="object-card__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
-            <button class="link-more" data-object="Столбище" data-loc="Лаишевский муниципальный район">Подробнее →</button>
+            <p class="objects-app__meta">Фотографии объекта / существующее состояние / планы / исходные данные.</p>
+            <button class="text-link link-more" type="button" data-object="Столбище" data-loc="Лаишевский муниципальный район"><span>Подробнее</span><span class="text-link__arrow">→</span></button>
           </div>
         </article>
       </div>
     </div>
 
-    <div class="marquee marquee--blue">
+    <div class="marquee marquee--blue" style="margin-top:56px; --marquee-duration:22s;">
       <div class="marquee__track">
         <span>_АРХИТЕКТУРА_ДИЗАЙН_ИССЛЕДОВАНИЕ_ВИЗУАЛИЗАЦИЯ_&nbsp;</span>
         <span>_АРХИТЕКТУРА_ДИЗАЙН_ИССЛЕДОВАНИЕ_ВИЗУАЛИЗАЦИЯ_&nbsp;</span>
@@ -258,122 +366,232 @@
     </div>
   </section>
 
-  <!-- WHO -->
+  <!-- ==================== WHO ==================== -->
   <section class="section" id="team">
     <div class="container">
-      <h2 class="h2">Тебе сюда, если ты…</h2>
-      <ul class="chip-list">
-        <li>Архитектор</li>
-        <li>Дизайнер</li>
-        <li>Урбанист</li>
-        <li>Проектировщик</li>
-        <li>Визуализатор</li>
-        <li>Исследователь</li>
-        <li>Социолог / антрополог</li>
-        <li>Студент профильного вуза или колледжа</li>
+      <div data-reveal>
+        <p class="eyebrow">Кто нужен</p>
+        <h2 class="h2">Тебе сюда, если ты…</h2>
+      </div>
+      <ul class="chip-list" data-reveal>
+        <li><span>Архитектор</span></li>
+        <li><span>Дизайнер</span></li>
+        <li><span>Урбанист</span></li>
+        <li><span>Проектировщик</span></li>
+        <li><span>Визуализатор</span></li>
+        <li><span>Исследователь</span></li>
+        <li><span>Социолог / антрополог</span></li>
+        <li><span>Студент профильного вуза или колледжа</span></li>
       </ul>
-      <p class="lead">Каждый приходит со своей сильной стороной. Мы собираем команды так, чтобы разные компетенции дополняли друг друга.</p>
+      <p class="lead" data-reveal>Каждый приходит со своей сильной стороной. Мы собираем команды так, чтобы разные компетенции дополняли друг друга.</p>
     </div>
   </section>
 
-  <!-- PROGRAM -->
+  <!-- ==================== PROGRAM: MAIN SCROLL-STORY ==================== -->
   <section class="section" id="program">
-    <div class="container">
+    <div class="container story__intro" data-reveal>
+      <p class="eyebrow">Главный интерактив</p>
       <h2 class="h2">От объекта до концепции — за 5 дней</h2>
-
-      <ol class="timeline">
-        <li class="timeline__item">
-          <div class="timeline__head">
-            <span class="timeline__num">01</span>
-            <div>
-              <p class="timeline__date">17 октября</p>
-              <h3 class="timeline__title timeline__title--blue">Слушать</h3>
-            </div>
-          </div>
-          <ul class="timeline__list">
-            <li>Открытие хакатона.</li>
-            <li>Знакомство участников и формирование команд.</li>
-            <li>Погружение в тему молодежных пространств.</li>
-            <li>Знакомство с объектами и исходными данными.</li>
-            <li>Образовательная программа и работа с экспертами.</li>
-          </ul>
-        </li>
-
-        <li class="timeline__item">
-          <div class="timeline__head">
-            <span class="timeline__num">02</span>
-            <div>
-              <p class="timeline__date">18 октября</p>
-              <h3 class="timeline__title timeline__title--pink">Исследовать</h3>
-            </div>
-          </div>
-          <ul class="timeline__list">
-            <li>Выезд команд на свои объекты.</li>
-            <li>Встречи с администрацией, сотрудниками, молодежью и будущими пользователями.</li>
-            <li>Исследование здания и территории.</li>
-            <li>Фиксация существующих сценариев использования пространства.</li>
-            <li>Сбор запросов и потребностей.</li>
-            <li>Интервью, наблюдения, фотофиксация и работа с планами.</li>
-            <li>Формирование основных выводов и проектного брифа.</li>
-          </ul>
-        </li>
-
-        <li class="timeline__item">
-          <div class="timeline__head">
-            <span class="timeline__num">03</span>
-            <div>
-              <p class="timeline__date">19 октября</p>
-              <h3 class="timeline__title timeline__title--orange">Собирать</h3>
-            </div>
-          </div>
-          <ul class="timeline__list">
-            <li>Перевод результатов исследования в проектную программу.</li>
-            <li>Определение основных функций пространства.</li>
-            <li>Разработка пользовательских сценариев.</li>
-            <li>Формирование связей между функциями.</li>
-            <li>Функциональное зонирование.</li>
-            <li>Разработка 3–5 ключевых сценариев использования молодежного центра.</li>
-          </ul>
-        </li>
-
-        <li class="timeline__item">
-          <div class="timeline__head">
-            <span class="timeline__num">04</span>
-            <div>
-              <p class="timeline__date">20 октября</p>
-              <h3 class="timeline__title timeline__title--green">Проектировать</h3>
-            </div>
-          </div>
-          <ul class="timeline__list">
-            <li>Перенос программы на существующее здание.</li>
-            <li>Разработка планировочных решений.</li>
-            <li>Формирование архитектурного и визуального образа пространства.</li>
-            <li>Работа с функциональными зонами и пользовательскими маршрутами.</li>
-            <li>Подготовка схем и визуализаций.</li>
-            <li>Использование AI-инструментов в проектной работе.</li>
-          </ul>
-        </li>
-
-        <li class="timeline__item">
-          <div class="timeline__head">
-            <span class="timeline__num">05</span>
-            <div>
-              <p class="timeline__date">21 октября</p>
-              <h3 class="timeline__title timeline__title--blue">Защищать</h3>
-            </div>
-          </div>
-          <ul class="timeline__list">
-            <li>Финализация концепций.</li>
-            <li>Подготовка итоговых презентаций.</li>
-            <li>Презентация проектов экспертам.</li>
-            <li>Экспертное обсуждение.</li>
-            <li>Подведение итогов хакатона.</li>
-          </ul>
-        </li>
-      </ol>
+      <p class="lead">Один проект. Пять дней. Листай вниз и смотри, как реальное здание шаг за шагом превращается в архитектурную концепцию.</p>
     </div>
 
-    <div class="marquee marquee--orange">
+    <div class="container story__pin-wrap" data-scene="story">
+      <div class="story__pin">
+
+        <nav class="story__stepper" aria-hidden="true">
+          <button class="story__step is-active" type="button" tabindex="-1">
+            <span class="story__step-num">01</span><span class="story__step-label">Слушать</span><span class="story__step-date">17 октября</span>
+          </button>
+          <button class="story__step" type="button" tabindex="-1">
+            <span class="story__step-num">02</span><span class="story__step-label">Исследовать</span><span class="story__step-date">18 октября</span>
+          </button>
+          <button class="story__step" type="button" tabindex="-1">
+            <span class="story__step-num">03</span><span class="story__step-label">Собирать</span><span class="story__step-date">19 октября</span>
+          </button>
+          <button class="story__step" type="button" tabindex="-1">
+            <span class="story__step-num">04</span><span class="story__step-label">Проектировать</span><span class="story__step-date">20 октября</span>
+          </button>
+          <button class="story__step" type="button" tabindex="-1">
+            <span class="story__step-num">05</span><span class="story__step-label">Защищать</span><span class="story__step-date">21 октября</span>
+          </button>
+        </nav>
+
+        <div class="story__stages">
+
+          <!-- STAGE 1 — ФОТОГРАФИЯ ОБЪЕКТА -->
+          <article class="story__stage is-active">
+            <header class="story__stage-head">
+              <span class="story__step-num">01 · 17 октября</span>
+              <span class="story__step-label">Слушать</span>
+            </header>
+            <div class="story__stage-visual">
+              <div class="story__frame sv-photo">
+                <div class="sv-photo__base"></div>
+                <div class="sv-photo__grid grid-plate" style="filter:invert(1);"></div>
+                <span class="tag" style="position:absolute; top:16px; left:16px;">OBJ.05 / СТОЛБИЩЕ</span>
+                <span class="tag" style="position:absolute; top:16px; right:16px;">ЛАИШЕВСКИЙ Р-Н</span>
+                <span class="crosshair" style="top:46%; left:36%;"></span>
+                <span class="tag" style="position:absolute; bottom:16px; left:16px;">ФОТОГРАФИЯ ОБЪЕКТА / ДО</span>
+              </div>
+            </div>
+            <div class="story__stage-copy">
+              <h3>Открытие и знакомство с объектом</h3>
+              <ul>
+                <li>Открытие хакатона.</li>
+                <li>Знакомство участников и формирование команд.</li>
+                <li>Погружение в тему молодежных пространств.</li>
+                <li>Знакомство с объектами и исходными данными.</li>
+                <li>Образовательная программа и работа с экспертами.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- STAGE 2 — ИССЛЕДОВАНИЕ / ИНТЕРВЬЮ / ЗАМЕТКИ -->
+          <article class="story__stage">
+            <header class="story__stage-head">
+              <span class="story__step-num">02 · 18 октября</span>
+              <span class="story__step-label">Исследовать</span>
+            </header>
+            <div class="story__stage-visual">
+              <div class="story__frame sv-notes">
+                <div class="sv-notes__note" style="top:10%; left:6%; transform:rotate(-4deg);">«Не хватает места для репетиций после школы»</div>
+                <div class="sv-notes__note" style="top:42%; left:32%; transform:rotate(3deg);">«Здесь всегда людно по вечерам»</div>
+                <div class="sv-notes__note" style="top:64%; left:4%; transform:rotate(-2deg);">«Хотим сцену для локальных выступлений»</div>
+                <div class="sv-notes__thumbs" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+                <span class="tag" style="position:absolute; bottom:16px; left:16px; color:var(--ink-faint);">ИНТЕРВЬЮ / НАБЛЮДЕНИЯ / ФОТОФИКСАЦИЯ</span>
+              </div>
+            </div>
+            <div class="story__stage-copy">
+              <h3>Выезд на объект и сбор запросов</h3>
+              <ul>
+                <li>Выезд команд на свои объекты.</li>
+                <li>Встречи с администрацией, сотрудниками, молодежью и будущими пользователями.</li>
+                <li>Исследование здания и территории.</li>
+                <li>Фиксация существующих сценариев использования пространства.</li>
+                <li>Сбор запросов и потребностей.</li>
+                <li>Интервью, наблюдения, фотофиксация и работа с планами.</li>
+                <li>Формирование основных выводов и проектного брифа.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- STAGE 3 — СЦЕНАРИИ -->
+          <article class="story__stage">
+            <header class="story__stage-head">
+              <span class="story__step-num">03 · 19 октября</span>
+              <span class="story__step-label">Собирать</span>
+            </header>
+            <div class="story__stage-visual">
+              <div class="story__frame sv-diagram">
+                <svg viewBox="0 0 400 300" fill="none">
+                  <g stroke="var(--line-strong)" stroke-width="1.2">
+                    <line x1="90" y1="80" x2="200" y2="150"/>
+                    <line x1="310" y1="70" x2="200" y2="150"/>
+                    <line x1="80" y1="220" x2="200" y2="150"/>
+                    <line x1="200" y1="150" x2="320" y2="230"/>
+                    <line x1="200" y1="150" x2="200" y2="240"/>
+                  </g>
+                  <g>
+                    <circle cx="200" cy="150" r="34" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.6"/>
+                    <text x="200" y="154" text-anchor="middle" class="sv-diagram__node">МЦ</text>
+                    <circle cx="90" cy="80" r="26" fill="var(--paper)" stroke="var(--blue)" stroke-width="1.6"/>
+                    <text x="90" y="84" text-anchor="middle" class="sv-diagram__node">События</text>
+                    <circle cx="310" cy="70" r="26" fill="var(--paper)" stroke="var(--pink)" stroke-width="1.6"/>
+                    <text x="310" y="74" text-anchor="middle" class="sv-diagram__node">Сцена</text>
+                    <circle cx="80" cy="220" r="26" fill="var(--paper)" stroke="var(--orange)" stroke-width="1.6"/>
+                    <text x="80" y="224" text-anchor="middle" class="sv-diagram__node">Коворкинг</text>
+                    <circle cx="320" cy="230" r="26" fill="var(--paper)" stroke="var(--green)" stroke-width="1.6"/>
+                    <text x="320" y="234" text-anchor="middle" class="sv-diagram__node">Мастерская</text>
+                    <circle cx="200" cy="240" r="22" fill="var(--paper)" stroke="var(--ink-faint)" stroke-width="1.6"/>
+                    <text x="200" y="244" text-anchor="middle" class="sv-diagram__node">Кафе</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <div class="story__stage-copy">
+              <h3>От выводов — к сценариям и программе</h3>
+              <ul>
+                <li>Перевод результатов исследования в проектную программу.</li>
+                <li>Определение основных функций пространства.</li>
+                <li>Разработка пользовательских сценариев.</li>
+                <li>Формирование связей между функциями.</li>
+                <li>Функциональное зонирование.</li>
+                <li>Разработка 3–5 ключевых сценариев использования молодежного центра.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- STAGE 4 — ФУНКЦИОНАЛЬНОЕ ЗОНИРОВАНИЕ / ПЛАН -->
+          <article class="story__stage">
+            <header class="story__stage-head">
+              <span class="story__step-num">04 · 20 октября</span>
+              <span class="story__step-label">Проектировать</span>
+            </header>
+            <div class="story__stage-visual">
+              <div class="story__frame sv-plan">
+                <svg viewBox="0 0 400 300" fill="none">
+                  <rect x="24" y="24" width="352" height="252" fill="none" stroke="var(--ink)" stroke-width="1.6"/>
+                  <rect x="24" y="24" width="140" height="120" fill="rgba(59,95,226,.12)" stroke="var(--blue)" stroke-width="1"/>
+                  <rect x="164" y="24" width="212" height="120" fill="rgba(225,79,196,.12)" stroke="var(--pink)" stroke-width="1"/>
+                  <rect x="24" y="144" width="212" height="132" fill="rgba(240,99,47,.12)" stroke="var(--orange)" stroke-width="1"/>
+                  <rect x="236" y="144" width="140" height="132" fill="rgba(46,142,82,.12)" stroke="var(--green)" stroke-width="1"/>
+                  <text x="94" y="88" text-anchor="middle" class="sv-plan__label">Коворкинг</text>
+                  <text x="270" y="88" text-anchor="middle" class="sv-plan__label">Универсальный зал / сцена</text>
+                  <text x="130" y="214" text-anchor="middle" class="sv-plan__label">Мастерские</text>
+                  <text x="306" y="214" text-anchor="middle" class="sv-plan__label">Кафе / холл</text>
+                  <line x1="24" y1="288" x2="376" y2="288" stroke="var(--ink-faint)" stroke-width="1"/>
+                  <line x1="24" y1="284" x2="24" y2="292" stroke="var(--ink-faint)" stroke-width="1"/>
+                  <line x1="376" y1="284" x2="376" y2="292" stroke="var(--ink-faint)" stroke-width="1"/>
+                  <text x="200" y="297" text-anchor="middle" class="sv-plan__label">24.6 м</text>
+                </svg>
+              </div>
+            </div>
+            <div class="story__stage-copy">
+              <h3>Планировка и архитектурный образ</h3>
+              <ul>
+                <li>Перенос программы на существующее здание.</li>
+                <li>Разработка планировочных решений.</li>
+                <li>Формирование архитектурного и визуального образа пространства.</li>
+                <li>Работа с функциональными зонами и пользовательскими маршрутами.</li>
+                <li>Подготовка схем и визуализаций.</li>
+                <li>Использование AI-инструментов в проектной работе.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- STAGE 5 — ГОТОВАЯ КОНЦЕПЦИЯ -->
+          <article class="story__stage">
+            <header class="story__stage-head">
+              <span class="story__step-num">05 · 21 октября</span>
+              <span class="story__step-label">Защищать</span>
+            </header>
+            <div class="story__stage-visual">
+              <div class="story__frame sv-final">
+                <div class="sv-final__base"></div>
+                <span class="tag" style="position:absolute; top:16px; left:16px; color:rgba(255,255,255,.75);">OBJ.05 / СТОЛБИЩЕ</span>
+                <span class="tag" style="position:absolute; top:16px; right:16px; color:rgba(255,255,255,.75);">КОНЦЕПЦИЯ / 21.10.2026</span>
+                <div class="sv-final__stamp">Готово к защите</div>
+              </div>
+            </div>
+            <div class="story__stage-copy">
+              <h3>Финал и защита проектов</h3>
+              <ul>
+                <li>Финализация концепций.</li>
+                <li>Подготовка итоговых презентаций.</li>
+                <li>Презентация проектов экспертам.</li>
+                <li>Экспертное обсуждение.</li>
+                <li>Подведение итогов хакатона.</li>
+              </ul>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="story__progress"><span class="story__progress-fill"></span></div>
+      </div>
+    </div>
+
+    <div class="marquee marquee--orange" style="margin-top:56px; --marquee-duration:26s; --marquee-dir:reverse;">
       <div class="marquee__track">
         <span>_СЛУШАТЬ_ИССЛЕДОВАТЬ_СОБИРАТЬ_ПРОЕКТИРОВАТЬ_РЕАЛИЗОВЫВАТЬ_&nbsp;</span>
         <span>_СЛУШАТЬ_ИССЛЕДОВАТЬ_СОБИРАТЬ_ПРОЕКТИРОВАТЬ_РЕАЛИЗОВЫВАТЬ_&nbsp;</span>
@@ -381,9 +599,10 @@
     </div>
   </section>
 
-  <!-- WHAT HAPPENS HERE -->
+  <!-- ==================== WHAT HAPPENS HERE (dark) ==================== -->
   <section class="section section--dark">
-    <div class="container">
+    <div class="container" data-reveal>
+      <p class="eyebrow eyebrow--light">Атмосфера</p>
       <h2 class="h2 h2--light">Что будет происходить здесь?</h2>
       <div class="word-cloud">
         <span>_работать</span>
@@ -403,9 +622,10 @@
     </div>
   </section>
 
-  <!-- ORGANIZERS -->
+  <!-- ==================== ORGANIZERS ==================== -->
   <section class="section">
-    <div class="container">
+    <div class="container" data-reveal>
+      <p class="eyebrow">Организаторы</p>
       <h2 class="h2">Кто делает хакатон</h2>
       <ul class="org-list">
         <li>Молодежный центр Республики Татарстан</li>
@@ -416,359 +636,32 @@
     </div>
   </section>
 
-  <!-- FINAL CTA -->
+  <!-- ==================== FINAL CTA ==================== -->
   <section class="section final-cta">
-    <div class="container">
+    <div class="container" data-reveal>
       <h2 class="h2">Возможно, именно твой проект станет новым молодежным пространством Татарстана</h2>
 
       <div class="info-strip">
         <div class="info-strip__item"><span>17–21 октября 2026</span><small>Казань</small></div>
         <div class="info-strip__item"><span>10–25 сентября</span><small>заявки</small></div>
-        <div class="info-strip__item"><span>до 3 октября</span><small>результаты отбора, включительно</small></div>
+        <div class="info-strip__item"><span>до 3 октября</span><small>результаты, включительно</small></div>
       </div>
-      <p class="fine-print">Количество мест ограничено.</p>
+      <p class="fine-print" style="margin-top:16px;">Количество мест ограничено.</p>
 
-      <a href="#apply" class="btn btn--primary">Подать заявку →</a>
+      <div class="final-cta__actions">
+        <a href="apply.html" class="btn btn--primary">
+          <span>Подать заявку</span>
+          <svg class="btn__arrow" width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 7H17M17 7L11 1M17 7L11 13" stroke="currentColor" stroke-width="1.6"/></svg>
+        </a>
+      </div>
 
       <p class="fine-print">Участие бесплатное. Для участников из других городов проезд до Казани, обратная дорога и проживание — за свой счет.</p>
     </div>
 
-    <div class="marquee marquee--pink">
+    <div class="marquee marquee--pink" style="margin-top:40px; --marquee-duration:21s;">
       <div class="marquee__track">
         <span>_ПРИДУМАТЬ_СПРОЕКТИРОВАТЬ_ДОРАБОТАТЬ_РЕАЛИЗОВАТЬ_&nbsp;</span>
         <span>_ПРИДУМАТЬ_СПРОЕКТИРОВАТЬ_ДОРАБОТАТЬ_РЕАЛИЗОВАТЬ_&nbsp;</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- APPLICATION FORM -->
-  <section class="section form-section" id="apply">
-    <div class="container">
-      <h2 class="h2">Заявка на участие</h2>
-
-      <form id="applyForm" novalidate>
-
-        <fieldset class="form-block">
-          <legend>01 / О тебе</legend>
-
-          <label class="field">
-            <span class="field__label">ФИО <em>*</em></span>
-            <input type="text" name="fullname" required autocomplete="name">
-          </label>
-
-          <div class="field">
-            <span class="field__label">Возраст <em>*</em></span>
-            <div class="option-row" role="radiogroup" aria-label="Возраст">
-              <label class="option-pill"><input type="radio" name="age" value="18–20" required><span>18–20</span></label>
-              <label class="option-pill"><input type="radio" name="age" value="21–25"><span>21–25</span></label>
-              <label class="option-pill"><input type="radio" name="age" value="26–30"><span>26–30</span></label>
-              <label class="option-pill"><input type="radio" name="age" value="31–35"><span>31–35</span></label>
-              <label class="option-pill"><input type="radio" name="age" value="старше 35"><span>старше 35</span></label>
-            </div>
-          </div>
-
-          <label class="field">
-            <span class="field__label">Город и регион проживания <em>*</em></span>
-            <input type="text" name="city" required>
-          </label>
-
-          <div class="field-row">
-            <label class="field">
-              <span class="field__label">Телефон <em>*</em></span>
-              <input type="tel" name="phone" required autocomplete="tel">
-            </label>
-            <label class="field">
-              <span class="field__label">Email <em>*</em></span>
-              <input type="email" name="email" required autocomplete="email">
-            </label>
-          </div>
-
-          <div class="field">
-            <span class="field__label">Удобный мессенджер <em>*</em></span>
-            <div class="option-row" role="radiogroup" aria-label="Удобный мессенджер">
-              <label class="option-pill"><input type="radio" name="messenger" value="Telegram" required><span>Telegram</span></label>
-              <label class="option-pill"><input type="radio" name="messenger" value="MAX"><span>MAX</span></label>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset class="form-block">
-          <legend>02 / Профиль</legend>
-
-          <div class="field">
-            <span class="field__label">Твой текущий статус <em>*</em></span>
-            <p class="field__hint">Можно выбрать несколько вариантов.</p>
-            <div class="option-col">
-              <label class="option-check"><input type="checkbox" name="status" value="студент архитектурного направления"><span>студент архитектурного направления</span></label>
-              <label class="option-check"><input type="checkbox" name="status" value="работающий архитектор"><span>работающий архитектор</span></label>
-              <label class="option-check"><input type="checkbox" name="status" value="урбанист"><span>урбанист</span></label>
-              <label class="option-check"><input type="checkbox" name="status" value="дизайнер"><span>дизайнер</span></label>
-              <label class="option-check"><input type="checkbox" name="status" value="исследователь / социолог / антрополог"><span>исследователь / социолог / антрополог</span></label>
-              <label class="option-check option-check--other">
-                <input type="checkbox" name="status" value="другое" data-other-toggle="statusOther">
-                <span>другое:</span>
-                <input type="text" class="option-check__other-input" id="statusOther" name="status_other" disabled placeholder="уточните">
-              </label>
-            </div>
-          </div>
-
-          <label class="field">
-            <span class="field__label">Место учебы / работы <em>*</em></span>
-            <input type="text" name="workplace" required>
-          </label>
-
-          <div class="field">
-            <span class="field__label">Твои основные компетенции <em>*</em></span>
-            <p class="field__hint">Можно выбрать несколько вариантов.</p>
-            <div class="option-col">
-              <label class="option-check"><input type="checkbox" name="competencies" value="архитектурное проектирование"><span>архитектурное проектирование</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="градостроительный анализ"><span>градостроительный анализ</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="разработка концепций общественных пространств"><span>разработка концепций общественных пространств</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="ландшафтный дизайн"><span>ландшафтный дизайн</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="дизайн интерьера"><span>дизайн интерьера</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="графический дизайн и визуализация"><span>графический дизайн и визуализация</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="3D-моделирование"><span>3D-моделирование</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="исследование территории и пользователей"><span>исследование территории и пользователей</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="социология и проведение интервью"><span>социология и проведение интервью</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="разработка событийных сценариев"><span>разработка событийных сценариев</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="молодежные проекты"><span>молодежные проекты</span></label>
-              <label class="option-check"><input type="checkbox" name="competencies" value="презентация и защита проектов"><span>презентация и защита проектов</span></label>
-              <label class="option-check option-check--other">
-                <input type="checkbox" name="competencies" value="другое" data-other-toggle="competenciesOther">
-                <span>другое:</span>
-                <input type="text" class="option-check__other-input" id="competenciesOther" name="competencies_other" disabled placeholder="уточните">
-              </label>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset class="form-block">
-          <legend>03 / Инструменты</legend>
-
-          <div class="field">
-            <span class="field__label">С какими профессиональными программами ты работаешь?</span>
-            <p class="field__hint">Можно выбрать несколько вариантов.</p>
-            <div class="option-col option-col--grid">
-              <label class="option-check"><input type="checkbox" name="software" value="AutoCAD"><span>AutoCAD</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="Revit"><span>Revit</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="Rhino"><span>Rhino</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="SketchUp"><span>SketchUp</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="3ds Max"><span>3ds Max</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="Blender"><span>Blender</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="Archicad"><span>Archicad</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="Photoshop"><span>Photoshop</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="Illustrator"><span>Illustrator</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="Figma"><span>Figma</span></label>
-              <label class="option-check"><input type="checkbox" name="software" value="GIS"><span>GIS</span></label>
-              <label class="option-check option-check--other">
-                <input type="checkbox" name="software" value="другие" data-other-toggle="softwareOther">
-                <span>другие:</span>
-                <input type="text" class="option-check__other-input" id="softwareOther" name="software_other" disabled placeholder="уточните">
-              </label>
-            </div>
-          </div>
-
-          <div class="field">
-            <span class="field__label">Какие AI-инструменты ты используешь?</span>
-            <p class="field__hint">Можно выбрать несколько вариантов.</p>
-            <div class="option-col">
-              <label class="option-check"><input type="checkbox" name="ai_tools" value="генерация изображений — Midjourney, DALL·E, Stable Diffusion, Leonardo AI и другие"><span>генерация изображений — Midjourney, DALL·E, Stable Diffusion, Leonardo AI и другие</span></label>
-              <label class="option-check"><input type="checkbox" name="ai_tools" value="AI для архитектурных концепций и поиска идей"><span>AI для архитектурных концепций и поиска идей</span></label>
-              <label class="option-check"><input type="checkbox" name="ai_tools" value="работа с текстами и аналитикой — ChatGPT, Claude, Gemini и другие"><span>работа с текстами и аналитикой — ChatGPT, Claude, Gemini и другие</span></label>
-              <label class="option-check"><input type="checkbox" name="ai_tools" value="обработка изображений и улучшение визуализаций"><span>обработка изображений и улучшение визуализаций</span></label>
-              <label class="option-check"><input type="checkbox" name="ai_tools" value="создание презентаций"><span>создание презентаций</span></label>
-              <label class="option-check"><input type="checkbox" name="ai_tools" value="работа с 3D-моделями и архитектурой"><span>работа с 3D-моделями и архитектурой</span></label>
-              <label class="option-check"><input type="checkbox" name="ai_tools" value="анализ данных, исследования и работа с документами"><span>анализ данных, исследования и работа с документами</span></label>
-              <label class="option-check"><input type="checkbox" name="ai_tools" value="AI-инструменты пока не использую"><span>AI-инструменты пока не использую</span></label>
-              <label class="option-check option-check--other">
-                <input type="checkbox" name="ai_tools" value="другие" data-other-toggle="aiToolsOther">
-                <span>другие:</span>
-                <input type="text" class="option-check__other-input" id="aiToolsOther" name="ai_tools_other" disabled placeholder="уточните">
-              </label>
-            </div>
-          </div>
-
-          <div class="field">
-            <span class="field__label">Какой уровень обучения работе с AI был бы для тебя полезен?</span>
-            <div class="option-col">
-              <label class="option-radio"><input type="radio" name="ai_level" value="обучение AI сейчас не требуется"><span>обучение AI сейчас не требуется</span></label>
-              <label class="option-radio"><input type="radio" name="ai_level" value="базовое знакомство с возможностями AI"><span>базовое знакомство с возможностями AI</span></label>
-              <label class="option-radio"><input type="radio" name="ai_level" value="практический воркшоп по созданию архитектурных изображений"><span>практический воркшоп по созданию архитектурных изображений</span></label>
-              <label class="option-radio"><input type="radio" name="ai_level" value="использование AI как части проектного процесса"><span>использование AI как части проектного процесса</span></label>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset class="form-block">
-          <legend>04 / Команда</legend>
-          <div class="field">
-            <span class="field__label">Какую роль ты обычно занимаешь в проектной команде?</span>
-            <div class="option-col">
-              <label class="option-radio"><input type="radio" name="team_role" value="генерирую идеи и концепции"><span>генерирую идеи и концепции</span></label>
-              <label class="option-radio"><input type="radio" name="team_role" value="анализирую территорию и пользователей"><span>анализирую территорию и пользователей</span></label>
-              <label class="option-radio"><input type="radio" name="team_role" value="разрабатываю архитектурные решения"><span>разрабатываю архитектурные решения</span></label>
-              <label class="option-radio"><input type="radio" name="team_role" value="работаю с визуализацией"><span>работаю с визуализацией</span></label>
-              <label class="option-radio"><input type="radio" name="team_role" value="координирую команду"><span>координирую команду</span></label>
-              <label class="option-radio"><input type="radio" name="team_role" value="готовлю презентацию и защиту проекта"><span>готовлю презентацию и защиту проекта</span></label>
-              <label class="option-radio"><input type="radio" name="team_role" value="пока сложно определить свою основную роль"><span>пока сложно определить свою основную роль</span></label>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset class="form-block">
-          <legend>05 / Мотивация</legend>
-
-          <div class="field">
-            <span class="field__label">Что ты хочешь получить от участия в хакатоне? <em>*</em></span>
-            <p class="field__hint">Выбери до трех вариантов. <span id="motivationCount">0 / 3</span></p>
-            <div class="option-col" id="motivationGroup">
-              <label class="option-check"><input type="checkbox" name="motivation" value="научиться проектировать молодежные центры"><span>научиться проектировать молодежные центры</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="получить опыт работы с реальным объектом"><span>получить опыт работы с реальным объектом</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="научиться работать с пользовательскими исследованиями"><span>научиться работать с пользовательскими исследованиями</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="освоить сценарное проектирование"><span>освоить сценарное проектирование</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="развить навыки командной работы"><span>развить навыки командной работы</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="получить экспертную обратную связь"><span>получить экспертную обратную связь</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="улучшить навыки презентации и защиты проекта"><span>улучшить навыки презентации и защиты проекта</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="освоить AI-инструменты"><span>освоить AI-инструменты</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="пополнить портфолио"><span>пополнить портфолио</span></label>
-              <label class="option-check"><input type="checkbox" name="motivation" value="найти новые профессиональные контакты"><span>найти новые профессиональные контакты</span></label>
-            </div>
-          </div>
-
-          <label class="field">
-            <span class="field__label">Почему ты хочешь принять участие в хакатоне? <em>*</em></span>
-            <textarea name="motivation_text" rows="5" required></textarea>
-          </label>
-        </fieldset>
-
-        <fieldset class="form-block">
-          <legend>06 / Портфолио</legend>
-          <label class="field">
-            <span class="field__label">Ссылка на портфолио <em>*</em></span>
-            <p class="field__hint">Можно указать ссылку на Google Drive, сайт или другой открытый источник.</p>
-            <input type="url" name="portfolio" placeholder="https://" required>
-          </label>
-        </fieldset>
-
-        <fieldset class="form-block">
-          <legend>07 / Где ты сейчас</legend>
-          <p class="field__hint">Оцени свои навыки по шкале от 1 до 5.</p>
-
-          <div class="rating-field">
-            <span class="rating-field__label">Анализ территории</span>
-            <div class="rating" role="radiogroup" aria-label="Анализ территории">
-              <label><input type="radio" name="skill_territory" value="1"><span>1</span></label>
-              <label><input type="radio" name="skill_territory" value="2"><span>2</span></label>
-              <label><input type="radio" name="skill_territory" value="3"><span>3</span></label>
-              <label><input type="radio" name="skill_territory" value="4"><span>4</span></label>
-              <label><input type="radio" name="skill_territory" value="5"><span>5</span></label>
-            </div>
-          </div>
-
-          <div class="rating-field">
-            <span class="rating-field__label">Исследование пользователей / работа с пользователями</span>
-            <div class="rating" role="radiogroup" aria-label="Исследование пользователей">
-              <label><input type="radio" name="skill_research" value="1"><span>1</span></label>
-              <label><input type="radio" name="skill_research" value="2"><span>2</span></label>
-              <label><input type="radio" name="skill_research" value="3"><span>3</span></label>
-              <label><input type="radio" name="skill_research" value="4"><span>4</span></label>
-              <label><input type="radio" name="skill_research" value="5"><span>5</span></label>
-            </div>
-          </div>
-
-          <div class="rating-field">
-            <span class="rating-field__label">Перевод запросов пользователей в архитектурную программу</span>
-            <div class="rating" role="radiogroup" aria-label="Перевод запросов в программу">
-              <label><input type="radio" name="skill_brief" value="1"><span>1</span></label>
-              <label><input type="radio" name="skill_brief" value="2"><span>2</span></label>
-              <label><input type="radio" name="skill_brief" value="3"><span>3</span></label>
-              <label><input type="radio" name="skill_brief" value="4"><span>4</span></label>
-              <label><input type="radio" name="skill_brief" value="5"><span>5</span></label>
-            </div>
-          </div>
-
-          <div class="rating-field">
-            <span class="rating-field__label">Разработка сценариев использования пространства</span>
-            <div class="rating" role="radiogroup" aria-label="Разработка сценариев">
-              <label><input type="radio" name="skill_scenarios" value="1"><span>1</span></label>
-              <label><input type="radio" name="skill_scenarios" value="2"><span>2</span></label>
-              <label><input type="radio" name="skill_scenarios" value="3"><span>3</span></label>
-              <label><input type="radio" name="skill_scenarios" value="4"><span>4</span></label>
-              <label><input type="radio" name="skill_scenarios" value="5"><span>5</span></label>
-            </div>
-          </div>
-
-          <div class="rating-field">
-            <span class="rating-field__label">Функциональное зонирование</span>
-            <div class="rating" role="radiogroup" aria-label="Функциональное зонирование">
-              <label><input type="radio" name="skill_zoning" value="1"><span>1</span></label>
-              <label><input type="radio" name="skill_zoning" value="2"><span>2</span></label>
-              <label><input type="radio" name="skill_zoning" value="3"><span>3</span></label>
-              <label><input type="radio" name="skill_zoning" value="4"><span>4</span></label>
-              <label><input type="radio" name="skill_zoning" value="5"><span>5</span></label>
-            </div>
-          </div>
-
-          <div class="rating-field">
-            <span class="rating-field__label">Создание идентичности и образа места</span>
-            <div class="rating" role="radiogroup" aria-label="Идентичность и образ места">
-              <label><input type="radio" name="skill_identity" value="1"><span>1</span></label>
-              <label><input type="radio" name="skill_identity" value="2"><span>2</span></label>
-              <label><input type="radio" name="skill_identity" value="3"><span>3</span></label>
-              <label><input type="radio" name="skill_identity" value="4"><span>4</span></label>
-              <label><input type="radio" name="skill_identity" value="5"><span>5</span></label>
-            </div>
-          </div>
-
-          <div class="rating-field">
-            <span class="rating-field__label">Работа в междисциплинарной команде</span>
-            <div class="rating" role="radiogroup" aria-label="Работа в междисциплинарной команде">
-              <label><input type="radio" name="skill_teamwork" value="1"><span>1</span></label>
-              <label><input type="radio" name="skill_teamwork" value="2"><span>2</span></label>
-              <label><input type="radio" name="skill_teamwork" value="3"><span>3</span></label>
-              <label><input type="radio" name="skill_teamwork" value="4"><span>4</span></label>
-              <label><input type="radio" name="skill_teamwork" value="5"><span>5</span></label>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset class="form-block">
-          <legend>Дополнительная информация</legend>
-          <label class="field">
-            <span class="field__label">Есть ли ограничения или особые потребности, которые организаторам важно учитывать?</span>
-            <p class="field__hint">Например, особенности здоровья или другие условия, которые могут повлиять на участие в программе.</p>
-            <textarea name="special_needs" rows="4"></textarea>
-          </label>
-        </fieldset>
-
-        <fieldset class="form-block form-block--confirm">
-          <legend>Перед отправкой</legend>
-          <ul class="confirm-notes">
-            <li>Хакатон пройдет очно в Казани с 17 по 21 октября 2026 года.</li>
-            <li>Участие бесплатное.</li>
-            <li>Для участников из других городов проезд до Казани, обратная дорога и проживание — за свой счет.</li>
-            <li>Количество мест ограничено. Заявки проходят конкурсный отбор.</li>
-          </ul>
-
-          <label class="option-check">
-            <input type="checkbox" name="confirm_attend" required>
-            <span>Я подтверждаю возможность очного участия в хакатоне с 17 по 21 октября 2026 года.</span>
-          </label>
-          <label class="option-check">
-            <input type="checkbox" name="confirm_pd" required>
-            <span>Я даю согласие на обработку персональных данных.</span>
-          </label>
-        </fieldset>
-
-        <button type="submit" class="btn btn--primary btn--wide">Отправить заявку →</button>
-        <p class="form-error" id="formError" hidden>Проверь, пожалуйста, все обязательные поля — что-то ещё не заполнено.</p>
-      </form>
-
-      <div class="thank-you" id="thankYou" hidden>
-        <h2 class="h2">Готово. Теперь наша очередь.</h2>
-        <p class="lead">Мы получили твою заявку.</p>
-        <p class="lead">Результаты отбора сообщим до 3 октября 2026 года включительно по контактам, указанным в анкете.</p>
-        <p class="hero__subtitle hero__subtitle--accent">До встречи в проекте.</p>
       </div>
     </div>
   </section>
@@ -780,18 +673,26 @@
   <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <button class="modal__close" data-close-modal aria-label="Закрыть">×</button>
     <h3 id="modalTitle"></h3>
-    <p id="modalLoc" class="object-card__loc"></p>
+    <p id="modalLoc" class="objects-app__loc"></p>
     <p>Полный пакет исходных данных объекта — фотографии, существующее состояние, планы — будет предоставлен командам, прошедшим отбор, перед началом хакатона.</p>
-    <a href="#apply" class="btn btn--outline" data-close-modal>Подать заявку →</a>
+    <a href="apply.html" class="btn btn--outline"><span>Подать заявку</span></a>
   </div>
 </div>
 
 <footer class="site-footer">
   <div class="container">
-    <div class="footer__orgs">
-      <p>Молодежный центр Республики Татарстан</p>
-      <p>АРТ-резиденция «Реактор»</p>
-      <p>Министерство по делам молодежи Республики Татарстан</p>
+    <div class="footer__top">
+      <div class="footer__orgs">
+        <p>Молодежный центр Республики Татарстан</p>
+        <p>АРТ-резиденция «Реактор»</p>
+        <p>Министерство по делам молодежи Республики Татарстан</p>
+      </div>
+      <nav class="footer__nav" aria-label="Навигация по разделам">
+        <a href="#about">Хакатон</a>
+        <a href="#objects">Объекты</a>
+        <a href="#program">Программа</a>
+        <a href="apply.html">Заявка</a>
+      </nav>
     </div>
     <div class="footer__links">
       <a href="#privacy">Политика конфиденциальности</a>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Заявка на участие — Молодежная среда</title>
+<meta name="description" content="Заявка на участие в архитектурно-проектном хакатоне «Молодежная среда: процессы / сценарии / пространство». 17–21 октября 2026, Казань.">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjMTQxNDBGIi8+PHJlY3QgeD0iNCIgeT0iMjQiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMyRThFNTIiLz48cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI4IiBoZWlnaHQ9IjE4IiBmaWxsPSIjMkU4RTUyIi8+PHJlY3QgeD0iMjQiIHk9IjQiIHdpZHRoPSI4IiBoZWlnaHQ9IjI4IiBmaWxsPSIjMkU4RTUyIi8+PC9zdmc+">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header__row">
+    <a href="index.html" class="logo" aria-label="Молодежная среда — на главную">
+      <span class="logo__mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="30" height="30" fill="none">
+          <rect x="0" y="24" width="8" height="8" fill="#2E8E52"/>
+          <rect x="10" y="14" width="8" height="18" fill="#2E8E52"/>
+          <rect x="20" y="4" width="8" height="28" fill="#2E8E52"/>
+        </svg>
+      </span>
+      <span class="logo__text">молодежная<br>среда</span>
+    </a>
+
+    <nav class="nav" id="nav">
+      <a href="index.html#about">Хакатон</a>
+      <a href="index.html#objects">Объекты</a>
+      <a href="index.html#program">Программа</a>
+      <a href="index.html#team">Кто ты</a>
+      <a href="apply.html" class="nav__cta"><span>Заявка</span></a>
+    </nav>
+
+    <button class="burger" id="burgerBtn" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <section class="section apply-hero">
+    <div class="container" data-reveal>
+      <p class="eyebrow">Заявка на участие</p>
+      <h1 class="display h1 apply-hero__title">Стань частью<br>«Молодежной среды»</h1>
+      <p class="lead" style="margin-top:16px;">Расскажи о себе, своих компетенциях и мотивации — это займет 8–10 минут. Поля, отмеченные «*», обязательны для заполнения.</p>
+      <div class="info-strip" style="margin-top:26px;">
+        <div class="info-strip__item"><span>17–21 октября 2026</span><small>Казань</small></div>
+        <div class="info-strip__item"><span>10–25 сентября</span><small>приём заявок</small></div>
+        <div class="info-strip__item"><span>до 3 октября</span><small>результаты, включительно</small></div>
+      </div>
+    </div>
+
+    <div class="marquee marquee--blue" style="margin-top:40px; --marquee-duration:22s;">
+      <div class="marquee__track">
+        <span>_ЗАЯВКА_КОМАНДА_ОБЪЕКТ_ПРОЕКТ_&nbsp;</span>
+        <span>_ЗАЯВКА_КОМАНДА_ОБЪЕКТ_ПРОЕКТ_&nbsp;</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section form-section">
+    <div class="container">
+
+      <form id="applyForm" novalidate>
+
+        <fieldset class="form-block">
+          <legend>01 / О тебе</legend>
+
+          <label class="field">
+            <span class="field__label">ФИО <em>*</em></span>
+            <input type="text" name="fullname" required autocomplete="name">
+          </label>
+
+          <div class="field">
+            <span class="field__label">Возраст <em>*</em></span>
+            <div class="option-row" role="radiogroup" aria-label="Возраст">
+              <label class="option-pill"><input type="radio" name="age" value="18–20" required><span>18–20</span></label>
+              <label class="option-pill"><input type="radio" name="age" value="21–25"><span>21–25</span></label>
+              <label class="option-pill"><input type="radio" name="age" value="26–30"><span>26–30</span></label>
+              <label class="option-pill"><input type="radio" name="age" value="31–35"><span>31–35</span></label>
+              <label class="option-pill"><input type="radio" name="age" value="старше 35"><span>старше 35</span></label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span class="field__label">Город и регион проживания <em>*</em></span>
+            <input type="text" name="city" required>
+          </label>
+
+          <div class="field-row">
+            <label class="field">
+              <span class="field__label">Телефон <em>*</em></span>
+              <input type="tel" name="phone" required autocomplete="tel">
+            </label>
+            <label class="field">
+              <span class="field__label">Email <em>*</em></span>
+              <input type="email" name="email" required autocomplete="email">
+            </label>
+          </div>
+
+          <div class="field">
+            <span class="field__label">Удобный мессенджер <em>*</em></span>
+            <div class="option-row" role="radiogroup" aria-label="Удобный мессенджер">
+              <label class="option-pill"><input type="radio" name="messenger" value="Telegram" required><span>Telegram</span></label>
+              <label class="option-pill"><input type="radio" name="messenger" value="MAX"><span>MAX</span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-block">
+          <legend>02 / Профиль</legend>
+
+          <div class="field">
+            <span class="field__label">Твой текущий статус <em>*</em></span>
+            <p class="field__hint">Можно выбрать несколько вариантов.</p>
+            <div class="option-col">
+              <label class="option-check"><input type="checkbox" name="status" value="студент архитектурного направления"><span>студент архитектурного направления</span></label>
+              <label class="option-check"><input type="checkbox" name="status" value="работающий архитектор"><span>работающий архитектор</span></label>
+              <label class="option-check"><input type="checkbox" name="status" value="урбанист"><span>урбанист</span></label>
+              <label class="option-check"><input type="checkbox" name="status" value="дизайнер"><span>дизайнер</span></label>
+              <label class="option-check"><input type="checkbox" name="status" value="исследователь / социолог / антрополог"><span>исследователь / социолог / антрополог</span></label>
+              <label class="option-check option-check--other">
+                <input type="checkbox" name="status" value="другое" data-other-toggle="statusOther">
+                <span>другое:</span>
+                <input type="text" class="option-check__other-input" id="statusOther" name="status_other" disabled placeholder="уточните">
+              </label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span class="field__label">Место учебы / работы <em>*</em></span>
+            <input type="text" name="workplace" required>
+          </label>
+
+          <div class="field">
+            <span class="field__label">Твои основные компетенции <em>*</em></span>
+            <p class="field__hint">Можно выбрать несколько вариантов.</p>
+            <div class="option-col">
+              <label class="option-check"><input type="checkbox" name="competencies" value="архитектурное проектирование"><span>архитектурное проектирование</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="градостроительный анализ"><span>градостроительный анализ</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="разработка концепций общественных пространств"><span>разработка концепций общественных пространств</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="ландшафтный дизайн"><span>ландшафтный дизайн</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="дизайн интерьера"><span>дизайн интерьера</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="графический дизайн и визуализация"><span>графический дизайн и визуализация</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="3D-моделирование"><span>3D-моделирование</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="исследование территории и пользователей"><span>исследование территории и пользователей</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="социология и проведение интервью"><span>социология и проведение интервью</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="разработка событийных сценариев"><span>разработка событийных сценариев</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="молодежные проекты"><span>молодежные проекты</span></label>
+              <label class="option-check"><input type="checkbox" name="competencies" value="презентация и защита проектов"><span>презентация и защита проектов</span></label>
+              <label class="option-check option-check--other">
+                <input type="checkbox" name="competencies" value="другое" data-other-toggle="competenciesOther">
+                <span>другое:</span>
+                <input type="text" class="option-check__other-input" id="competenciesOther" name="competencies_other" disabled placeholder="уточните">
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-block">
+          <legend>03 / Инструменты</legend>
+
+          <div class="field">
+            <span class="field__label">С какими профессиональными программами ты работаешь?</span>
+            <p class="field__hint">Можно выбрать несколько вариантов.</p>
+            <div class="option-col option-col--grid">
+              <label class="option-check"><input type="checkbox" name="software" value="AutoCAD"><span>AutoCAD</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="Revit"><span>Revit</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="Rhino"><span>Rhino</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="SketchUp"><span>SketchUp</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="3ds Max"><span>3ds Max</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="Blender"><span>Blender</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="Archicad"><span>Archicad</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="Photoshop"><span>Photoshop</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="Illustrator"><span>Illustrator</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="Figma"><span>Figma</span></label>
+              <label class="option-check"><input type="checkbox" name="software" value="GIS"><span>GIS</span></label>
+              <label class="option-check option-check--other">
+                <input type="checkbox" name="software" value="другие" data-other-toggle="softwareOther">
+                <span>другие:</span>
+                <input type="text" class="option-check__other-input" id="softwareOther" name="software_other" disabled placeholder="уточните">
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field__label">Какие AI-инструменты ты используешь?</span>
+            <p class="field__hint">Можно выбрать несколько вариантов.</p>
+            <div class="option-col">
+              <label class="option-check"><input type="checkbox" name="ai_tools" value="генерация изображений — Midjourney, DALL·E, Stable Diffusion, Leonardo AI и другие"><span>генерация изображений — Midjourney, DALL·E, Stable Diffusion, Leonardo AI и другие</span></label>
+              <label class="option-check"><input type="checkbox" name="ai_tools" value="AI для архитектурных концепций и поиска идей"><span>AI для архитектурных концепций и поиска идей</span></label>
+              <label class="option-check"><input type="checkbox" name="ai_tools" value="работа с текстами и аналитикой — ChatGPT, Claude, Gemini и другие"><span>работа с текстами и аналитикой — ChatGPT, Claude, Gemini и другие</span></label>
+              <label class="option-check"><input type="checkbox" name="ai_tools" value="обработка изображений и улучшение визуализаций"><span>обработка изображений и улучшение визуализаций</span></label>
+              <label class="option-check"><input type="checkbox" name="ai_tools" value="создание презентаций"><span>создание презентаций</span></label>
+              <label class="option-check"><input type="checkbox" name="ai_tools" value="работа с 3D-моделями и архитектурой"><span>работа с 3D-моделями и архитектурой</span></label>
+              <label class="option-check"><input type="checkbox" name="ai_tools" value="анализ данных, исследования и работа с документами"><span>анализ данных, исследования и работа с документами</span></label>
+              <label class="option-check"><input type="checkbox" name="ai_tools" value="AI-инструменты пока не использую"><span>AI-инструменты пока не использую</span></label>
+              <label class="option-check option-check--other">
+                <input type="checkbox" name="ai_tools" value="другие" data-other-toggle="aiToolsOther">
+                <span>другие:</span>
+                <input type="text" class="option-check__other-input" id="aiToolsOther" name="ai_tools_other" disabled placeholder="уточните">
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field__label">Какой уровень обучения работе с AI был бы для тебя полезен?</span>
+            <div class="option-col">
+              <label class="option-radio"><input type="radio" name="ai_level" value="обучение AI сейчас не требуется"><span>обучение AI сейчас не требуется</span></label>
+              <label class="option-radio"><input type="radio" name="ai_level" value="базовое знакомство с возможностями AI"><span>базовое знакомство с возможностями AI</span></label>
+              <label class="option-radio"><input type="radio" name="ai_level" value="практический воркшоп по созданию архитектурных изображений"><span>практический воркшоп по созданию архитектурных изображений</span></label>
+              <label class="option-radio"><input type="radio" name="ai_level" value="использование AI как части проектного процесса"><span>использование AI как части проектного процесса</span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-block">
+          <legend>04 / Команда</legend>
+          <div class="field">
+            <span class="field__label">Какую роль ты обычно занимаешь в проектной команде?</span>
+            <div class="option-col">
+              <label class="option-radio"><input type="radio" name="team_role" value="генерирую идеи и концепции"><span>генерирую идеи и концепции</span></label>
+              <label class="option-radio"><input type="radio" name="team_role" value="анализирую территорию и пользователей"><span>анализирую территорию и пользователей</span></label>
+              <label class="option-radio"><input type="radio" name="team_role" value="разрабатываю архитектурные решения"><span>разрабатываю архитектурные решения</span></label>
+              <label class="option-radio"><input type="radio" name="team_role" value="работаю с визуализацией"><span>работаю с визуализацией</span></label>
+              <label class="option-radio"><input type="radio" name="team_role" value="координирую команду"><span>координирую команду</span></label>
+              <label class="option-radio"><input type="radio" name="team_role" value="готовлю презентацию и защиту проекта"><span>готовлю презентацию и защиту проекта</span></label>
+              <label class="option-radio"><input type="radio" name="team_role" value="пока сложно определить свою основную роль"><span>пока сложно определить свою основную роль</span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-block">
+          <legend>05 / Мотивация</legend>
+
+          <div class="field">
+            <span class="field__label">Что ты хочешь получить от участия в хакатоне? <em>*</em></span>
+            <p class="field__hint">Выбери до трех вариантов. <span id="motivationCount">0 / 3</span></p>
+            <div class="option-col" id="motivationGroup">
+              <label class="option-check"><input type="checkbox" name="motivation" value="научиться проектировать молодежные центры"><span>научиться проектировать молодежные центры</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="получить опыт работы с реальным объектом"><span>получить опыт работы с реальным объектом</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="научиться работать с пользовательскими исследованиями"><span>научиться работать с пользовательскими исследованиями</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="освоить сценарное проектирование"><span>освоить сценарное проектирование</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="развить навыки командной работы"><span>развить навыки командной работы</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="получить экспертную обратную связь"><span>получить экспертную обратную связь</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="улучшить навыки презентации и защиты проекта"><span>улучшить навыки презентации и защиты проекта</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="освоить AI-инструменты"><span>освоить AI-инструменты</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="пополнить портфолио"><span>пополнить портфолио</span></label>
+              <label class="option-check"><input type="checkbox" name="motivation" value="найти новые профессиональные контакты"><span>найти новые профессиональные контакты</span></label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span class="field__label">Почему ты хочешь принять участие в хакатоне? <em>*</em></span>
+            <textarea name="motivation_text" rows="5" required></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset class="form-block">
+          <legend>06 / Портфолио</legend>
+          <label class="field">
+            <span class="field__label">Ссылка на портфолио <em>*</em></span>
+            <p class="field__hint">Можно указать ссылку на Google Drive, сайт или другой открытый источник.</p>
+            <input type="url" name="portfolio" placeholder="https://" required>
+          </label>
+        </fieldset>
+
+        <fieldset class="form-block">
+          <legend>07 / Где ты сейчас</legend>
+          <p class="field__hint">Оцени свои навыки по шкале от 1 до 5.</p>
+
+          <div class="rating-field">
+            <span class="rating-field__label">Анализ территории</span>
+            <div class="rating" role="radiogroup" aria-label="Анализ территории">
+              <label><input type="radio" name="skill_territory" value="1"><span>1</span></label>
+              <label><input type="radio" name="skill_territory" value="2"><span>2</span></label>
+              <label><input type="radio" name="skill_territory" value="3"><span>3</span></label>
+              <label><input type="radio" name="skill_territory" value="4"><span>4</span></label>
+              <label><input type="radio" name="skill_territory" value="5"><span>5</span></label>
+            </div>
+          </div>
+
+          <div class="rating-field">
+            <span class="rating-field__label">Исследование пользователей / работа с пользователями</span>
+            <div class="rating" role="radiogroup" aria-label="Исследование пользователей">
+              <label><input type="radio" name="skill_research" value="1"><span>1</span></label>
+              <label><input type="radio" name="skill_research" value="2"><span>2</span></label>
+              <label><input type="radio" name="skill_research" value="3"><span>3</span></label>
+              <label><input type="radio" name="skill_research" value="4"><span>4</span></label>
+              <label><input type="radio" name="skill_research" value="5"><span>5</span></label>
+            </div>
+          </div>
+
+          <div class="rating-field">
+            <span class="rating-field__label">Перевод запросов пользователей в архитектурную программу</span>
+            <div class="rating" role="radiogroup" aria-label="Перевод запросов в программу">
+              <label><input type="radio" name="skill_brief" value="1"><span>1</span></label>
+              <label><input type="radio" name="skill_brief" value="2"><span>2</span></label>
+              <label><input type="radio" name="skill_brief" value="3"><span>3</span></label>
+              <label><input type="radio" name="skill_brief" value="4"><span>4</span></label>
+              <label><input type="radio" name="skill_brief" value="5"><span>5</span></label>
+            </div>
+          </div>
+
+          <div class="rating-field">
+            <span class="rating-field__label">Разработка сценариев использования пространства</span>
+            <div class="rating" role="radiogroup" aria-label="Разработка сценариев">
+              <label><input type="radio" name="skill_scenarios" value="1"><span>1</span></label>
+              <label><input type="radio" name="skill_scenarios" value="2"><span>2</span></label>
+              <label><input type="radio" name="skill_scenarios" value="3"><span>3</span></label>
+              <label><input type="radio" name="skill_scenarios" value="4"><span>4</span></label>
+              <label><input type="radio" name="skill_scenarios" value="5"><span>5</span></label>
+            </div>
+          </div>
+
+          <div class="rating-field">
+            <span class="rating-field__label">Функциональное зонирование</span>
+            <div class="rating" role="radiogroup" aria-label="Функциональное зонирование">
+              <label><input type="radio" name="skill_zoning" value="1"><span>1</span></label>
+              <label><input type="radio" name="skill_zoning" value="2"><span>2</span></label>
+              <label><input type="radio" name="skill_zoning" value="3"><span>3</span></label>
+              <label><input type="radio" name="skill_zoning" value="4"><span>4</span></label>
+              <label><input type="radio" name="skill_zoning" value="5"><span>5</span></label>
+            </div>
+          </div>
+
+          <div class="rating-field">
+            <span class="rating-field__label">Создание идентичности и образа места</span>
+            <div class="rating" role="radiogroup" aria-label="Идентичность и образ места">
+              <label><input type="radio" name="skill_identity" value="1"><span>1</span></label>
+              <label><input type="radio" name="skill_identity" value="2"><span>2</span></label>
+              <label><input type="radio" name="skill_identity" value="3"><span>3</span></label>
+              <label><input type="radio" name="skill_identity" value="4"><span>4</span></label>
+              <label><input type="radio" name="skill_identity" value="5"><span>5</span></label>
+            </div>
+          </div>
+
+          <div class="rating-field">
+            <span class="rating-field__label">Работа в междисциплинарной команде</span>
+            <div class="rating" role="radiogroup" aria-label="Работа в междисциплинарной команде">
+              <label><input type="radio" name="skill_teamwork" value="1"><span>1</span></label>
+              <label><input type="radio" name="skill_teamwork" value="2"><span>2</span></label>
+              <label><input type="radio" name="skill_teamwork" value="3"><span>3</span></label>
+              <label><input type="radio" name="skill_teamwork" value="4"><span>4</span></label>
+              <label><input type="radio" name="skill_teamwork" value="5"><span>5</span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-block">
+          <legend>Дополнительная информация</legend>
+          <label class="field">
+            <span class="field__label">Есть ли ограничения или особые потребности, которые организаторам важно учитывать?</span>
+            <p class="field__hint">Например, особенности здоровья или другие условия, которые могут повлиять на участие в программе.</p>
+            <textarea name="special_needs" rows="4"></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset class="form-block form-block--confirm">
+          <legend>Перед отправкой</legend>
+          <ul class="confirm-notes">
+            <li>Хакатон пройдет очно в Казани с 17 по 21 октября 2026 года.</li>
+            <li>Участие бесплатное.</li>
+            <li>Для участников из других городов проезд до Казани, обратная дорога и проживание — за свой счет.</li>
+            <li>Количество мест ограничено. Заявки проходят конкурсный отбор.</li>
+          </ul>
+
+          <label class="option-check">
+            <input type="checkbox" name="confirm_attend" required>
+            <span>Я подтверждаю возможность очного участия в хакатоне с 17 по 21 октября 2026 года.</span>
+          </label>
+          <label class="option-check">
+            <input type="checkbox" name="confirm_pd" required>
+            <span>Я даю согласие на обработку персональных данных.</span>
+          </label>
+        </fieldset>
+
+        <button type="submit" class="btn btn--primary btn--wide">
+          <span>Отправить заявку</span>
+          <svg class="btn__arrow" width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true"><path d="M1 7H17M17 7L11 1M17 7L11 13" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+        <p class="form-error" id="formError" hidden>Проверь, пожалуйста, все обязательные поля — что-то ещё не заполнено.</p>
+      </form>
+
+      <div class="thank-you" id="thankYou" hidden>
+        <p class="eyebrow">Заявка отправлена</p>
+        <h2 class="h2">Готово. Теперь наша очередь.</h2>
+        <p class="lead">Мы получили твою заявку.</p>
+        <p class="lead">Результаты отбора сообщим до 3 октября 2026 года включительно по контактам, указанным в анкете.</p>
+        <p class="hero__subtitle hero__subtitle--accent">До встречи в проекте.</p>
+        <a href="index.html" class="text-link" style="margin-top:20px;"><span class="text-link__arrow">←</span><span>Вернуться на главную</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__orgs">
+        <p>Молодежный центр Республики Татарстан</p>
+        <p>АРТ-резиденция «Реактор»</p>
+        <p>Министерство по делам молодежи Республики Татарстан</p>
+      </div>
+      <nav class="footer__nav" aria-label="Навигация по разделам">
+        <a href="index.html#about">Хакатон</a>
+        <a href="index.html#objects">Объекты</a>
+        <a href="index.html#program">Программа</a>
+        <a href="apply.html">Заявка</a>
+      </nav>
+    </div>
+    <div class="footer__links">
+      <a href="#privacy">Политика конфиденциальности</a>
+      <a href="#consent">Согласие на обработку персональных данных</a>
+      <a href="https://mctatarstan.ru" target="_blank" rel="noopener">Контакты</a>
+    </div>
+    <p class="footer__copy">© 2026 «Молодежная среда: процессы / сценарии / пространство»</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/apply.js"></script>
+</body>
+</html>
