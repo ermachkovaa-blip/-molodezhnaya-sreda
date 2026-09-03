@@ -8,24 +8,23 @@
    ШРИФТЫ
 
    Основные шрифты бренда — Druk Cond Cy Super (заголовки) и Apercu Pro
-   (текст/интерфейс). Файлы этих шрифтов лицензируются отдельно и в проекте
-   физически отсутствуют, поэтому мы НЕ подменяем их фиктивными именами.
-   Ниже — готовая структура для настоящих webfont-файлов: как только они
-   появятся в /assets/fonts/, достаточно раскомментировать @font-face —
-   имена в --font-display и --font-body уже на них ссылаются.
-   До этого момента используются близкие по характеру бесплатные шрифты
-   (Oswald — сжатый плотный гротеск, Inter — нейтральный текстовый гротеск,
-   JetBrains Mono — для координат и технических подписей).
+   (текст/интерфейс). Druk Cond Cy Super подключен как настоящий webfont
+   (assets/fonts/DrukCondensed-Super.woff2). Apercu Pro пока физически
+   отсутствует в проекте — как только появится файл, достаточно
+   раскомментировать блок ниже, --font-body уже ссылается на это имя.
+   До этого момента вместо него используется Inter — нейтральный
+   текстовый гротеск (JetBrains Mono — для координат и подписей).
    -------------------------------------------------------------------------- */
 
-/*
 @font-face{
   font-family:'Druk Cond Cy Super';
-  src: url('../fonts/DrukCondCyr-Super.woff2') format('woff2');
-  font-weight: 900;
+  src: url('../fonts/DrukCondensed-Super.woff2') format('woff2');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
+
+/*
 @font-face{
   font-family:'Apercu Pro';
   src: url('../fonts/ApercuPro-Regular.woff2') format('woff2');
