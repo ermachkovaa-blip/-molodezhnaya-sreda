@@ -32,6 +32,8 @@
   var sceneViewport = document.getElementById('scene-viewport');
   var sceneStage = document.getElementById('scene-stage');
   var sceneImage = document.getElementById('scene-image');
+  var sceneSourceWebp = document.getElementById('scene-source-webp');
+  var mapSourceWebp = document.getElementById('map-source-webp');
   var sceneHotspotsEl = document.getElementById('scene-hotspots');
   var contentHotspotsEl = document.getElementById('scene-content-hotspots');
   var mapReturnBtn = document.getElementById('map-return');
@@ -70,6 +72,8 @@
   var state = {
     currentZoneId: null,
     currentScene: null,
+    sceneW: 0,
+    sceneH: 0,
     presetScale: 1,
     zoomFactor: 1,
     scale: 1,
@@ -197,7 +201,12 @@
     if (logoCaption) logoCaption.innerHTML = SITE.subtitle.toUpperCase().split(' ').join('<br>');
 
     var mapImg = document.getElementById('map-image');
-    if (mapImg) mapImg.alt = 'Карта пространства «' + SITE.name + '»';
+    if (mapImg) {
+      mapImg.alt = 'Карта пространства «' + SITE.name + '»';
+      mapImg.srcset = MAP_IMAGE.srcsetPng;
+      mapImg.src = MAP_IMAGE.src;
+    }
+    if (mapSourceWebp) mapSourceWebp.srcset = MAP_IMAGE.srcsetWebp;
 
     var headerCta = document.getElementById('cta-apply-header');
     if (headerCta) {
@@ -402,14 +411,29 @@
     var zone = ZONES[zoneId];
     var sceneId = zone.scene;
     var sceneDef = SCENES[sceneId];
-    var isNewImage = sceneImage.getAttribute('src') !== sceneDef.file;
+    var isNewImage = sceneImage.getAttribute('src') !== sceneDef.src;
 
     state.currentZoneId = zoneId;
     state.currentScene = sceneId;
     state.zoomFactor = 1;
 
     function activate() {
-      if (isNewImage) sceneImage.src = sceneDef.file;
+      if (isNewImage) {
+        sceneSourceWebp.srcset = sceneDef.srcsetWebp;
+        sceneImage.srcset = sceneDef.srcsetPng;
+        sceneImage.src = sceneDef.src;
+        // Force the rendered CSS box to the canonical pixel size regardless
+        // of which srcset tier the browser actually fetches — with
+        // sizes+srcset, naturalWidth/Height (and the img's intrinsic
+        // display size) become density-adjusted, not the file's raw
+        // pixels, which would silently break the pan/zoom transform math
+        // below. The retina tier then just supplies more real pixels to
+        // resample from when our own scale() zooms in — sharper, same box.
+        sceneImage.style.width = sceneDef.w + 'px';
+        sceneImage.style.height = sceneDef.h + 'px';
+        state.sceneW = sceneDef.w;
+        state.sceneH = sceneDef.h;
+      }
       sceneImage.alt = 'Панорама: ' + sceneDef.zones.map(function (z) { return ZONES[z].id + ' ' + ZONES[z].title; }).join(' / ');
 
       buildSceneSwitchHotspots(sceneDef);
@@ -473,8 +497,8 @@
   function getCoverScale() {
     var vw = sceneViewport.clientWidth;
     var vh = sceneViewport.clientHeight;
-    var iw = sceneImage.naturalWidth;
-    var ih = sceneImage.naturalHeight;
+    var iw = state.sceneW;
+    var ih = state.sceneH;
     if (!iw || !ih) return 1;
     return Math.max(vw / iw, vh / ih);
   }
@@ -488,8 +512,8 @@
   function clampTranslate() {
     var vw = sceneViewport.clientWidth;
     var vh = sceneViewport.clientHeight;
-    var iw = sceneImage.naturalWidth * state.scale;
-    var ih = sceneImage.naturalHeight * state.scale;
+    var iw = state.sceneW * state.scale;
+    var ih = state.sceneH * state.scale;
     var minTx = Math.min(0, vw - iw);
     var minTy = Math.min(0, vh - ih);
     state.tx = Math.max(minTx, Math.min(0, state.tx));
@@ -507,8 +531,8 @@
 
     var vw = sceneViewport.clientWidth;
     var vh = sceneViewport.clientHeight;
-    var focusX = (focus.x / 100) * sceneImage.naturalWidth * presetScale;
-    var focusY = (focus.y / 100) * sceneImage.naturalHeight * presetScale;
+    var focusX = (focus.x / 100) * state.sceneW * presetScale;
+    var focusY = (focus.y / 100) * state.sceneH * presetScale;
 
     state.tx = vw / 2 - focusX;
     state.ty = vh / 2 - focusY;
@@ -668,7 +692,7 @@
 
   sceneViewport.addEventListener('click', function (e) {
     if (!e.altKey) return;
-    var iw = sceneImage.naturalWidth, ih = sceneImage.naturalHeight;
+    var iw = state.sceneW, ih = state.sceneH;
     var imgX = (e.clientX - sceneViewport.getBoundingClientRect().left - state.tx) / state.scale;
     var imgY = (e.clientY - sceneViewport.getBoundingClientRect().top - state.ty) / state.scale;
     var pctX = (imgX / iw * 100).toFixed(1);
@@ -935,7 +959,7 @@
       'mode: ' + (isMobileViewport() ? 'mobile' : 'desktop'),
       'camera x/y: ' + (activePreset ? activePreset.x + ' / ' + activePreset.y : '—'),
       'scale: ' + state.scale.toFixed(3) + ' (zoomFactor ' + state.zoomFactor.toFixed(3) + ')',
-      'bbox: ' + sceneImage.naturalWidth + '×' + sceneImage.naturalHeight,
+      'bbox: ' + state.sceneW + '×' + state.sceneH + ' (canvas)',
       'viewport: ' + sceneViewport.clientWidth + '×' + sceneViewport.clientHeight,
       'DPR: ' + window.devicePixelRatio
     ];

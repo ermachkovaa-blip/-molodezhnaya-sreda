@@ -34,7 +34,10 @@
 <!-- ================= СТАРТОВАЯ КАРТА ПРОСТРАНСТВА (навигационный хаб, вне нумерации 00–07) ================= -->
 <section id="map-view" class="view view--active" aria-label="Карта пространства">
   <div class="map-stage">
-    <img class="map-image" id="map-image" src="assets/scenes/scene-map.png" alt="" draggable="false">
+    <picture>
+      <source type="image/webp" id="map-source-webp" srcset="" sizes="100vw">
+      <img class="map-image" id="map-image" src="assets/scenes/scene-map.png" srcset="" sizes="100vw" alt="" draggable="false">
+    </picture>
     <div class="map-hotspots" id="map-hotspots"></div>
   </div>
 
@@ -45,7 +48,10 @@
 <section id="scene-view" class="view" aria-label="Сцена пространства">
   <div class="scene-viewport" id="scene-viewport">
     <div class="scene-stage" id="scene-stage">
-      <img class="scene-image" id="scene-image" src="" alt="" draggable="false">
+      <picture>
+        <source type="image/webp" id="scene-source-webp" srcset="" sizes="100vw">
+        <img class="scene-image" id="scene-image" src="" srcset="" sizes="100vw" alt="" draggable="false">
+      </picture>
       <div class="scene-hotspots" id="scene-hotspots"></div>
       <div class="scene-hotspots scene-hotspots--content" id="scene-content-hotspots"></div>
     </div>

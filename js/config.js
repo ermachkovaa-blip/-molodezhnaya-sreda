@@ -155,14 +155,39 @@ var ZONES = {
 
 var ZONE_ORDER = ['00', '01', '02', '03', '04', '05', '06', '07'];
 
+// Full HD / Retina asset pipeline: каждая approved-иллюстрация отдаётся в
+// 3 тирах (оригинал ~1.6-1.7к = mobile, 1920 Full HD, 2560 retina),
+// Lanczos-апскейл без визуальных изменений композиции; WebP q92 для
+// доставки в браузер + PNG-мастер (lossless) на случай будущей обработки.
+// Браузер сам выбирает подходящий тир по ширине вьюпорта/DPR (srcset).
+// w/h — канонические пиксельные размеры оригинального тира. Все тиры
+// (оригинал/1920/2560) имеют СТРОГО одинаковый aspect ratio, поэтому вся
+// процентная математика камеры/hotspot'ов в main.js считается именно от
+// этих фиксированных чисел, а не от img.naturalWidth/Height DOM-элемента:
+// с srcset+sizes браузер отдаёт naturalWidth/Height как density-adjusted
+// значение (не реальные пиксели загруженного файла), и полагаться на него
+// для координатной математики небезопасно. <img> принудительно рендерится
+// в CSS-размер w×h (см. main.js), поэтому retina-тир просто даёт больше
+// исходных пикселей на тот же CSS-бокс — картинка резче при zoom.
+function sceneAsset(name, w0, h0) {
+  var base = 'assets/scenes/' + name;
+  return {
+    src: base + '.png',
+    srcsetWebp: base + '.webp ' + w0 + 'w, ' + base + '@1920.webp 1920w, ' + base + '@2560.webp 2560w',
+    srcsetPng: base + '.png ' + w0 + 'w, ' + base + '@1920.png 1920w, ' + base + '@2560.png 2560w',
+    w: w0,
+    h: h0
+  };
+}
+
 var SCENES = {
-  'scene-00-01': { file: 'assets/scenes/scene-00-01.png', w: 1536, h: 1024, zones: ['00', '01'] },
-  'scene-02-03': { file: 'assets/scenes/scene-02-03.png', w: 1717, h: 916, zones: ['02', '03'] },
-  'scene-04-05': { file: 'assets/scenes/scene-04-05.png', w: 1690, h: 931, zones: ['04', '05'] },
-  'scene-06-07': { file: 'assets/scenes/scene-06-07.png', w: 1672, h: 941, zones: ['06', '07'] }
+  'scene-00-01': Object.assign({ zones: ['00', '01'] }, sceneAsset('scene-00-01', 1536, 1024)),
+  'scene-02-03': Object.assign({ zones: ['02', '03'] }, sceneAsset('scene-02-03', 1717, 916)),
+  'scene-04-05': Object.assign({ zones: ['04', '05'] }, sceneAsset('scene-04-05', 1690, 931)),
+  'scene-06-07': Object.assign({ zones: ['06', '07'] }, sceneAsset('scene-06-07', 1672, 941))
 };
 
-var MAP_IMAGE = { file: 'assets/scenes/scene-map.png', w: 1690, h: 931 };
+var MAP_IMAGE = sceneAsset('scene-map', 1690, 931);
 
 // mobile breakpoint used everywhere camera/interaction behaviour forks
 var MOBILE_BREAKPOINT = 767;
