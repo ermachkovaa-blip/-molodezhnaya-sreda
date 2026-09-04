@@ -33,6 +33,12 @@
 
 <!-- ================= СТАРТОВАЯ КАРТА ПРОСТРАНСТВА (навигационный хаб, вне нумерации 00–07) ================= -->
 <section id="map-view" class="view view--active" aria-label="Карта пространства">
+  <!-- краткое интро — только на mobile, чтобы сразу было понятно, что это за сайт -->
+  <div class="map-intro" id="map-intro">
+    <p class="map-intro__title" id="map-intro-title"></p>
+    <p class="map-intro__body" id="map-intro-body"></p>
+  </div>
+
   <div class="map-stage">
     <picture>
       <source type="image/webp" id="map-source-webp" srcset="" sizes="100vw">
@@ -77,6 +83,14 @@
       <span class="map-return__icon" aria-hidden="true">&#8593;</span>
     </button>
   </div>
+
+  <!-- текущая зона + переход к следующей, всегда на экране -->
+  <button class="scene-next" id="scene-next-btn" type="button">
+    <span class="scene-next__current" id="scene-next-current"></span>
+    <span class="scene-next__divider" aria-hidden="true">|</span>
+    <span class="scene-next__label" id="scene-next-label"></span>
+    <span class="scene-next__arrow" aria-hidden="true">&#8594;</span>
+  </button>
 
   <!-- ================= НИЖНЯЯ НАВИГАЦИЯ 00–07 ================= -->
   <nav class="bottom-nav" id="bottom-nav" aria-label="Навигация по зонам пространства">

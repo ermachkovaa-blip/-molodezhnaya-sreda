@@ -94,6 +94,8 @@
     parallaxY: 0,
     parallaxTargetX: 0,
     parallaxTargetY: 0,
+    cursorBlend: 0,
+    cursorBlendTarget: 0,
     lastFocusedEl: null
   };
 
@@ -239,6 +241,9 @@
     setText('dossier-placeholder', UI_STRINGS.dossierPlaceholder);
 
     renderOrganizerLogos();
+
+    setText('map-intro-title', UI_STRINGS.mapIntro.title);
+    setText('map-intro-body', UI_STRINGS.mapIntro.body);
   }
 
   function renderOrganizerLogos() {
@@ -296,8 +301,11 @@
       // real href (works via keyboard, middle-click, no-JS, and from apply.html);
       // the click handler below intercepts it for a smooth in-page transition
       // when we're already on this page.
-      a.href = 'index.html?zone=' + item.zone;
+      var href = 'index.html?zone=' + item.zone;
+      if (item.hotspot) href += '&hotspot=' + item.hotspot;
+      a.href = href;
       a.dataset.zone = item.zone;
+      if (item.hotspot) a.dataset.hotspot = item.hotspot;
       a.textContent = item.label;
       siteNav.appendChild(a.cloneNode(true));
       mobileMenu.appendChild(a);
@@ -315,18 +323,32 @@
         e.preventDefault();
         mobileMenu.hidden = true;
         burgerBtn.setAttribute('aria-expanded', 'false');
+        var sameSceneAlready = state.currentZoneId && ZONES[a.dataset.zone] &&
+          state.currentScene === ZONES[a.dataset.zone].scene && sceneView.classList.contains('view--active');
         goToZone(a.dataset.zone);
+        if (a.dataset.hotspot) {
+          var item = findHotspotById(a.dataset.hotspot);
+          if (item) setTimeout(function () { openPaperNote(item); }, sameSceneAlready ? 750 : 950);
+        }
       });
     });
   }
 
-  // deep link support: index.html?zone=05 opens directly into that zone
+  // deep link support: index.html?zone=05 opens directly into that zone,
+  // optionally &hotspot=id also opens that hotspot's note once settled
   // (used by the header nav when navigating in from apply.html)
   function openZoneFromQueryString() {
     var zoneParam = params.get('zone');
+    var hotspotParam = params.get('hotspot');
     if (zoneParam && ZONES[zoneParam]) {
       whenImageReady(mapImageEl, function () {
-        setTimeout(function () { goToZoneFromMap(zoneParam); }, 50);
+        setTimeout(function () {
+          goToZoneFromMap(zoneParam);
+          if (hotspotParam) {
+            var item = findHotspotById(hotspotParam);
+            if (item) setTimeout(function () { openPaperNote(item); }, 950);
+          }
+        }, 50);
       });
     }
   }
@@ -439,7 +461,7 @@
         mapStage.style.transform = 'scale(1)';
         mapZoomVeil.classList.remove('is-visible');
       }, 50);
-    }, 380);
+    }, 500);
   }
 
   // ---------------------------------------------------------------
@@ -469,6 +491,7 @@
     state.zoomFactor = 1;
     setCameraTo(getCameraPreset(zone), !reducedMotion());
     updateSceneChrome(zoneId);
+    syncBlendToZone(zoneId);
   }
 
   // ---------------------------------------------------------------
@@ -514,12 +537,13 @@
       whenImageReady(sceneImage, function () { setCameraTo(getCameraPreset(zone), false); });
 
       updateSceneChrome(zoneId);
+      syncBlendToZone(zoneId);
       fadeVeil.classList.remove('is-visible');
     }
 
     if (animated && !reducedMotion()) {
       fadeVeil.classList.add('is-visible');
-      setTimeout(activate, 260);
+      setTimeout(activate, 330);
     } else {
       activate();
     }
@@ -531,8 +555,28 @@
     highlightSwitchHotspot(zoneId);
     ctaCard.hidden = zoneId !== '07';
     document.documentElement.style.setProperty('--zone-color', zone.color);
+    updateSceneNextButton(zoneId);
     updateDebugHud();
   }
+
+  var sceneNextBtn = document.getElementById('scene-next-btn');
+  var sceneNextCurrent = document.getElementById('scene-next-current');
+  var sceneNextLabel = document.getElementById('scene-next-label');
+
+  function updateSceneNextButton(zoneId) {
+    var idx = ZONE_ORDER.indexOf(zoneId);
+    var nextId = ZONE_ORDER[(idx + 1) % ZONE_ORDER.length];
+    var nextZone = ZONES[nextId];
+    sceneNextCurrent.textContent = zoneId + ' ' + ZONES[zoneId].title.split(' / ')[0];
+    sceneNextLabel.textContent = UI_STRINGS.sceneNextPrefix + ' ' + nextId + ' ' + nextZone.title.split(' / ')[0];
+    sceneNextBtn.dataset.nextZone = nextId;
+    sceneNextBtn.setAttribute('aria-label', 'Следующее пространство: ' + nextId + ' ' + nextZone.title);
+  }
+
+  sceneNextBtn.addEventListener('click', function () {
+    var next = sceneNextBtn.dataset.nextZone;
+    if (next) { logHotspot('scene-next:' + next); goToZone(next); }
+  });
 
   function buildSceneSwitchHotspots(sceneDef) {
     sceneHotspotsEl.innerHTML = '';
@@ -588,11 +632,19 @@
     state.ty = Math.max(minTy, Math.min(0, state.ty));
   }
 
-  function setCameraTo(focus, animated) {
+  // core focus->transform math, shared by the discrete camera jump
+  // (setCameraTo) and the continuous cursor-driven blend between the two
+  // zones of a scene (applyBlendCamera) — kept in one place so both stay
+  // consistent with getCoverScale()/clampTranslate().
+  function computeCameraScale(focus) {
     var base = getCoverScale();
     state.minScale = base;
     state.maxScale = base * 2.6;
-    var presetScale = Math.min(state.maxScale, Math.max(state.minScale, base * (focus.scale || 1)));
+    return Math.min(state.maxScale, Math.max(state.minScale, base * (focus.scale || 1)));
+  }
+
+  function setCameraTo(focus, animated) {
+    var presetScale = computeCameraScale(focus);
     state.presetScale = presetScale;
     state.zoomFactor = 1;
     state.scale = presetScale;
@@ -607,11 +659,60 @@
     clampTranslate();
 
     if (animated) {
-      sceneStage.style.transition = 'transform 700ms cubic-bezier(.65,0,.35,1)';
-      setTimeout(function () { sceneStage.style.transition = ''; }, 750);
+      sceneStage.style.transition = 'transform 800ms cubic-bezier(0.22, 1, 0.36, 1)';
+      setTimeout(function () { sceneStage.style.transition = ''; }, 850);
     }
     applyStageTransform();
     updateDebugHud();
+  }
+
+  // ---- cursor-driven live blend between the two zones of a scene ----
+  // Moving the pointer across the scene continuously slides the camera
+  // between zone A's and zone B's presets — the zone under the cursor
+  // visually "grows" to fill more of the view, like flying from one to
+  // the other, instead of only jumping on click. Desktop only; pauses
+  // during drag, manual wheel-zoom, or once reduced-motion is set.
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function blendableZones() {
+    var sceneDef = SCENES[state.currentScene];
+    if (!sceneDef || sceneDef.zones.length !== 2) return null;
+    return sceneDef;
+  }
+
+  function syncBlendToZone(zoneId) {
+    var sceneDef = blendableZones();
+    if (!sceneDef) return;
+    var idx = sceneDef.zones.indexOf(zoneId);
+    if (idx === -1) return;
+    state.cursorBlend = idx;
+    state.cursorBlendTarget = idx;
+  }
+
+  function applyBlendCamera(t, sceneDef) {
+    var zoneA = ZONES[sceneDef.zones[0]];
+    var zoneB = ZONES[sceneDef.zones[1]];
+    var camA = getCameraPreset(zoneA);
+    var camB = getCameraPreset(zoneB);
+    var focus = {
+      x: lerp(camA.x, camB.x, t),
+      y: lerp(camA.y, camB.y, t),
+      scale: lerp(camA.scale, camB.scale, t)
+    };
+    state.scale = computeCameraScale(focus);
+    var vw = sceneViewport.clientWidth;
+    var vh = sceneViewport.clientHeight;
+    state.tx = vw / 2 - (focus.x / 100) * state.sceneW * state.scale;
+    state.ty = vh / 2 - (focus.y / 100) * state.sceneH * state.scale;
+    clampTranslate();
+    applyStageTransform();
+
+    var activeId = sceneDef.zones[t < 0.5 ? 0 : 1];
+    if (activeId !== state.currentZoneId) {
+      state.currentZoneId = activeId;
+      localStorage.setItem(STORAGE_KEY, activeId);
+      updateSceneChrome(activeId);
+    }
   }
 
   // ---- drag to pan (desktop mouse + touch) ----
@@ -657,11 +758,23 @@
     var AMP = 9;
     state.parallaxTargetX = -nx * AMP;
     state.parallaxTargetY = -ny * AMP;
+
+    // live camera blend between the scene's two zones, following the
+    // cursor along whichever axis they're laid out on — paused once the
+    // visitor has manually wheel-zoomed in (state.zoomFactor !== 1).
+    var sceneDef = blendableZones();
+    if (sceneDef && state.zoomFactor === 1) {
+      var frac = sceneDef.axis === 'y'
+        ? (e.clientY - rect.top) / rect.height
+        : (e.clientX - rect.left) / rect.width;
+      state.cursorBlendTarget = Math.max(0, Math.min(1, frac));
+    }
   });
   window.addEventListener('mouseup', onDragEnd);
   sceneViewport.addEventListener('mouseleave', function () {
     state.parallaxTargetX = 0;
     state.parallaxTargetY = 0;
+    state.cursorBlendTarget = Math.round(state.cursorBlend);
   });
 
   // touch: pan + swipe-to-neighbour
@@ -732,7 +845,15 @@
     if (sceneView.classList.contains('view--active') && !reducedMotion()) {
       state.parallaxX += (state.parallaxTargetX - state.parallaxX) * 0.08;
       state.parallaxY += (state.parallaxTargetY - state.parallaxY) * 0.08;
-      applyStageTransform();
+
+      var sceneDef = blendableZones();
+      if (sceneDef && isDesktopPointer() && !state.dragging && state.zoomFactor === 1) {
+        state.cursorBlend += (state.cursorBlendTarget - state.cursorBlend) * 0.06;
+        if (Math.abs(state.cursorBlend - state.cursorBlendTarget) < 0.0015) state.cursorBlend = state.cursorBlendTarget;
+        applyBlendCamera(state.cursorBlend, sceneDef);
+      } else {
+        applyStageTransform();
+      }
     }
     requestAnimationFrame(parallaxTick);
   }
@@ -787,7 +908,9 @@
 
   function buildContentHotspots(sceneId) {
     contentHotspotsEl.innerHTML = '';
-    if (sceneId === 'scene-02-03') {
+    if (sceneId === 'scene-00-01') {
+      HOTSPOTS_01.forEach(buildPaperHotspot);
+    } else if (sceneId === 'scene-02-03') {
       HOTSPOTS_02.concat(HOTSPOTS_03).forEach(buildPaperHotspot);
     } else if (sceneId === 'scene-04-05') {
       ARCHIVE_ITEMS.forEach(buildArchiveDrawer);
@@ -795,6 +918,19 @@
     } else if (sceneId === 'scene-06-07') {
       TEAM_ROLES.forEach(buildTeamRole);
     }
+  }
+
+  function openPaperNote(item) {
+    paperSubtitle.textContent = item.subtitle || '';
+    paperTitle.textContent = item.title;
+    paperBody.textContent = item.body;
+    openModal(paperOverlay, paperClose);
+  }
+
+  // used for deep-linking a header-nav item straight to a hotspot's content
+  // (e.g. ДЛЯ КОГО -> zone 01 -> "Для кого этот хакатон" note)
+  function findHotspotById(hotspotId) {
+    return HOTSPOTS_01.concat(HOTSPOTS_02, HOTSPOTS_03).filter(function (h) { return h.id === hotspotId; })[0];
   }
 
   function buildPaperHotspot(item) {
@@ -808,10 +944,7 @@
     attachCursorHint(btn, UI_STRINGS.cursorOpen);
     btn.addEventListener('click', function () {
       logHotspot(item.id);
-      paperSubtitle.textContent = item.subtitle || '';
-      paperTitle.textContent = item.title;
-      paperBody.textContent = item.body;
-      openModal(paperOverlay, paperClose);
+      openPaperNote(item);
     });
     contentHotspotsEl.appendChild(btn);
   }
@@ -988,7 +1121,7 @@
         mapView.classList.add('view--active');
         if (state.currentZoneId) highlightMapZone(state.currentZoneId);
         fadeVeil.classList.remove('is-visible');
-      }, 260);
+      }, 330);
     }
   }
 
