@@ -1133,6 +1133,7 @@ body.debug-mode .gallery-hotspot {
   padding: 6px 4px 22px;
   margin-bottom: 8px;
 }
+.sheet-progress[hidden] { display: none; }
 .sheet-progress::-webkit-scrollbar { display: none; }
 
 .sheet-progress__item {
@@ -1157,6 +1158,7 @@ body.debug-mode .gallery-hotspot {
 }
 
 .sheet-progress__label {
+  display: none;
   margin-left: 8px;
   font-size: 0.68rem;
   font-weight: 700;
@@ -1179,7 +1181,7 @@ body.debug-mode .gallery-hotspot {
   background: var(--accent);
   color: #fff;
 }
-.sheet-progress__item.is-current .sheet-progress__label { color: var(--ink); }
+.sheet-progress__item.is-current .sheet-progress__label { display: inline; color: var(--ink); }
 
 .sheet-progress__item.is-done .sheet-progress__num {
   border-color: #1f8f5f;
@@ -1195,6 +1197,7 @@ body.debug-mode .gallery-hotspot {
   gap: 40px;
   align-items: start;
 }
+.sheet-layout[hidden] { display: none; }
 
 .sheet-aside {
   position: relative;
@@ -1346,6 +1349,7 @@ body.debug-mode .gallery-hotspot {
   gap: 24px;
 }
 
+.sheet-nav[hidden] { display: none; }
 .sheet-nav {
   display: flex;
   justify-content: space-between;
@@ -1356,6 +1360,7 @@ body.debug-mode .gallery-hotspot {
   border-top: 1px dashed rgba(28,26,23,0.2);
 }
 
+.sheet-btn[hidden] { display: none; }
 .sheet-btn {
   display: inline-flex;
   align-items: center;
@@ -1389,6 +1394,234 @@ body.debug-mode .gallery-hotspot {
   opacity: 0.4;
   font-family: 'SF Mono', 'Consolas', monospace;
   letter-spacing: 0.03em;
+}
+
+/* ---------- select (same underline language as text inputs) ---------- */
+
+.sheet-field select {
+  width: 100%;
+  border: none;
+  border-bottom: 1.5px solid rgba(28,26,23,0.3);
+  background: transparent;
+  padding: 8px 2px 10px;
+  font-size: 1.05rem;
+  font-family: inherit;
+  color: var(--ink);
+  border-radius: 0;
+  min-height: 44px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231c1a17' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+}
+.sheet-field select:invalid { color: rgba(28,26,23,0.45); }
+.sheet-field select:focus { outline: none; border-bottom-color: var(--accent); border-bottom-width: 2px; }
+
+/* ---------- textarea: ruled note-sheet lines ---------- */
+
+.sheet-field textarea {
+  width: 100%;
+  min-height: 128px;
+  border: none;
+  border-bottom: 1.5px solid rgba(28,26,23,0.3);
+  background: transparent;
+  background-image: repeating-linear-gradient(rgba(28,26,23,0.12) 0 1px, transparent 1px 30px);
+  background-position: 0 28px;
+  padding: 8px 2px 10px;
+  font-size: 1rem;
+  line-height: 30px;
+  font-family: inherit;
+  color: var(--ink);
+  border-radius: 0;
+  resize: vertical;
+}
+.sheet-field textarea::placeholder { color: rgba(28,26,23,0.28); line-height: normal; }
+.sheet-field textarea:focus { outline: none; border-bottom-color: var(--accent); border-bottom-width: 2px; }
+
+/* ---------- error state ---------- */
+
+.sheet-field__hint {
+  margin-top: 8px;
+  font-size: 0.76rem;
+  color: #c0392b;
+  display: none;
+}
+.sheet-field.has-error input,
+.sheet-field.has-error select,
+.sheet-field.has-error textarea { border-bottom-color: #c0392b; }
+.sheet-field.has-error .sheet-field__hint { display: block; }
+
+/* ---------- checkbox / radio: worksheet marks, not browser default ---------- */
+
+.sheet-marks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sheet-marks--row { flex-direction: row; flex-wrap: wrap; gap: 14px; }
+
+.sheet-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 0.94rem;
+}
+
+.sheet-mark input {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0; overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.sheet-mark__box {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 1.8px solid rgba(28,26,23,0.45);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.sheet-mark--radio .sheet-mark__box { border-radius: 50%; }
+
+.sheet-mark__box::after {
+  content: '';
+  width: 10px; height: 10px;
+  background: var(--accent);
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.sheet-mark--radio .sheet-mark__box::after { border-radius: 50%; }
+
+.sheet-mark.is-selected .sheet-mark__box { border-color: var(--accent); }
+.sheet-mark.is-selected .sheet-mark__box::after { opacity: 1; transform: scale(1); }
+.sheet-mark input:focus-visible ~ .sheet-mark__box { outline: 3px solid #2f7dee; outline-offset: 2px; }
+
+/* ---------- tags: competencies / tools / goals ---------- */
+
+.sheet-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sheet-tag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1.5px solid rgba(28,26,23,0.3);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.sheet-tag input {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0; overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.sheet-tag.is-selected {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.sheet-tag input:focus-visible ~ * { outline: none; }
+.sheet-tag:has(input:focus-visible) { outline: 3px solid #2f7dee; outline-offset: 2px; }
+.sheet-tag.is-disabled { opacity: 0.35; cursor: default; }
+
+/* ---------- 1–5 graphical scale ---------- */
+
+.sheet-scale {
+  display: flex;
+  gap: 8px;
+}
+
+.sheet-scale__item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border: 1.8px solid rgba(28,26,23,0.3);
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.sheet-scale__item input {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0; overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.sheet-scale__item.is-selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.sheet-scale__item:has(input:focus-visible) { outline: 3px solid #2f7dee; outline-offset: 2px; }
+
+.sheet-scale-row {
+  margin-bottom: 24px;
+}
+.sheet-scale-row__label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.sheet-scale-caption {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.66rem;
+  opacity: 0.45;
+  margin-top: 4px;
+}
+
+/* ---------- success screen ---------- */
+
+.sheet-success {
+  text-align: center;
+  padding: 40px 20px;
+  position: relative;
+}
+.sheet-success__stamp {
+  display: inline-block;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--accent);
+  border: 4px solid var(--accent);
+  padding: 10px 30px;
+  transform: rotate(-4deg);
+  border-radius: 6px;
+  margin-bottom: 22px;
+}
+.sheet-success__id {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 0.78rem;
+  opacity: 0.5;
+  margin-bottom: 18px;
+}
+.sheet-success__text {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 44ch;
+  margin: 0 auto 30px;
+}
+.sheet-success__error {
+  color: #c0392b;
+  font-weight: 700;
+  margin-bottom: 18px;
 }
 
 @media (max-width: 900px) {

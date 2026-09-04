@@ -23,153 +23,306 @@
 
 <nav class="mobile-menu" id="mobile-menu" aria-label="Мобильное меню" hidden></nav>
 
-<main class="apply-page">
-  <div class="apply-shell">
-    <a class="apply-back-link" href="index.html">&#8592; Вернуться в пространство</a>
+<main class="sheet-page">
+  <div class="sheet-shell">
+    <a class="sheet-back" href="index.html">&#8592; Вернуться в пространство</a>
 
-    <div class="apply-steps" id="apply-steps" role="tablist" aria-label="Шаги заявки"></div>
+    <div class="sheet-progress" id="sheet-progress" aria-label="Шаги анкеты" role="tablist"></div>
 
-    <form class="apply-card" id="apply-form" novalidate>
+    <form id="apply-form" novalidate>
 
-      <section class="apply-step" data-step="1">
-        <h2>01 · О тебе</h2>
-        <p class="apply-hint">Расскажи, как с тобой связаться.</p>
-        <div class="apply-field" data-field="name">
-          <label for="f-name">Имя и фамилия <span class="req">*</span></label>
-          <input type="text" id="f-name" name="name" autocomplete="name" required>
-          <p class="apply-field__error">Укажи имя и фамилию.</p>
-        </div>
-        <div class="apply-field" data-field="email">
-          <label for="f-email">Email <span class="req">*</span></label>
-          <input type="email" id="f-email" name="email" autocomplete="email" required>
-          <p class="apply-field__error">Проверь формат email.</p>
-        </div>
-        <div class="apply-field" data-field="phone">
-          <label for="f-phone">Телефон</label>
-          <input type="tel" id="f-phone" name="phone" autocomplete="tel">
-        </div>
-        <div class="apply-field" data-field="age">
-          <label for="f-age">Возраст <span class="req">*</span></label>
-          <input type="text" id="f-age" name="age" inputmode="numeric" required>
-          <p class="apply-field__error">Укажи возраст.</p>
-        </div>
-      </section>
-
-      <section class="apply-step" data-step="2" hidden>
-        <h2>02 · Профиль</h2>
-        <p class="apply-hint">Кто ты в проекте.</p>
-        <div class="apply-field" data-field="role">
-          <label for="f-role">Роль, с которой хочешь участвовать <span class="req">*</span></label>
-          <select id="f-role" name="role" required>
-            <option value="">Выбери роль</option>
-            <option>Архитектор</option>
-            <option>Дизайнер</option>
-            <option>Урбанист</option>
-            <option>Исследователь</option>
-            <option>Визуализатор</option>
-            <option>Социолог / антрополог</option>
-            <option>Студент профильного вуза или колледжа</option>
-            <option>Другое</option>
-          </select>
-          <p class="apply-field__error">Выбери роль.</p>
-        </div>
-        <div class="apply-field" data-field="place">
-          <label for="f-place">Вуз / колледж / место учёбы или работы</label>
-          <input type="text" id="f-place" name="place">
-        </div>
-      </section>
-
-      <section class="apply-step" data-step="3" hidden>
-        <h2>03 · Инструменты</h2>
-        <p class="apply-hint">Чем пользуешься в работе — можно выбрать несколько.</p>
-        <div class="apply-field" data-field="tools">
-          <div class="apply-checkbox-group" id="tools-group">
-            <label><input type="checkbox" name="tools" value="AutoCAD">AutoCAD</label>
-            <label><input type="checkbox" name="tools" value="Revit">Revit</label>
-            <label><input type="checkbox" name="tools" value="SketchUp">SketchUp</label>
-            <label><input type="checkbox" name="tools" value="Rhino / Grasshopper">Rhino / Grasshopper</label>
-            <label><input type="checkbox" name="tools" value="Figma">Figma</label>
-            <label><input type="checkbox" name="tools" value="Illustrator / Photoshop">Illustrator / Photoshop</label>
-            <label><input type="checkbox" name="tools" value="AI-инструменты">AI-инструменты</label>
-            <label><input type="checkbox" name="tools" value="Ручная графика">Ручная графика</label>
+      <!-- ============ 01 О ТЕБЕ ============ -->
+      <div class="sheet-layout" data-step="1">
+        <aside class="sheet-aside">
+          <span class="sheet-aside__sheetnum">ЛИСТ 01 / 07</span>
+          <div class="sheet-aside__num">01</div>
+          <h1 class="sheet-aside__title">О тебе</h1>
+          <p class="sheet-aside__desc">Расскажи, как с тобой связаться. Это первая страница твоего проектного досье — дальше будут профиль, инструменты, команда и мотивация.</p>
+          <div class="sheet-aside__spacer"></div>
+          <svg class="sheet-aside__arrow" width="120" height="46" viewBox="0 0 120 46" fill="none" aria-hidden="true"><path d="M2 34C28 10 70 6 112 22" stroke="#1c1a17" stroke-width="1.6" stroke-linecap="round"/><path d="M96 14C103 17 109 20 112 22C108 24 102 27 98 34" stroke="#1c1a17" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="sheet-aside__calque" aria-hidden="true"></div>
+        </aside>
+        <div class="sheet-card">
+          <div class="sheet-row">
+            <div class="sheet-field" data-field="fullName">
+              <label class="sheet-field__label" for="f-fullName"><span class="sheet-field__index">01.</span> ФИО <span class="req">*</span></label>
+              <input type="text" id="f-fullName" name="fullName" autocomplete="name" placeholder="Имя и фамилия" required>
+              <p class="sheet-field__hint">Укажи имя и фамилию.</p>
+            </div>
+            <div class="sheet-field" data-field="age">
+              <label class="sheet-field__label" for="f-age"><span class="sheet-field__index">02.</span> Возраст <span class="req">*</span></label>
+              <input type="text" id="f-age" name="age" inputmode="numeric" placeholder="18" required>
+              <p class="sheet-field__hint">Укажи возраст.</p>
+            </div>
+          </div>
+          <div class="sheet-field" data-field="cityRegion">
+            <label class="sheet-field__label" for="f-cityRegion"><span class="sheet-field__index">03.</span> Город и регион <span class="req">*</span></label>
+            <input type="text" id="f-cityRegion" name="cityRegion" placeholder="Казань, Республика Татарстан" required>
+            <p class="sheet-field__hint">Укажи город и регион.</p>
+          </div>
+          <div class="sheet-row">
+            <div class="sheet-field" data-field="email">
+              <label class="sheet-field__label" for="f-email"><span class="sheet-field__index">04.</span> Email <span class="req">*</span></label>
+              <input type="email" id="f-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+              <p class="sheet-field__hint">Проверь формат email.</p>
+            </div>
+            <div class="sheet-field" data-field="phone">
+              <label class="sheet-field__label" for="f-phone"><span class="sheet-field__index">05.</span> Телефон</label>
+              <input type="tel" id="f-phone" name="phone" autocomplete="tel" placeholder="+7 ___ ___-__-__">
+            </div>
+          </div>
+          <div class="sheet-field" data-field="messenger">
+            <label class="sheet-field__label" for="f-messenger"><span class="sheet-field__index">06.</span> Мессенджер для связи</label>
+            <input type="text" id="f-messenger" name="messenger" placeholder="Telegram / WhatsApp">
           </div>
         </div>
-      </section>
-
-      <section class="apply-step" data-step="4" hidden>
-        <h2>04 · Команда</h2>
-        <p class="apply-hint">Участвуешь один или уже есть команда?</p>
-        <div class="apply-field" data-field="teamStatus">
-          <div class="apply-checkbox-group">
-            <label><input type="radio" name="teamStatus" value="have" required>У меня есть команда</label>
-            <label><input type="radio" name="teamStatus" value="need">Ищу команду / участников</label>
-            <label><input type="radio" name="teamStatus" value="solo">Иду соло</label>
-          </div>
-          <p class="apply-field__error">Отметь один из вариантов.</p>
-        </div>
-        <div class="apply-field" data-field="teamNames">
-          <label for="f-team-names">Имена участников команды (если есть)</label>
-          <textarea id="f-team-names" name="teamNames"></textarea>
-        </div>
-      </section>
-
-      <section class="apply-step" data-step="5" hidden>
-        <h2>05 · Мотивация</h2>
-        <p class="apply-hint">Что хочешь получить от хакатона — выбери до 3 целей.</p>
-        <div class="apply-field" data-field="goals">
-          <div class="apply-checkbox-group" id="goals-group">
-            <label><input type="checkbox" name="goals" value="Опыт реального проекта">Опыт реального проекта</label>
-            <label><input type="checkbox" name="goals" value="Портфолио">Портфолио</label>
-            <label><input type="checkbox" name="goals" value="Знакомство с командой">Знакомство с командой</label>
-            <label><input type="checkbox" name="goals" value="Нетворкинг">Нетворкинг</label>
-            <label><input type="checkbox" name="goals" value="Обратная связь от экспертов">Обратная связь от экспертов</label>
-            <label><input type="checkbox" name="goals" value="Шанс на реализацию идеи">Шанс на реализацию идеи</label>
-          </div>
-          <p class="apply-field__error">Выбери хотя бы одну цель (максимум 3).</p>
-        </div>
-        <div class="apply-field" data-field="motivation">
-          <label for="f-motivation">Расскажи, почему хочешь участвовать <span class="req">*</span></label>
-          <textarea id="f-motivation" name="motivation" required></textarea>
-          <p class="apply-field__error">Расскажи пару предложений о мотивации.</p>
-        </div>
-      </section>
-
-      <section class="apply-step" data-step="6" hidden>
-        <h2>06 · Портфолио</h2>
-        <p class="apply-hint">Ссылка на работы — Behance, Google Drive, сайт, PDF.</p>
-        <div class="apply-field" data-field="portfolio">
-          <label for="f-portfolio">Ссылка на портфолио <span class="req">*</span></label>
-          <input type="url" id="f-portfolio" name="portfolio" placeholder="https://" required>
-          <p class="apply-field__error">Укажи корректную ссылку (начинается с http:// или https://).</p>
-        </div>
-      </section>
-
-      <section class="apply-step" data-step="7" hidden>
-        <h2>07 · Где ты сейчас</h2>
-        <p class="apply-hint">Хакатон проходит очно в Казани, 17–21 октября 2026.</p>
-        <div class="apply-field" data-field="city">
-          <label for="f-city">Город проживания <span class="req">*</span></label>
-          <input type="text" id="f-city" name="city" required>
-          <p class="apply-field__error">Укажи город.</p>
-        </div>
-        <div class="apply-field" data-field="agree">
-          <div class="apply-checkbox-group">
-            <label><input type="checkbox" name="agree" value="yes" required>Понимаю: участие бесплатно, количество мест ограничено; для иногородних проезд и проживание — за свой счёт.</label>
-          </div>
-          <p class="apply-field__error">Нужно подтвердить, что условия понятны.</p>
-        </div>
-      </section>
-
-      <section class="apply-step apply-step--done" data-step="8" hidden>
-        <h2>Заявка готова</h2>
-        <p class="apply-hint">Это прототип интерфейса: данные сохранены только в этом браузере (localStorage), реальная отправка на сервер не подключена.</p>
-        <dl class="apply-summary" id="apply-summary"></dl>
-      </section>
-
-      <div class="apply-nav">
-        <button type="button" class="apply-btn apply-btn--ghost" id="apply-back">Назад</button>
-        <button type="button" class="apply-btn apply-btn--primary" id="apply-next">Далее</button>
       </div>
+
+      <!-- ============ 02 ПРОФИЛЬ ============ -->
+      <div class="sheet-layout" data-step="2" hidden>
+        <aside class="sheet-aside">
+          <span class="sheet-aside__sheetnum">ЛИСТ 02 / 07</span>
+          <div class="sheet-aside__num">02</div>
+          <h1 class="sheet-aside__title">Профиль</h1>
+          <p class="sheet-aside__desc">Кто ты в проекте: статус, место учёбы или работы и роль, с которой хочешь участвовать в команде.</p>
+          <div class="sheet-aside__spacer"></div>
+          <svg class="sheet-aside__arrow" width="120" height="46" viewBox="0 0 120 46" fill="none" aria-hidden="true"><path d="M2 34C28 10 70 6 112 22" stroke="#1c1a17" stroke-width="1.6" stroke-linecap="round"/><path d="M96 14C103 17 109 20 112 22C108 24 102 27 98 34" stroke="#1c1a17" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </aside>
+        <div class="sheet-card">
+          <div class="sheet-field" data-field="status">
+            <label class="sheet-field__label" for="f-status"><span class="sheet-field__index">01.</span> Статус <span class="req">*</span></label>
+            <select id="f-status" name="status" required>
+              <option value="">Выбери вариант</option>
+              <option>Школьник</option>
+              <option>Студент</option>
+              <option>Выпускник</option>
+              <option>Специалист / практик</option>
+            </select>
+            <p class="sheet-field__hint">Выбери статус.</p>
+          </div>
+          <div class="sheet-field" data-field="studyWork">
+            <label class="sheet-field__label" for="f-studyWork"><span class="sheet-field__index">02.</span> Место учёбы или работы</label>
+            <input type="text" id="f-studyWork" name="studyWork" placeholder="Вуз, колледж, компания">
+          </div>
+          <div class="sheet-field" data-field="teamRole">
+            <label class="sheet-field__label" for="f-teamRole"><span class="sheet-field__index">03.</span> Роль в команде <span class="req">*</span></label>
+            <select id="f-teamRole" name="teamRole" required>
+              <option value="">Выбери роль</option>
+              <option>Архитектор</option>
+              <option>Дизайнер</option>
+              <option>Урбанист</option>
+              <option>Исследователь</option>
+              <option>Визуализатор</option>
+              <option>Социолог / антрополог</option>
+              <option>Студент профильного вуза или колледжа</option>
+              <option>Другое</option>
+            </select>
+            <p class="sheet-field__hint">Выбери роль.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 03 ИНСТРУМЕНТЫ ============ -->
+      <div class="sheet-layout" data-step="3" hidden>
+        <aside class="sheet-aside">
+          <span class="sheet-aside__sheetnum">ЛИСТ 03 / 07</span>
+          <div class="sheet-aside__num">03</div>
+          <h1 class="sheet-aside__title">Инструменты</h1>
+          <p class="sheet-aside__desc">Чем пользуешься в работе. Отмечай столько вариантов, сколько применимо — можно несколько.</p>
+        </aside>
+        <div class="sheet-card">
+          <div class="sheet-field" data-field="competencies">
+            <label class="sheet-field__label"><span class="sheet-field__index">01.</span> Компетенции</label>
+            <div class="sheet-tags" id="tags-competencies" data-name="competencies">
+              <label class="sheet-tag"><input type="checkbox" value="Архитектура"><span>Архитектура</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Урбан-анализ"><span>Урбан-анализ</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Исследование пользователей"><span>Исследование пользователей</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Графический дизайн"><span>Графический дизайн</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="3D-моделирование"><span>3D-моделирование</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Написание текстов"><span>Написание текстов</span></label>
+            </div>
+          </div>
+          <div class="sheet-field" data-field="software">
+            <label class="sheet-field__label"><span class="sheet-field__index">02.</span> Программы</label>
+            <div class="sheet-tags" id="tags-software" data-name="software">
+              <label class="sheet-tag"><input type="checkbox" value="AutoCAD"><span>AutoCAD</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Revit"><span>Revit</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="SketchUp"><span>SketchUp</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Rhino / Grasshopper"><span>Rhino / Grasshopper</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Figma"><span>Figma</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Illustrator / Photoshop"><span>Illustrator / Photoshop</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Ручная графика"><span>Ручная графика</span></label>
+            </div>
+          </div>
+          <div class="sheet-field" data-field="aiTools">
+            <label class="sheet-field__label"><span class="sheet-field__index">03.</span> AI-инструменты</label>
+            <div class="sheet-tags" id="tags-aiTools" data-name="aiTools">
+              <label class="sheet-tag"><input type="checkbox" value="Midjourney"><span>Midjourney</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="ChatGPT / Claude"><span>ChatGPT / Claude</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Stable Diffusion"><span>Stable Diffusion</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Другое"><span>Другое</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Не использую"><span>Не использую</span></label>
+            </div>
+          </div>
+          <div class="sheet-field" data-field="aiLevel">
+            <label class="sheet-field__label" for="f-aiLevel"><span class="sheet-field__index">04.</span> Уровень владения AI-инструментами</label>
+            <select id="f-aiLevel" name="aiLevel">
+              <option value="">Выбери вариант</option>
+              <option>Не использую</option>
+              <option>Начинающий</option>
+              <option>Уверенно</option>
+              <option>Профессионально</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 04 КОМАНДА ============ -->
+      <div class="sheet-layout" data-step="4" hidden>
+        <aside class="sheet-aside">
+          <span class="sheet-aside__sheetnum">ЛИСТ 04 / 07</span>
+          <div class="sheet-aside__num">04</div>
+          <h1 class="sheet-aside__title">Команда</h1>
+          <p class="sheet-aside__desc">Участвуешь один или уже есть команда — это ни на что не влияет, просто поможет организаторам с логистикой.</p>
+        </aside>
+        <div class="sheet-card">
+          <div class="sheet-field" data-field="teamStatus">
+            <label class="sheet-field__label"><span class="sheet-field__index">01.</span> Статус команды <span class="req">*</span></label>
+            <div class="sheet-marks" id="marks-teamStatus" data-name="teamStatus">
+              <label class="sheet-mark sheet-mark--radio"><input type="radio" name="teamStatus" value="У меня есть команда"><span class="sheet-mark__box"></span> У меня есть команда</label>
+              <label class="sheet-mark sheet-mark--radio"><input type="radio" name="teamStatus" value="Ищу команду / участников"><span class="sheet-mark__box"></span> Ищу команду / участников</label>
+              <label class="sheet-mark sheet-mark--radio"><input type="radio" name="teamStatus" value="Иду соло"><span class="sheet-mark__box"></span> Иду соло</label>
+            </div>
+            <p class="sheet-field__hint">Отметь один из вариантов.</p>
+          </div>
+          <div class="sheet-field" data-field="teamNames">
+            <label class="sheet-field__label" for="f-teamNames"><span class="sheet-field__index">02.</span> Имена участников команды (если есть)</label>
+            <textarea id="f-teamNames" name="teamNames" placeholder="Кто уже в команде"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 05 МОТИВАЦИЯ ============ -->
+      <div class="sheet-layout" data-step="5" hidden>
+        <aside class="sheet-aside">
+          <span class="sheet-aside__sheetnum">ЛИСТ 05 / 07</span>
+          <div class="sheet-aside__num">05</div>
+          <h1 class="sheet-aside__title">Мотивация</h1>
+          <p class="sheet-aside__desc">Что хочешь получить от хакатона — выбери до трёх целей — и расскажи пару предложений своими словами.</p>
+        </aside>
+        <div class="sheet-card">
+          <div class="sheet-field" data-field="goals">
+            <label class="sheet-field__label"><span class="sheet-field__index">01.</span> Цели участия <span class="req">*</span> <span class="sheet-field__hint" style="display:inline;margin:0 0 0 8px;color:inherit;opacity:.5;font-size:.7rem;">(максимум 3)</span></label>
+            <div class="sheet-tags" id="tags-goals" data-name="goals" data-max="3">
+              <label class="sheet-tag"><input type="checkbox" value="Опыт реального проекта"><span>Опыт реального проекта</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Портфолио"><span>Портфолио</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Знакомство с командой"><span>Знакомство с командой</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Нетворкинг"><span>Нетворкинг</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Обратная связь от экспертов"><span>Обратная связь от экспертов</span></label>
+              <label class="sheet-tag"><input type="checkbox" value="Шанс на реализацию идеи"><span>Шанс на реализацию идеи</span></label>
+            </div>
+            <p class="sheet-field__hint">Выбери хотя бы одну цель (максимум 3).</p>
+          </div>
+          <div class="sheet-field" data-field="motivation">
+            <label class="sheet-field__label" for="f-motivation"><span class="sheet-field__index">02.</span> Почему хочешь участвовать <span class="req">*</span></label>
+            <textarea id="f-motivation" name="motivation" required placeholder="Пара предложений о мотивации"></textarea>
+            <p class="sheet-field__hint">Расскажи пару предложений о мотивации.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 06 ПОРТФОЛИО ============ -->
+      <div class="sheet-layout" data-step="6" hidden>
+        <aside class="sheet-aside">
+          <span class="sheet-aside__sheetnum">ЛИСТ 06 / 07</span>
+          <div class="sheet-aside__num">06</div>
+          <h1 class="sheet-aside__title">Портфолио</h1>
+          <p class="sheet-aside__desc">Приложи своё проектное досье — ссылку на Behance, Google Drive, личный сайт или PDF.</p>
+        </aside>
+        <div class="sheet-card">
+          <div class="sheet-field" data-field="portfolioUrl">
+            <label class="sheet-field__label" for="f-portfolioUrl"><span class="sheet-field__index">01.</span> Ссылка на портфолио <span class="req">*</span></label>
+            <input type="url" id="f-portfolioUrl" name="portfolioUrl" placeholder="https://" required>
+            <p class="sheet-field__hint">Укажи корректную ссылку (начинается с http:// или https://).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 07 ГДЕ ТЫ СЕЙЧАС (самооценка + согласия) ============ -->
+      <div class="sheet-layout" data-step="7" hidden>
+        <aside class="sheet-aside">
+          <span class="sheet-aside__sheetnum">ЛИСТ 07 / 07</span>
+          <div class="sheet-aside__num">07</div>
+          <h1 class="sheet-aside__title">Где ты сейчас</h1>
+          <p class="sheet-aside__desc">Оцени свой текущий уровень по шкале от 1 до 5 — это поможет собрать сбалансированные команды. Хакатон проходит очно в Казани, 17–21 октября 2026.</p>
+        </aside>
+        <div class="sheet-card">
+          <div class="sheet-scale-row" data-field="selfTerritory">
+            <p class="sheet-scale-row__label">Анализ территории <span class="req">*</span></p>
+            <div class="sheet-scale" data-name="selfTerritory"></div>
+          </div>
+          <div class="sheet-scale-row" data-field="selfUsers">
+            <p class="sheet-scale-row__label">Работа с пользователями <span class="req">*</span></p>
+            <div class="sheet-scale" data-name="selfUsers"></div>
+          </div>
+          <div class="sheet-scale-row" data-field="selfProgram">
+            <p class="sheet-scale-row__label">Формирование программы <span class="req">*</span></p>
+            <div class="sheet-scale" data-name="selfProgram"></div>
+          </div>
+          <div class="sheet-scale-row" data-field="selfScenarios">
+            <p class="sheet-scale-row__label">Сценарии использования <span class="req">*</span></p>
+            <div class="sheet-scale" data-name="selfScenarios"></div>
+          </div>
+          <div class="sheet-scale-row" data-field="selfZoning">
+            <p class="sheet-scale-row__label">Функциональное зонирование <span class="req">*</span></p>
+            <div class="sheet-scale" data-name="selfZoning"></div>
+          </div>
+          <div class="sheet-scale-row" data-field="selfIdentity">
+            <p class="sheet-scale-row__label">Образ и идентичность пространства <span class="req">*</span></p>
+            <div class="sheet-scale" data-name="selfIdentity"></div>
+          </div>
+          <div class="sheet-scale-row" data-field="selfTeamwork">
+            <p class="sheet-scale-row__label">Командная работа <span class="req">*</span></p>
+            <div class="sheet-scale" data-name="selfTeamwork"></div>
+            <p class="sheet-scale-caption"><span>1 — новичок</span><span>5 — уверенно веду сам</span></p>
+          </div>
+
+          <div class="sheet-field" data-field="specialNeeds">
+            <label class="sheet-field__label" for="f-specialNeeds">Особые потребности или ограничения</label>
+            <textarea id="f-specialNeeds" name="specialNeeds" placeholder="Если нужно учесть — напиши здесь"></textarea>
+          </div>
+
+          <div class="sheet-field" data-field="attendanceConfirmed">
+            <div class="sheet-marks">
+              <label class="sheet-mark"><input type="checkbox" id="f-attendanceConfirmed" name="attendanceConfirmed" required><span class="sheet-mark__box"></span> Понимаю: участие бесплатно, количество мест ограничено; для иногородних проезд и проживание — за свой счёт.</label>
+            </div>
+            <p class="sheet-field__hint">Нужно подтвердить, что условия понятны.</p>
+          </div>
+
+          <div class="sheet-field" data-field="personalDataConsent">
+            <div class="sheet-marks">
+              <label class="sheet-mark"><input type="checkbox" id="f-personalDataConsent" name="personalDataConsent" required><span class="sheet-mark__box"></span> Согласен(-на) на обработку персональных данных.</label>
+            </div>
+            <p class="sheet-field__hint">Нужно согласие на обработку данных.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SUCCESS ============ -->
+      <div class="sheet-layout sheet-layout--success" data-step="8" hidden>
+        <div class="sheet-card sheet-success">
+          <div class="sheet-success__stamp">ГОТОВО</div>
+          <p class="sheet-success__id" id="success-id"></p>
+          <p class="sheet-success__text">Теперь наша очередь. Мы сообщим результаты отбора <strong id="success-results-date"></strong>.</p>
+          <a class="sheet-btn sheet-btn--primary" href="index.html">Вернуться в пространство &#8594;</a>
+        </div>
+      </div>
+
+      <nav class="sheet-nav" id="sheet-nav">
+        <button type="button" class="sheet-btn sheet-btn--ghost" id="apply-back">&#8592; Назад</button>
+        <button type="button" class="sheet-btn sheet-btn--primary" id="apply-next">Далее &#8594;</button>
+      </nav>
+      <p class="sheet-note" id="sheet-error-note" hidden></p>
     </form>
   </div>
 </main>
