@@ -6,8 +6,16 @@
   var DEBUG = params.get('debug') === '1';
   var reduceMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
   var hoverFineMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var mobileViewportMQ = window.matchMedia('(max-width: ' + MOBILE_BREAKPOINT + 'px)');
   function reducedMotion() { return reduceMotionMQ.matches; }
-  function isDesktopPointer() { return hoverFineMQ.matches; }
+  function isMobileViewport() { return mobileViewportMQ.matches; }
+  // desktop-only affordances (parallax, custom cursor) require BOTH a fine
+  // pointer with real hover AND a viewport above the mobile breakpoint —
+  // a touch laptop in a narrow window must still behave like mobile.
+  function isDesktopPointer() { return hoverFineMQ.matches && !isMobileViewport(); }
+  function getCameraPreset(zone) {
+    return (isMobileViewport() && zone.cameraMobile) ? zone.cameraMobile : zone.camera;
+  }
 
   // ---------------------------------------------------------------
   // DOM refs
@@ -137,7 +145,7 @@
     if (CONFIG.externalLibraryUrl) {
       window.open(CONFIG.externalLibraryUrl, '_blank', 'noopener');
     } else {
-      showToast('Ссылка на библиотеку объектов появится позже');
+      showToast(UI_STRINGS.libraryToast);
     }
   }
 
@@ -176,7 +184,59 @@
   });
 
   // ---------------------------------------------------------------
-  // HEADER
+  // BRANDING / STATIC UI TEXT — everything editable via js/config.js
+  // ---------------------------------------------------------------
+
+  function renderBranding() {
+    var pageTitleEl = document.getElementById('page-title');
+    if (pageTitleEl) pageTitleEl.textContent = SITE.pageTitleMap;
+
+    var logoImg = document.getElementById('logo-image');
+    var logoCaption = document.getElementById('logo-caption');
+    if (logoImg) { logoImg.src = SITE.logo; logoImg.alt = SITE.shortName; }
+    if (logoCaption) logoCaption.innerHTML = SITE.subtitle.toUpperCase().split(' ').join('<br>');
+
+    var mapImg = document.getElementById('map-image');
+    if (mapImg) mapImg.alt = 'Карта пространства «' + SITE.name + '»';
+
+    var headerCta = document.getElementById('cta-apply-header');
+    if (headerCta) {
+      headerCta.href = CONFIG.applicationUrl;
+      headerCta.innerHTML = UI_STRINGS.ctaApply + ' <span aria-hidden="true">↗</span>';
+    }
+
+    var sceneCta = document.getElementById('cta-apply-scene');
+    if (sceneCta) {
+      sceneCta.href = CONFIG.applicationUrl;
+      sceneCta.innerHTML = UI_STRINGS.ctaCard.button + ' <span aria-hidden="true">→</span>';
+    }
+
+    var mapReturnLabel = document.getElementById('map-return-label');
+    if (mapReturnLabel) mapReturnLabel.textContent = UI_STRINGS.mapButton;
+
+    var eyebrow = document.getElementById('cta-card-eyebrow');
+    var title = document.getElementById('cta-card-title');
+    var note = document.getElementById('cta-card-note');
+    if (eyebrow) eyebrow.textContent = UI_STRINGS.ctaCard.eyebrow;
+    if (title) title.textContent = UI_STRINGS.ctaCard.title;
+    if (note) note.innerHTML = UI_STRINGS.ctaCard.note.split('\n').join('<br>');
+    setText('cta-date-event-label', UI_STRINGS.ctaCard.dateEventLabel);
+    setText('cta-date-apply-label', UI_STRINGS.ctaCard.dateApplyLabel);
+    setText('cta-date-results-label', UI_STRINGS.ctaCard.dateResultsLabel);
+    setText('cta-date-event', CONFIG.dates.event);
+    setText('cta-date-apply', CONFIG.dates.apply);
+    setText('cta-date-results', CONFIG.dates.results);
+
+    setText('dossier-placeholder', UI_STRINGS.dossierPlaceholder);
+  }
+
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  // ---------------------------------------------------------------
+  // HEADER navigation
   // ---------------------------------------------------------------
 
   function renderHeader() {
@@ -188,9 +248,9 @@
       mobileMenu.appendChild(a);
     });
     var applyLink = document.createElement('a');
-    applyLink.href = CONFIG.applyUrl;
+    applyLink.href = CONFIG.applicationUrl;
     applyLink.className = 'cta-apply';
-    applyLink.innerHTML = 'ПОДАТЬ ЗАЯВКУ <span aria-hidden="true">↗</span>';
+    applyLink.innerHTML = UI_STRINGS.ctaApply + ' <span aria-hidden="true">↗</span>';
     mobileMenu.appendChild(applyLink);
   }
 
@@ -248,7 +308,7 @@
       dot.style.setProperty('--dot', zone.color);
       dot.setAttribute('aria-label', zoneId + ' ' + zone.title + ' — идти');
 
-      attachCursorHint(dot, zoneId + ' ' + zone.title + ' · ИДТИ →');
+      attachCursorHint(dot, zoneId + ' ' + zone.title + ' · ' + UI_STRINGS.cursorGo);
       dot.addEventListener('click', function () {
         logHotspot('map:' + zoneId);
         goToZoneFromMap(zoneId);
@@ -330,7 +390,7 @@
     state.currentZoneId = zoneId;
     localStorage.setItem(STORAGE_KEY, zoneId);
     state.zoomFactor = 1;
-    setCameraTo(zone.camera, !reducedMotion());
+    setCameraTo(getCameraPreset(zone), !reducedMotion());
     updateSceneChrome(zoneId);
   }
 
@@ -359,7 +419,7 @@
       sceneView.classList.add('view--active');
       closeAllOverlays();
 
-      whenImageReady(sceneImage, function () { setCameraTo(zone.camera, false); });
+      whenImageReady(sceneImage, function () { setCameraTo(getCameraPreset(zone), false); });
 
       updateSceneChrome(zoneId);
       fadeVeil.classList.remove('is-visible');
@@ -592,14 +652,15 @@
   sceneViewport.addEventListener('mousemove', function (e) {
     if (!isDesktopPointer() || state.dragging) return;
     if (e.target.closest(HOTSPOT_SELECTOR)) return;
-    showCursorBadge('ПЕРЕТАЩИТЬ ↔', e);
+    showCursorBadge(UI_STRINGS.cursorDrag, e);
   });
   sceneViewport.addEventListener('mouseleave', hideCursorBadge);
 
   window.addEventListener('resize', function () {
     layoutMapFrame();
     if (state.currentZoneId && sceneView.classList.contains('view--active')) {
-      setCameraTo(ZONES[state.currentZoneId].camera, false);
+      // re-apply the correct preset (desktop/mobile may have flipped)
+      setCameraTo(getCameraPreset(ZONES[state.currentZoneId]), false);
     }
   });
 
@@ -616,7 +677,7 @@
     // eslint-disable-next-line no-console
     console.log('COORD:', coord);
     if (navigator.clipboard) navigator.clipboard.writeText(coord).catch(function () {});
-    showToast('Скопировано: ' + coord, 1800);
+    showToast(UI_STRINGS.coordCopyToast + ': ' + coord, 1800);
   });
 
   // ---------------------------------------------------------------
@@ -652,7 +713,7 @@
     btn.style.top = item.y + '%';
     btn.setAttribute('aria-label', item.title + (item.subtitle ? ' — ' + item.subtitle : ''));
     btn.innerHTML = '<span class="content-hotspot__dot">+</span>';
-    attachCursorHint(btn, 'ОТКРЫТЬ +');
+    attachCursorHint(btn, UI_STRINGS.cursorOpen);
     btn.addEventListener('click', function () {
       logHotspot(item.id);
       paperSubtitle.textContent = item.subtitle || '';
@@ -671,7 +732,7 @@
     btn.style.left = box.left; btn.style.top = box.top;
     btn.style.width = box.width; btn.style.height = box.height;
     btn.setAttribute('aria-label', 'Ящик ' + item.num + ' — ' + item.city);
-    attachCursorHint(btn, 'ОТКРЫТЬ +');
+    attachCursorHint(btn, UI_STRINGS.cursorOpen);
     btn.addEventListener('click', function () {
       logHotspot('archive:' + item.num);
       btn.classList.add('is-open');
@@ -699,7 +760,7 @@
     btn.style.left = box.left; btn.style.top = box.top;
     btn.style.width = box.width; btn.style.height = box.height;
     btn.setAttribute('aria-label', item.label);
-    attachCursorHint(btn, 'ПЕРЕЙТИ ↗');
+    attachCursorHint(btn, UI_STRINGS.cursorExternal);
     btn.addEventListener('click', function () {
       logHotspot(item.id);
       openExternalLibrary();
@@ -817,14 +878,6 @@
   });
 
   // ---------------------------------------------------------------
-  // CTA card (07) — real authoritative dates, never invented
-  // ---------------------------------------------------------------
-
-  document.getElementById('cta-date-event').textContent = CONFIG.dates.event;
-  document.getElementById('cta-date-apply').textContent = CONFIG.dates.apply;
-  document.getElementById('cta-date-results').textContent = CONFIG.dates.results;
-
-  // ---------------------------------------------------------------
   // SCENE -> MAP return
   // ---------------------------------------------------------------
 
@@ -874,10 +927,13 @@
 
   function updateDebugHud() {
     if (!DEBUG) return;
+    var activeZone = ZONES[state.currentZoneId];
+    var activePreset = activeZone ? getCameraPreset(activeZone) : null;
     var lines = [
       'scene: ' + (state.currentScene || '—'),
       'zone: ' + (state.currentZoneId || '—'),
-      'camera x/y: ' + (ZONES[state.currentZoneId] ? ZONES[state.currentZoneId].camera.x + ' / ' + ZONES[state.currentZoneId].camera.y : '—'),
+      'mode: ' + (isMobileViewport() ? 'mobile' : 'desktop'),
+      'camera x/y: ' + (activePreset ? activePreset.x + ' / ' + activePreset.y : '—'),
       'scale: ' + state.scale.toFixed(3) + ' (zoomFactor ' + state.zoomFactor.toFixed(3) + ')',
       'bbox: ' + sceneImage.naturalWidth + '×' + sceneImage.naturalHeight,
       'viewport: ' + sceneViewport.clientWidth + '×' + sceneViewport.clientHeight,
@@ -892,6 +948,7 @@
   // init
   // ---------------------------------------------------------------
 
+  renderBranding();
   renderHeader();
   buildMapHotspots();
 })();

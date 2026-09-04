@@ -16,7 +16,20 @@
 
   var current = 1;
 
-  // ---------------- header (shared minimal copy for this standalone page) ----------------
+  // ---------------- branding (shared with index.html via js/config.js) ----------------
+
+  var pageTitleEl = document.getElementById('page-title');
+  if (pageTitleEl) pageTitleEl.textContent = SITE.pageTitleApply;
+
+  var logoImg = document.getElementById('logo-image');
+  var logoCaption = document.getElementById('logo-caption');
+  if (logoImg) { logoImg.src = SITE.logo; logoImg.alt = SITE.shortName; }
+  if (logoCaption) logoCaption.innerHTML = SITE.subtitle.toUpperCase().split(' ').join('<br>');
+
+  var backLink = document.querySelector('.apply-back-link');
+  if (backLink) backLink.textContent = UI_STRINGS.applyBackLink;
+
+  // ---------------- header nav (shared minimal copy for this standalone page) ----------------
 
   HEADER_NAV.forEach(function (item) {
     var a = document.createElement('a');

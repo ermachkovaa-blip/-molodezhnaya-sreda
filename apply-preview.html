@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-page">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Визуальный прототип анкеты — шаг 1</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="scroll-page">
+
+<header class="site-header" id="site-header">
+  <a class="site-header__logo" href="index.html">
+    <img class="logo-mark" id="logo-image" src="" alt="">
+    <span class="logo-caption" id="logo-caption"></span>
+  </a>
+  <nav class="site-header__nav" id="site-nav" aria-label="Основная навигация"></nav>
+  <div class="site-header__actions">
+    <button class="burger" id="burger-btn" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<nav class="mobile-menu" id="mobile-menu" aria-label="Мобильное меню" hidden></nav>
+
+<main class="sheet-page">
+  <div class="sheet-shell">
+    <a class="sheet-back" href="index.html">&#8592; Вернуться в пространство</a>
+
+    <!-- прогресс: тот же визуальный принцип, что нижняя навигация сайта -->
+    <div class="sheet-progress" id="sheet-progress" aria-label="Шаги анкеты" role="tablist"></div>
+
+    <div class="sheet-layout">
+      <!-- левая колонка: номер шага / пояснение / декоративная проектная графика -->
+      <aside class="sheet-aside">
+        <span class="sheet-aside__sheetnum">ЛИСТ 01 / 07</span>
+        <div class="sheet-aside__num">01</div>
+        <h1 class="sheet-aside__title">О тебе</h1>
+        <p class="sheet-aside__desc">Расскажи, как с тобой связаться. Это первая страница твоего проектного досье — дальше будут профиль, инструменты, команда и мотивация.</p>
+        <div class="sheet-aside__spacer"></div>
+        <svg class="sheet-aside__arrow" width="120" height="46" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+          <path d="M2 34C28 10 70 6 112 22" stroke="#1c1a17" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M96 14C103 17 109 20 112 22C108 24 102 27 98 34" stroke="#1c1a17" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="sheet-aside__calque" aria-hidden="true"></div>
+      </aside>
+
+      <!-- правая колонка: настоящая HTML-форма -->
+      <form class="sheet-card" id="sheet-form" novalidate>
+        <div class="sheet-row">
+          <div class="sheet-field">
+            <label class="sheet-field__label" for="sf-name"><span class="sheet-field__index">01.</span> ФИО <span class="req">*</span></label>
+            <input type="text" id="sf-name" name="name" autocomplete="name" placeholder="Имя и фамилия" required>
+          </div>
+          <div class="sheet-field">
+            <label class="sheet-field__label" for="sf-age"><span class="sheet-field__index">02.</span> Возраст <span class="req">*</span></label>
+            <input type="text" id="sf-age" name="age" inputmode="numeric" placeholder="18" required>
+          </div>
+        </div>
+
+        <div class="sheet-field">
+          <label class="sheet-field__label" for="sf-city"><span class="sheet-field__index">03.</span> Город и регион <span class="req">*</span></label>
+          <input type="text" id="sf-city" name="cityRegion" placeholder="Казань, Республика Татарстан" required>
+        </div>
+
+        <div class="sheet-row">
+          <div class="sheet-field">
+            <label class="sheet-field__label" for="sf-email"><span class="sheet-field__index">04.</span> Email <span class="req">*</span></label>
+            <input type="email" id="sf-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+          </div>
+          <div class="sheet-field">
+            <label class="sheet-field__label" for="sf-phone"><span class="sheet-field__index">05.</span> Телефон</label>
+            <input type="tel" id="sf-phone" name="phone" autocomplete="tel" placeholder="+7 ___ ___-__-__">
+          </div>
+        </div>
+
+        <nav class="sheet-nav">
+          <button type="button" class="sheet-btn sheet-btn--ghost" disabled>&#8592; Назад</button>
+          <button type="button" class="sheet-btn sheet-btn--primary">Далее &#8594;</button>
+        </nav>
+
+        <p class="sheet-note">ВИЗУАЛЬНЫЙ ПРОТОТИП · ШАГ 1 ИЗ 7 · НА УТВЕРЖДЕНИЕ</p>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var logoImg = document.getElementById('logo-image');
+  var logoCaption = document.getElementById('logo-caption');
+  if (logoImg) { logoImg.src = SITE.logo; logoImg.alt = SITE.shortName; }
+  if (logoCaption) logoCaption.innerHTML = SITE.subtitle.toUpperCase().split(' ').join('<br>');
+
+  var siteNav = document.getElementById('site-nav');
+  var mobileMenu = document.getElementById('mobile-menu');
+  HEADER_NAV.forEach(function (item) {
+    var a = document.createElement('a');
+    a.href = 'index.html' + item.href;
+    a.textContent = item.label;
+    siteNav.appendChild(a.cloneNode(true));
+    mobileMenu.appendChild(a);
+  });
+  document.getElementById('burger-btn').addEventListener('click', function (e) {
+    var expanded = e.currentTarget.getAttribute('aria-expanded') === 'true';
+    e.currentTarget.setAttribute('aria-expanded', String(!expanded));
+    mobileMenu.hidden = expanded;
+  });
+
+  var STEP_LABELS = ['О тебе', 'Профиль', 'Инструменты', 'Команда', 'Мотивация', 'Портфолио', 'Где ты сейчас'];
+  var rail = document.getElementById('sheet-progress');
+  STEP_LABELS.forEach(function (label, i) {
+    var n = i + 1;
+    if (i > 0) {
+      var connector = document.createElement('div');
+      connector.className = 'sheet-progress__connector';
+      rail.appendChild(connector);
+    }
+    var item = document.createElement('div');
+    item.className = 'sheet-progress__item' + (n === 1 ? ' is-current' : '');
+    item.innerHTML = '<span class="sheet-progress__num">' + String(n).padStart(2, '0') + '</span>' +
+      (n === 1 ? '<span class="sheet-progress__label">' + label + '</span>' : '');
+    rail.appendChild(item);
+  });
+})();
+</script>
+</body>
+</html>

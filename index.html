@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Молодёжная среда — цифровое пространство</title>
+<title id="page-title">Молодёжная среда</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <!-- ================= HEADER (глобальный, поверх карты и сцен) ================= -->
 <header class="site-header" id="site-header">
-  <a class="site-header__logo" href="index.html" aria-label="Молодёжная среда — на главную">
-    <span class="logo-mark" aria-hidden="true">mly</span>
-    <span class="logo-caption">МОЛОДЁЖНЫЙ<br>ЦЕНТР<br>РЕСПУБЛИКИ<br>ТАТАРСТАН</span>
+  <a class="site-header__logo" href="index.html" id="site-logo-link">
+    <img class="logo-mark" id="logo-image" src="" alt="">
+    <span class="logo-caption" id="logo-caption"></span>
   </a>
 
   <nav class="site-header__nav" id="site-nav" aria-label="Основная навигация">
@@ -20,7 +20,7 @@
   </nav>
 
   <div class="site-header__actions">
-    <a class="cta-apply" id="cta-apply-header" href="apply.html">ПОДАТЬ ЗАЯВКУ <span aria-hidden="true">↗</span></a>
+    <a class="cta-apply" id="cta-apply-header" href="#"></a>
     <button class="burger" id="burger-btn" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
@@ -34,7 +34,7 @@
 <!-- ================= СТАРТОВАЯ КАРТА ПРОСТРАНСТВА (навигационный хаб, вне нумерации 00–07) ================= -->
 <section id="map-view" class="view view--active" aria-label="Карта пространства">
   <div class="map-stage">
-    <img class="map-image" src="assets/scenes/scene-map.png" alt="Карта пространства «Молодёжная среда»" draggable="false">
+    <img class="map-image" id="map-image" src="assets/scenes/scene-map.png" alt="" draggable="false">
     <div class="map-hotspots" id="map-hotspots"></div>
   </div>
 
@@ -53,20 +53,20 @@
 
   <!-- 07 АМФИТЕАТР: постоянная CTA-карточка с достоверными датами (не встроена в pan/zoom canvas — всегда читаема) -->
   <aside class="cta-card" id="cta-card-07" hidden>
-    <p class="cta-card__eyebrow">Архитектурно-проектный хакатон</p>
-    <p class="cta-card__title">Возможно, именно твой проект станет новым молодёжным пространством Татарстана.</p>
+    <p class="cta-card__eyebrow" id="cta-card-eyebrow"></p>
+    <p class="cta-card__title" id="cta-card-title"></p>
     <dl class="cta-card__dates">
-      <div><dt>Даты хакатона</dt><dd id="cta-date-event"></dd></div>
-      <div><dt>Приём заявок</dt><dd id="cta-date-apply"></dd></div>
-      <div><dt>Результаты</dt><dd id="cta-date-results"></dd></div>
+      <div><dt id="cta-date-event-label"></dt><dd id="cta-date-event"></dd></div>
+      <div><dt id="cta-date-apply-label"></dt><dd id="cta-date-apply"></dd></div>
+      <div><dt id="cta-date-results-label"></dt><dd id="cta-date-results"></dd></div>
     </dl>
-    <p class="cta-card__note">Участие бесплатно. Количество мест ограничено.<br>Для участников из других городов проезд до Казани, обратная дорога и проживание — за свой счёт.</p>
-    <a class="cta-card__button" id="cta-apply-scene" href="apply.html">ПОДАТЬ ЗАЯВКУ <span aria-hidden="true">→</span></a>
+    <p class="cta-card__note" id="cta-card-note"></p>
+    <a class="cta-card__button" id="cta-apply-scene" href="#"></a>
   </aside>
 
   <div class="scene-topbar">
     <button class="map-return" id="map-return" aria-label="Вернуться к карте пространства (клавиша M)" title="Карта пространства (M)">
-      <span>КАРТА</span>
+      <span id="map-return-label"></span>
       <span class="map-return__icon" aria-hidden="true">&#8593;</span>
     </button>
   </div>
@@ -99,7 +99,7 @@
     <p class="dossier__num" id="dossier-num"></p>
     <h3 class="dossier__title" id="dossier-title"></h3>
     <ul class="dossier__checklist" id="dossier-checklist"></ul>
-    <p class="dossier__placeholder">Материалы по объекту скоро появятся здесь.</p>
+    <p class="dossier__placeholder" id="dossier-placeholder"></p>
   </div>
 </div>
 
@@ -120,7 +120,7 @@
 <!-- debug HUD (?debug=1) -->
 <div class="debug-hud" id="debug-hud" hidden></div>
 
-<script src="js/data.js"></script>
+<script src="js/config.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
