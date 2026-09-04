@@ -113,6 +113,7 @@ var ZONES = {
     color: '#e0483e',
     scene: 'scene-00-01',
     map: { x: 7.4, y: 69.2 },
+    mapMobile: { x: 8.3, y: 64.9 },
     camera: { x: 50, y: 23, scale: 1.3 },
     cameraMobile: { x: 50, y: 18, scale: 1.9 }
   },
@@ -122,6 +123,7 @@ var ZONES = {
     color: '#f07a1f',
     scene: 'scene-00-01',
     map: { x: 22.4, y: 34.1 },
+    mapMobile: { x: 28.31, y: 45.26 },
     camera: { x: 40, y: 75, scale: 1.05 },
     cameraMobile: { x: 35, y: 78, scale: 1.7 }
   },
@@ -131,6 +133,7 @@ var ZONES = {
     color: '#e8b923',
     scene: 'scene-02-03',
     map: { x: 33.4, y: 69.2 },
+    mapMobile: { x: 34.8, y: 64.33 },
     camera: { x: 24, y: 40, scale: 1.15 },
     cameraMobile: { x: 24, y: 35, scale: 1.5 }
   },
@@ -140,6 +143,7 @@ var ZONES = {
     color: '#3f6fd1',
     scene: 'scene-02-03',
     map: { x: 43.8, y: 35.9 },
+    mapMobile: { x: 51.74, y: 45.65 },
     camera: { x: 76, y: 45, scale: 1.15 },
     cameraMobile: { x: 74, y: 42, scale: 1.5 }
   },
@@ -149,6 +153,7 @@ var ZONES = {
     color: '#1f8f5f',
     scene: 'scene-04-05',
     map: { x: 55.7, y: 69.0 },
+    mapMobile: { x: 59.3, y: 64.16 },
     camera: { x: 24, y: 52, scale: 1.2 },
     cameraMobile: { x: 22, y: 52, scale: 1.55 }
   },
@@ -158,6 +163,7 @@ var ZONES = {
     color: '#d63e8a',
     scene: 'scene-04-05',
     map: { x: 59.2, y: 34.5 },
+    mapMobile: { x: 70.01, y: 45.87 },
     camera: { x: 78, y: 50, scale: 1.2 },
     cameraMobile: { x: 80, y: 48, scale: 1.55 }
   },
@@ -167,6 +173,7 @@ var ZONES = {
     color: '#7a4fc9',
     scene: 'scene-06-07',
     map: { x: 75.4, y: 68.9 },
+    mapMobile: { x: 81.53, y: 64.79 },
     camera: { x: 22, y: 48, scale: 1.2 },
     cameraMobile: { x: 18, y: 48, scale: 1.55 }
   },
@@ -176,6 +183,7 @@ var ZONES = {
     color: '#e0692a',
     scene: 'scene-06-07',
     map: { x: 91.8, y: 37.5 },
+    mapMobile: { x: 91.17, y: 46.38 },
     camera: { x: 78, y: 48, scale: 1.2 },
     cameraMobile: { x: 80, y: 48, scale: 1.55 }
   }
@@ -220,6 +228,19 @@ var SCENES = {
 };
 
 var MAP_IMAGE = sceneAsset('scene-map', 1689, 931);
+
+// mobile-only стартовый экран: отдельная approved-иллюстрация (вертикальная
+// композиция — заголовок/легенда/карта/инструкция «как перемещаться» уже
+// нарисованы внутри неё), не масштабированная копия десктопной MAP_IMAGE.
+// Один тир (без @1920/@2560) — картинка уже 1024×1536, этого достаточно
+// для mobile-ширины экрана с запасом под retina.
+var MAP_IMAGE_MOBILE = {
+  src: 'assets/scenes/scene-map-mobile.png',
+  srcsetWebp: 'assets/scenes/scene-map-mobile.webp',
+  srcsetPng: 'assets/scenes/scene-map-mobile.png',
+  w: 1024,
+  h: 1536
+};
 
 // mobile breakpoint used everywhere camera/interaction behaviour forks
 var MOBILE_BREAKPOINT = 767;

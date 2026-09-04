@@ -427,16 +427,21 @@
   whenImageReady(mapImageEl, layoutMapFrame);
   window.addEventListener('resize', layoutMapFrame);
 
+  function getMapDotPosition(zone) {
+    return (isMobileViewport() && zone.mapMobile) ? zone.mapMobile : zone.map;
+  }
+
   function buildMapHotspots() {
     ZONE_ORDER.forEach(function (zoneId) {
       var zone = ZONES[zoneId];
+      var pos = getMapDotPosition(zone);
       var dot = document.createElement('button');
       dot.className = 'map-hotspot';
       dot.type = 'button';
       dot.dataset.zone = zoneId;
       dot.dataset.num = zoneId;
-      dot.style.left = zone.map.x + '%';
-      dot.style.top = zone.map.y + '%';
+      dot.style.left = pos.x + '%';
+      dot.style.top = pos.y + '%';
       dot.style.setProperty('--dot', zone.color);
       dot.setAttribute('aria-label', zoneId + ' ' + zone.title + ' — идти');
 
@@ -483,12 +488,13 @@
     highlightMapZone(zoneId);
     hideCursorBadge();
 
+    var pos = getMapDotPosition(zone);
     var frameLeft = parseFloat(mapHotspotsEl.style.left) || 0;
     var frameTop = parseFloat(mapHotspotsEl.style.top) || 0;
     var frameW = parseFloat(mapHotspotsEl.style.width) || mapStage.clientWidth;
     var frameH = parseFloat(mapHotspotsEl.style.height) || mapStage.clientHeight;
-    var originX = (frameLeft + (zone.map.x / 100) * frameW) + 'px';
-    var originY = (frameTop + (zone.map.y / 100) * frameH) + 'px';
+    var originX = (frameLeft + (pos.x / 100) * frameW) + 'px';
+    var originY = (frameTop + (pos.y / 100) * frameH) + 'px';
     mapStage.style.transformOrigin = originX + ' ' + originY;
 
     if (reducedMotion()) {

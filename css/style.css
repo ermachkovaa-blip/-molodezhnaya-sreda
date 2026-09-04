@@ -1034,64 +1034,32 @@ body.debug-mode .gallery-hotspot {
   .map-return span:first-child { display: none; }
   .map-return { padding: 10px; }
 
-  /* стартовый экран на mobile: композицию задаёт approved-картинка карты
-     (крупная, во всю ширину, без object-fit-трюков — .map-stage сама по
-     себе не имеет заданной высоты, она берётся от реального контента, т.е.
-     от рендер-высоты <img>, поэтому пустого «воздуха» вокруг картинки
-     появиться не может). Заголовок проекта и инструкция «как
-     перемещаться» вокруг неё собраны кодом (см. renderBranding() /
-     renderMapHowtoSteps() в main.js), header — уже глобальный код-слой,
-     здесь не дублируется. Экран скроллится, если контент выше вьюпорта. */
+  /* стартовый экран на mobile: approved-вертикальная картинка
+     (MAP_IMAGE_MOBILE, выбирается через <picture><source media> в
+     index.html) задаёт ВСЮ композицию сама — заголовок, легенда, карта
+     00-07, инструкция «как перемещаться», подписи уже нарисованы внутри
+     неё, кодом не дублируются (.map-hero/.map-howto/.map-enter-hint
+     остаются скрыты, см. базовое display:none выше). Поверх — только
+     реальный интерфейс сайта: header (уже глобальный) и низовая
+     навигация 00-07 (position:fixed, showMapBottomNav() в main.js — не
+     занимает место в потоке, не создаёт пустоты). .map-stage не имеет
+     заданной высоты — она берётся от реального content flow самой <img>,
+     без object-fit-трюков; картинка крупная, во всю ширину, в исходных
+     пропорциях, экран естественно скроллится, если она выше вьюпорта. */
   #map-view {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    /* ровно на высоту нижней нав-панели, чтобы подсказку-вход не съедало —
-       не больше: не резервируем лишнее пустое место под неё. */
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
 
-  .map-hero {
-    display: block;
-    flex-shrink: 0;
-    margin-top: var(--header-h);
-    padding: 18px 20px 0;
-  }
-  .map-hero__name {
-    margin: 0;
-    font-size: 1.7rem;
-    font-weight: 800;
-    letter-spacing: 0.01em;
-    line-height: 1.1;
-  }
-  .map-hero__tagline {
-    margin: 6px 0 0;
-    font-size: 0.72rem;
-    letter-spacing: 0.03em;
-    opacity: 0.5;
-    text-transform: lowercase;
-  }
-  .map-hero__type {
-    margin: 10px 0 0;
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-
-  /* картинка сама определяет высоту .map-stage через нормальный document
-     flow (никакого fixed-height контейнера, никакого object-fit:contain
-     внутри пустого блока) — она крупная, во всю ширину, со своими
-     истинными пропорциями. */
   .map-stage {
     position: relative;
     inset: auto;
     flex: none;
     width: 100%;
     height: auto;
-    margin-top: 14px;
+    margin-top: var(--header-h);
     display: block;
   }
   .map-stage picture { display: block; line-height: 0; }
@@ -1100,69 +1068,6 @@ body.debug-mode .gallery-hotspot {
     width: 100%;
     height: auto;
     object-fit: unset;
-  }
-
-  .map-howto {
-    display: block;
-    flex-shrink: 0;
-    padding: 20px 20px 0;
-  }
-  .map-howto__title {
-    margin: 0 0 16px;
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: 0.01em;
-    max-width: 26ch;
-  }
-  .map-howto__steps {
-    display: flex;
-    flex-direction: column;
-  }
-  .map-howto__step {
-    display: flex;
-    gap: 14px;
-    padding: 14px 0;
-    border-top: 1px dashed rgba(28,26,23,0.2);
-  }
-  .map-howto__step:last-child { padding-bottom: 0; }
-  .map-howto__num {
-    flex-shrink: 0;
-    font-family: 'SF Mono', 'Consolas', monospace;
-    font-size: 0.78rem;
-    font-weight: 700;
-    opacity: 0.4;
-    padding-top: 0.15em;
-  }
-  .map-howto__step-title {
-    margin: 0 0 4px;
-    font-size: 0.9rem;
-    font-weight: 700;
-  }
-  .map-howto__step-desc {
-    margin: 0;
-    font-size: 0.78rem;
-    line-height: 1.45;
-    opacity: 0.65;
-  }
-
-  .map-enter-hint {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 14px auto 0;
-    padding: 12px 4px;
-    min-height: 44px;
-    border: none;
-    background: transparent;
-    color: var(--ink);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    cursor: pointer;
   }
 
   .scene-topbar { top: calc(var(--header-h) + 8px); left: 12px; }

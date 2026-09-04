@@ -49,6 +49,10 @@
 
   <div class="map-stage">
     <picture>
+      <!-- mobile: отдельная approved-вертикальная картинка (не масштабированная
+           десктопная) — см. MAP_IMAGE_MOBILE в config.js -->
+      <source media="(max-width: 640px)" type="image/webp" srcset="assets/scenes/scene-map-mobile.webp">
+      <source media="(max-width: 640px)" srcset="assets/scenes/scene-map-mobile.png">
       <source type="image/webp" id="map-source-webp" srcset="" sizes="100vw">
       <img class="map-image" id="map-image" src="assets/scenes/scene-map.png" srcset="" sizes="100vw" alt="" draggable="false">
     </picture>
