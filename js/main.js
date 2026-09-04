@@ -988,8 +988,9 @@
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'content-hotspot';
-    btn.style.left = item.x + '%';
-    btn.style.top = item.y + '%';
+    var useMobilePos = isMobileViewport() && (item.xMobile !== undefined || item.yMobile !== undefined);
+    btn.style.left = (useMobilePos && item.xMobile !== undefined ? item.xMobile : item.x) + '%';
+    btn.style.top = (useMobilePos && item.yMobile !== undefined ? item.yMobile : item.y) + '%';
     btn.setAttribute('aria-label', item.title + (item.subtitle ? ' — ' + item.subtitle : ''));
     btn.innerHTML = '<span class="content-hotspot__dot">+</span>';
     attachCursorHint(btn, UI_STRINGS.cursorOpen);
