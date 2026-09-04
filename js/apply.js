@@ -38,7 +38,7 @@
 
   HEADER_NAV.forEach(function (item) {
     var a = document.createElement('a');
-    a.href = 'index.html' + item.href;
+    a.href = 'index.html?zone=' + item.zone;
     a.textContent = item.label;
     siteNav.appendChild(a.cloneNode(true));
     mobileMenu.appendChild(a);

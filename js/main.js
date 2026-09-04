@@ -251,7 +251,11 @@
   function renderHeader() {
     HEADER_NAV.forEach(function (item) {
       var a = document.createElement('a');
-      a.href = item.href;
+      // real href (works via keyboard, middle-click, no-JS, and from apply.html);
+      // the click handler below intercepts it for a smooth in-page transition
+      // when we're already on this page.
+      a.href = 'index.html?zone=' + item.zone;
+      a.dataset.zone = item.zone;
       a.textContent = item.label;
       siteNav.appendChild(a.cloneNode(true));
       mobileMenu.appendChild(a);
@@ -261,6 +265,28 @@
     applyLink.className = 'cta-apply';
     applyLink.innerHTML = UI_STRINGS.ctaApply + ' <span aria-hidden="true">↗</span>';
     mobileMenu.appendChild(applyLink);
+
+    [siteNav, mobileMenu].forEach(function (nav) {
+      nav.addEventListener('click', function (e) {
+        var a = e.target.closest('a[data-zone]');
+        if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        mobileMenu.hidden = true;
+        burgerBtn.setAttribute('aria-expanded', 'false');
+        goToZone(a.dataset.zone);
+      });
+    });
+  }
+
+  // deep link support: index.html?zone=05 opens directly into that zone
+  // (used by the header nav when navigating in from apply.html)
+  function openZoneFromQueryString() {
+    var zoneParam = params.get('zone');
+    if (zoneParam && ZONES[zoneParam]) {
+      whenImageReady(mapImageEl, function () {
+        setTimeout(function () { goToZoneFromMap(zoneParam); }, 50);
+      });
+    }
   }
 
   burgerBtn.addEventListener('click', function () {
@@ -975,4 +1001,5 @@
   renderBranding();
   renderHeader();
   buildMapHotspots();
+  openZoneFromQueryString();
 })();
