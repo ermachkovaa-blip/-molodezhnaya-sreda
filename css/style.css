@@ -1034,27 +1034,29 @@ body.debug-mode .gallery-hotspot {
   .map-return span:first-child { display: none; }
   .map-return { padding: 10px; }
 
-  /* стартовый экран на mobile: приведённая картинка карты остаётся
-     approved-иллюстрацией как есть (без обрезки/растяжения) — заголовок
-     проекта и инструкция «как перемещаться» вокруг неё собраны кодом
-     (см. showMapHero()/renderMapHowto() в main.js), а не дорисованы в
-     картинку. Header — уже глобальный код-слой, здесь не дублируется.
-     Экран скроллится, если контент выше вьюпорта. */
+  /* стартовый экран на mobile: композицию задаёт approved-картинка карты
+     (крупная, во всю ширину, без object-fit-трюков — .map-stage сама по
+     себе не имеет заданной высоты, она берётся от реального контента, т.е.
+     от рендер-высоты <img>, поэтому пустого «воздуха» вокруг картинки
+     появиться не может). Заголовок проекта и инструкция «как
+     перемещаться» вокруг неё собраны кодом (см. renderBranding() /
+     renderMapHowtoSteps() в main.js), header — уже глобальный код-слой,
+     здесь не дублируется. Экран скроллится, если контент выше вьюпорта. */
   #map-view {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    /* clears the fixed bottom-nav so the last item (enter-hint) can
-       actually scroll into an unobstructed, tappable position. */
-    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    /* ровно на высоту нижней нав-панели, чтобы подсказку-вход не съедало —
+       не больше: не резервируем лишнее пустое место под неё. */
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
 
   .map-hero {
     display: block;
     flex-shrink: 0;
     margin-top: var(--header-h);
-    padding: 22px 20px 8px;
+    padding: 18px 20px 0;
   }
   .map-hero__name {
     margin: 0;
@@ -1071,7 +1073,7 @@ body.debug-mode .gallery-hotspot {
     text-transform: lowercase;
   }
   .map-hero__type {
-    margin: 14px 0 0;
+    margin: 10px 0 0;
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: 0.03em;
@@ -1079,26 +1081,34 @@ body.debug-mode .gallery-hotspot {
     color: var(--accent);
   }
 
+  /* картинка сама определяет высоту .map-stage через нормальный document
+     flow (никакого fixed-height контейнера, никакого object-fit:contain
+     внутри пустого блока) — она крупная, во всю ширину, со своими
+     истинными пропорциями. */
   .map-stage {
     position: relative;
     inset: auto;
     flex: none;
     width: 100%;
-    margin-top: 18px;
-    /* картинка карты не обрезается и не тянется — контейнер по её
-       собственным пропорциям; если контента больше высоты экрана,
-       #map-view выше просто скроллится. */
-    aspect-ratio: 1689 / 931;
-    min-height: 0;
+    height: auto;
+    margin-top: 14px;
+    display: block;
+  }
+  .map-stage picture { display: block; line-height: 0; }
+  .map-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: unset;
   }
 
   .map-howto {
     display: block;
     flex-shrink: 0;
-    padding: 28px 20px 4px;
+    padding: 20px 20px 0;
   }
   .map-howto__title {
-    margin: 0 0 20px;
+    margin: 0 0 16px;
     font-size: 1rem;
     font-weight: 800;
     letter-spacing: 0.01em;
@@ -1111,7 +1121,7 @@ body.debug-mode .gallery-hotspot {
   .map-howto__step {
     display: flex;
     gap: 14px;
-    padding: 16px 0;
+    padding: 14px 0;
     border-top: 1px dashed rgba(28,26,23,0.2);
   }
   .map-howto__step:last-child { padding-bottom: 0; }
@@ -1141,7 +1151,7 @@ body.debug-mode .gallery-hotspot {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin: 22px auto calc(28px + env(safe-area-inset-bottom, 0px));
+    margin: 14px auto 0;
     padding: 12px 4px;
     min-height: 44px;
     border: none;
