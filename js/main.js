@@ -237,6 +237,48 @@
     setText('cta-date-results', CONFIG.dates.results);
 
     setText('dossier-placeholder', UI_STRINGS.dossierPlaceholder);
+
+    renderOrganizerLogos();
+  }
+
+  function renderOrganizerLogos() {
+    var el = document.getElementById('cta-card-organizers');
+    if (!el) return;
+    el.innerHTML = '';
+    var label = document.createElement('p');
+    label.className = 'cta-card__organizers-label';
+    label.textContent = 'ОРГАНИЗАТОРЫ';
+    el.appendChild(label);
+
+    var row = document.createElement('div');
+    row.className = 'cta-card__organizers-row';
+
+    if (SITE.organizerLogos && SITE.organizerLogos.length) {
+      SITE.organizerLogos.forEach(function (org) {
+        var img = document.createElement('img');
+        img.src = org.src;
+        img.alt = org.name || '';
+        img.className = 'cta-card__organizer-logo';
+        if (org.url) {
+          var a = document.createElement('a');
+          a.href = org.url;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.appendChild(img);
+          row.appendChild(a);
+        } else {
+          row.appendChild(img);
+        }
+      });
+    } else {
+      // честный placeholder: логотипы ещё не переданы — не выдумываем их
+      for (var i = 0; i < 3; i++) {
+        var slot = document.createElement('div');
+        slot.className = 'cta-card__organizer-slot';
+        row.appendChild(slot);
+      }
+    }
+    el.appendChild(row);
   }
 
   function setText(id, text) {

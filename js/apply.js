@@ -100,6 +100,21 @@
     container.querySelectorAll('input').forEach(function (input) { input.name = name; });
   });
 
+  // AI tools guide: same data source as the "Ноутбук" hotspot in the space
+  var aiGuideEl = document.getElementById('ai-guide');
+  if (aiGuideEl && typeof AI_TOOL_GUIDE !== 'undefined') {
+    var titleEl = document.createElement('div');
+    titleEl.className = 'sheet-ai-guide__title';
+    titleEl.textContent = 'Какая нейросеть для чего пригодится';
+    aiGuideEl.appendChild(titleEl);
+    AI_TOOL_GUIDE.forEach(function (row) {
+      var rowEl = document.createElement('div');
+      rowEl.className = 'sheet-ai-guide__row';
+      rowEl.innerHTML = '<b>' + row.task + ':</b><span>' + row.tools + '</span>';
+      aiGuideEl.appendChild(rowEl);
+    });
+  }
+
   // build the 1-5 graphical scales
   document.querySelectorAll('.sheet-scale[data-name]').forEach(function (container) {
     var name = container.dataset.name;
