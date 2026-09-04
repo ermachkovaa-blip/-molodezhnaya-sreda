@@ -1023,17 +1023,13 @@ body.debug-mode .gallery-hotspot {
   .map-return span:first-child { display: none; }
   .map-return { padding: 10px; }
 
-  #map-view { display: flex; flex-direction: column; justify-content: center; }
+  #map-view { display: flex; flex-direction: column; }
   .map-stage {
     position: relative;
     inset: auto;
     flex: none;
     width: 100%;
-    /* aspect-ratio is set inline by JS to match whichever image is
-       currently shown (hero scene-00-01 vs the real scene-map) — see
-       showMobileHero()/showInteractiveMap() in main.js. This is only the
-       fallback for the instant before that JS runs. */
-    aspect-ratio: 1536 / 1024;
+    aspect-ratio: 1689 / 931;
     min-height: 0;
   }
 
@@ -1056,44 +1052,6 @@ body.debug-mode .gallery-hotspot {
     font-size: 0.76rem;
     line-height: 1.45;
     opacity: 0.75;
-  }
-
-  /* mobile welcome screen: hero image (первая сцена) replaces the
-     abstract map on first load; these two buttons live in the space
-     freed up below it — apply straight away, or open the real
-     interactive map. Hidden again once "КАРТА" is tapped. */
-  .map-hero-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex-shrink: 0;
-    padding: 16px 18px calc(18px + env(safe-area-inset-bottom, 0px));
-  }
-  .map-hero-actions[hidden] { display: none; }
-
-  .map-hero-actions__apply,
-  .map-hero-actions__map {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 48px;
-    border-radius: 999px;
-    font-weight: 800;
-    font-size: 0.86rem;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  .map-hero-actions__apply {
-    border: none;
-    background: var(--accent);
-    color: #fff;
-  }
-  .map-hero-actions__map {
-    border: 1.5px solid rgba(0,0,0,0.18);
-    background: transparent;
-    color: var(--ink);
   }
   .scene-topbar { top: calc(var(--header-h) + 8px); left: 12px; }
   .bottom-nav { bottom: 10px; max-width: 96vw; }
