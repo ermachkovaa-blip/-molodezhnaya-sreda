@@ -221,6 +221,15 @@ a { color: inherit; }
   display: none;
 }
 
+/* mobile-only first-screen chrome around the map image: title, "how to
+   move around" instructions, enter hint. All real HTML — never baked into
+   the illustration. Desktop keeps the plain interactive map, unchanged. */
+.map-hero,
+.map-howto,
+.map-enter-hint {
+  display: none;
+}
+
 .map-stage {
   position: absolute;
   inset: 0;
@@ -1025,28 +1034,125 @@ body.debug-mode .gallery-hotspot {
   .map-return span:first-child { display: none; }
   .map-return { padding: 10px; }
 
-  /* стартовый экран (карта) на mobile: сама approved-картинка карты — это
-     и есть согласованная композиция (заголовок, легенда, описания зон уже
-     нарисованы внутри неё), поверх неё только код-элементы интерфейса —
-     header (заявка/меню, уже глобальный) и низовая навигация 00–07 (см.
-     showMapBottomNav() в main.js). Никаких отдельных текстовых блоков. */
+  /* стартовый экран на mobile: приведённая картинка карты остаётся
+     approved-иллюстрацией как есть (без обрезки/растяжения) — заголовок
+     проекта и инструкция «как перемещаться» вокруг неё собраны кодом
+     (см. showMapHero()/renderMapHowto() в main.js), а не дорисованы в
+     картинку. Header — уже глобальный код-слой, здесь не дублируется.
+     Экран скроллится, если контент выше вьюпорта. */
   #map-view {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    /* clears the fixed bottom-nav so the last item (enter-hint) can
+       actually scroll into an unobstructed, tappable position. */
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   }
+
+  .map-hero {
+    display: block;
+    flex-shrink: 0;
+    margin-top: var(--header-h);
+    padding: 22px 20px 8px;
+  }
+  .map-hero__name {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+  }
+  .map-hero__tagline {
+    margin: 6px 0 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    opacity: 0.5;
+    text-transform: lowercase;
+  }
+  .map-hero__type {
+    margin: 14px 0 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
   .map-stage {
     position: relative;
     inset: auto;
     flex: none;
     width: 100%;
-    margin-top: var(--header-h);
+    margin-top: 18px;
     /* картинка карты не обрезается и не тянется — контейнер по её
        собственным пропорциям; если контента больше высоты экрана,
        #map-view выше просто скроллится. */
     aspect-ratio: 1689 / 931;
     min-height: 0;
+  }
+
+  .map-howto {
+    display: block;
+    flex-shrink: 0;
+    padding: 28px 20px 4px;
+  }
+  .map-howto__title {
+    margin: 0 0 20px;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    max-width: 26ch;
+  }
+  .map-howto__steps {
+    display: flex;
+    flex-direction: column;
+  }
+  .map-howto__step {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1px dashed rgba(28,26,23,0.2);
+  }
+  .map-howto__step:last-child { padding-bottom: 0; }
+  .map-howto__num {
+    flex-shrink: 0;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    opacity: 0.4;
+    padding-top: 0.15em;
+  }
+  .map-howto__step-title {
+    margin: 0 0 4px;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .map-howto__step-desc {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    opacity: 0.65;
+  }
+
+  .map-enter-hint {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 22px auto calc(28px + env(safe-area-inset-bottom, 0px));
+    padding: 12px 4px;
+    min-height: 44px;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
   }
 
   .scene-topbar { top: calc(var(--header-h) + 8px); left: 12px; }

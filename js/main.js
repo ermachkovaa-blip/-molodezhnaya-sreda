@@ -245,6 +245,38 @@
 
     setText('map-intro-title', UI_STRINGS.mapIntro.title);
     setText('map-intro-body', UI_STRINGS.mapIntro.body);
+
+    setText('map-hero-name', SITE.name);
+    setText('map-hero-tagline', UI_STRINGS.mapHero.tagline);
+    setText('map-hero-type', UI_STRINGS.mapHero.type);
+    setText('map-howto-title', UI_STRINGS.mapHowto.title);
+    renderMapHowtoSteps();
+    setText('map-enter-hint-label', UI_STRINGS.mapEnterHint);
+  }
+
+  function renderMapHowtoSteps() {
+    var el = document.getElementById('map-howto-steps');
+    if (!el) return;
+    el.innerHTML = '';
+    UI_STRINGS.mapHowto.steps.forEach(function (step) {
+      var row = document.createElement('div');
+      row.className = 'map-howto__step';
+      var num = document.createElement('span');
+      num.className = 'map-howto__num';
+      num.textContent = step.num;
+      var text = document.createElement('div');
+      var title = document.createElement('p');
+      title.className = 'map-howto__step-title';
+      title.textContent = step.title;
+      var desc = document.createElement('p');
+      desc.className = 'map-howto__step-desc';
+      desc.textContent = step.desc;
+      text.appendChild(title);
+      text.appendChild(desc);
+      row.appendChild(num);
+      row.appendChild(text);
+      el.appendChild(row);
+    });
   }
 
   function renderOrganizerLogos() {
@@ -1142,6 +1174,14 @@
 
   mapReturnBtn.addEventListener('click', returnToMap);
   document.getElementById('bottom-nav-map').addEventListener('click', returnToMap);
+
+  var mapEnterHint = document.getElementById('map-enter-hint');
+  if (mapEnterHint) {
+    mapEnterHint.addEventListener('click', function () {
+      logHotspot('map-enter-hint:00');
+      goToZoneFromMap('00');
+    });
+  }
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {

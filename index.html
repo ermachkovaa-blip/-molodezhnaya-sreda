@@ -39,6 +39,14 @@
     <p class="map-intro__body" id="map-intro-body"></p>
   </div>
 
+  <!-- mobile-only: заголовок первого экрана — настоящий HTML-текст, не
+       часть картинки (см. renderBranding()/showMapHero() в main.js) -->
+  <div class="map-hero" id="map-hero">
+    <p class="map-hero__name" id="map-hero-name"></p>
+    <p class="map-hero__tagline" id="map-hero-tagline"></p>
+    <p class="map-hero__type" id="map-hero-type"></p>
+  </div>
+
   <div class="map-stage">
     <picture>
       <source type="image/webp" id="map-source-webp" srcset="" sizes="100vw">
@@ -46,6 +54,18 @@
     </picture>
     <div class="map-hotspots" id="map-hotspots"></div>
   </div>
+
+  <!-- mobile-only: инструкция под картой — код, не часть картинки -->
+  <div class="map-howto" id="map-howto">
+    <p class="map-howto__title" id="map-howto-title"></p>
+    <div class="map-howto__steps" id="map-howto-steps"></div>
+  </div>
+
+  <!-- mobile-only: компактная подсказка входа в пространство (зона 00) -->
+  <button class="map-enter-hint" id="map-enter-hint" type="button">
+    <span id="map-enter-hint-label"></span>
+    <span aria-hidden="true">&#8595;</span>
+  </button>
 
   <div class="map-zoom-veil" id="map-zoom-veil"></div>
 </section>
