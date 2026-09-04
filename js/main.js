@@ -430,6 +430,55 @@
   }
 
   // ---------------------------------------------------------------
+  // MOBILE WELCOME SCREEN: the first scene (00/01) stands in for the
+  // abstract map on first load, so a visitor immediately sees the space
+  // instead of a diagram of it. "КАРТА" swaps back to the real interactive
+  // map (with its zone dots); any zone navigation also swaps back, so
+  // returning to the map view later never re-shows the hero. Desktop is
+  // unaffected — it always shows the interactive map.
+  // ---------------------------------------------------------------
+
+  var mapHeroActions = document.getElementById('map-hero-actions');
+  var mapHeroApply = document.getElementById('map-hero-apply');
+  var mapHeroMapBtn = document.getElementById('map-hero-map-btn');
+
+  function showMobileHero() {
+    if (!isMobileViewport()) return;
+    var hero = SCENES['scene-00-01'];
+    mapImageEl.alt = SITE.name + ' — вход и холл';
+    mapImageEl.srcset = hero.srcsetPng;
+    mapImageEl.src = hero.src;
+    if (mapSourceWebp) mapSourceWebp.srcset = hero.srcsetWebp;
+    mapStage.style.aspectRatio = hero.w + ' / ' + hero.h;
+    mapHotspotsEl.style.visibility = 'hidden';
+    mapHeroActions.hidden = false;
+    whenImageReady(mapImageEl, layoutMapFrame);
+  }
+
+  function showInteractiveMap() {
+    mapImageEl.alt = 'Карта пространства «' + SITE.name + '»';
+    mapImageEl.srcset = MAP_IMAGE.srcsetPng;
+    mapImageEl.src = MAP_IMAGE.src;
+    if (mapSourceWebp) mapSourceWebp.srcset = MAP_IMAGE.srcsetWebp;
+    mapStage.style.aspectRatio = MAP_IMAGE.w + ' / ' + MAP_IMAGE.h;
+    mapHotspotsEl.style.visibility = '';
+    mapHeroActions.hidden = true;
+    whenImageReady(mapImageEl, layoutMapFrame);
+  }
+
+  if (mapHeroApply) {
+    mapHeroApply.href = CONFIG.applicationUrl;
+    mapHeroApply.innerHTML = UI_STRINGS.ctaApply + ' <span aria-hidden="true">↗</span>';
+  }
+  if (mapHeroMapBtn) {
+    mapHeroMapBtn.innerHTML = UI_STRINGS.mapButton + ' <span aria-hidden="true">↑</span>';
+    mapHeroMapBtn.addEventListener('click', function () {
+      logHotspot('map-hero:open-map');
+      showInteractiveMap();
+    });
+  }
+
+  // ---------------------------------------------------------------
   // MAP -> SCENE transition
   // ---------------------------------------------------------------
 
@@ -503,6 +552,11 @@
     var sceneId = zone.scene;
     var sceneDef = SCENES[sceneId];
     var isNewImage = sceneImage.getAttribute('src') !== sceneDef.src;
+
+    // once a visitor has gone into any zone, the mobile welcome screen has
+    // done its job — a later return to the map view shows the real
+    // interactive map, not the hero art again.
+    showInteractiveMap();
 
     state.currentZoneId = zoneId;
     state.currentScene = sceneId;
@@ -1176,5 +1230,6 @@
   renderBranding();
   renderHeader();
   buildMapHotspots();
+  showMobileHero();
   openZoneFromQueryString();
 })();
