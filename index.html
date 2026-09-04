@@ -91,15 +91,18 @@
     <span class="scene-next__label" id="scene-next-label"></span>
     <span class="scene-next__arrow" aria-hidden="true">&#8594;</span>
   </button>
-
-  <!-- ================= НИЖНЯЯ НАВИГАЦИЯ 00–07 ================= -->
-  <nav class="bottom-nav" id="bottom-nav" aria-label="Навигация по зонам пространства">
-    <button class="bottom-nav__arrow" id="bottom-nav-prev" type="button" aria-label="Предыдущая зона">&#8592;</button>
-    <div class="bottom-nav__rail" id="bottom-nav-rail"></div>
-    <button class="bottom-nav__arrow" id="bottom-nav-next" type="button" aria-label="Следующая зона">&#8594;</button>
-    <button class="bottom-nav__map" id="bottom-nav-map" type="button" aria-label="Карта пространства (клавиша M)" title="Карта пространства (M)">&#8593;</button>
-  </nav>
 </section>
+
+<!-- ================= НИЖНЯЯ НАВИГАЦИЯ 00–07 =================
+     Глобальный элемент (не внутри #scene-view): всегда видна в сценах,
+     и на mobile — также поверх стартовой карты (см. showMapBottomNav()
+     в main.js), чтобы по зонам можно было ходить прямо с главного экрана. -->
+<nav class="bottom-nav" id="bottom-nav" aria-label="Навигация по зонам пространства" hidden>
+  <button class="bottom-nav__arrow" id="bottom-nav-prev" type="button" aria-label="Предыдущая зона">&#8592;</button>
+  <div class="bottom-nav__rail" id="bottom-nav-rail"></div>
+  <button class="bottom-nav__arrow" id="bottom-nav-next" type="button" aria-label="Следующая зона">&#8594;</button>
+  <button class="bottom-nav__map" id="bottom-nav-map" type="button" aria-label="Карта пространства (клавиша M)" title="Карта пространства (M)">&#8593;</button>
+</nav>
 
 <!-- ================= ГЛОБАЛЬНЫЕ OVERLAY-Ы ================= -->
 

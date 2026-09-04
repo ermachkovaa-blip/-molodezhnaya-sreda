@@ -512,6 +512,8 @@ a { color: inherit; }
   overflow: hidden;
 }
 
+.bottom-nav[hidden] { display: none; }
+
 .bottom-nav__arrow {
   flex-shrink: 0;
   width: 40px;
@@ -1023,36 +1025,30 @@ body.debug-mode .gallery-hotspot {
   .map-return span:first-child { display: none; }
   .map-return { padding: 10px; }
 
-  #map-view { display: flex; flex-direction: column; }
+  /* стартовый экран (карта) на mobile: сама approved-картинка карты — это
+     и есть согласованная композиция (заголовок, легенда, описания зон уже
+     нарисованы внутри неё), поверх неё только код-элементы интерфейса —
+     header (заявка/меню, уже глобальный) и низовая навигация 00–07 (см.
+     showMapBottomNav() в main.js). Никаких отдельных текстовых блоков. */
+  #map-view {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   .map-stage {
     position: relative;
     inset: auto;
     flex: none;
     width: 100%;
+    margin-top: var(--header-h);
+    /* картинка карты не обрезается и не тянется — контейнер по её
+       собственным пропорциям; если контента больше высоты экрана,
+       #map-view выше просто скроллится. */
     aspect-ratio: 1689 / 931;
     min-height: 0;
   }
 
-  .map-intro {
-    display: block;
-    flex-shrink: 0;
-    margin-top: var(--header-h);
-    padding: 14px 18px 12px;
-    background: var(--paper);
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-  }
-  .map-intro__title {
-    margin: 0 0 4px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-  }
-  .map-intro__body {
-    margin: 0;
-    font-size: 0.76rem;
-    line-height: 1.45;
-    opacity: 0.75;
-  }
   .scene-topbar { top: calc(var(--header-h) + 8px); left: 12px; }
   .bottom-nav { bottom: 10px; max-width: 96vw; }
   .cta-card {

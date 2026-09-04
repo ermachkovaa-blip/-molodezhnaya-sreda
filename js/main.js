@@ -42,6 +42,7 @@
   var mobileMenu = document.getElementById('mobile-menu');
   var burgerBtn = document.getElementById('burger-btn');
 
+  var bottomNav = document.getElementById('bottom-nav');
   var bottomNavRail = document.getElementById('bottom-nav-rail');
   var bottomNavPrev = document.getElementById('bottom-nav-prev');
   var bottomNavNext = document.getElementById('bottom-nav-next');
@@ -429,6 +430,17 @@
     dots.forEach(function (d) { d.classList.toggle('is-selected', d.dataset.zone === zoneId); });
   }
 
+  // on mobile the bottom nav (00–07) also works on the map screen itself —
+  // same rail, same goToZone() plumbing, just visible one screen earlier.
+  // Desktop map view is unchanged: the nav stays hidden there.
+  function showMapBottomNav() {
+    if (!isMobileViewport()) { bottomNav.hidden = true; return; }
+    var zoneId = state.currentZoneId || localStorage.getItem(STORAGE_KEY) || ZONE_ORDER[0];
+    state.currentZoneId = zoneId;
+    renderBottomNav(zoneId);
+    bottomNav.hidden = false;
+  }
+
   // ---------------------------------------------------------------
   // MAP -> SCENE transition
   // ---------------------------------------------------------------
@@ -551,6 +563,7 @@
 
   function updateSceneChrome(zoneId) {
     var zone = ZONES[zoneId];
+    bottomNav.hidden = false;
     renderBottomNav(zoneId);
     highlightSwitchHotspot(zoneId);
     ctaCard.hidden = zoneId !== '07';
@@ -1113,6 +1126,7 @@
         sceneView.classList.remove('view--active');
         mapView.classList.add('view--active');
         if (state.currentZoneId) highlightMapZone(state.currentZoneId);
+        showMapBottomNav();
         return;
       }
       fadeVeil.classList.add('is-visible');
@@ -1120,6 +1134,7 @@
         sceneView.classList.remove('view--active');
         mapView.classList.add('view--active');
         if (state.currentZoneId) highlightMapZone(state.currentZoneId);
+        showMapBottomNav();
         fadeVeil.classList.remove('is-visible');
       }, 330);
     }
@@ -1176,5 +1191,6 @@
   renderBranding();
   renderHeader();
   buildMapHotspots();
+  showMapBottomNav();
   openZoneFromQueryString();
 })();
