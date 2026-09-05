@@ -316,7 +316,14 @@
   opacity: 1;
 }
 
-.yh-hotspot-caption {
+/* Caption class is derived per-layer in hotspot-layer.js (layerClass +
+   "__caption"), not one fixed generic class — a future zone can give its
+   own caption a different look here without touching the generic JS.
+   Zone 01's object hotspots and the passage happen to want the same
+   look today, hence the grouped selector; that's a CSS/data choice, not
+   something the generic component decided. */
+.yh-object-hotspot__caption,
+.yh-passage-hotspot__caption {
   position: absolute;
   transform: translate(-50%, 0);
   background: rgba(28, 26, 23, 0.92);
@@ -332,7 +339,8 @@
   white-space: pre-line;
 }
 
-.yh-hotspot-caption[hidden] { display: none; }
+.yh-object-hotspot__caption[hidden],
+.yh-passage-hotspot__caption[hidden] { display: none; }
 
 /* ================= PASSAGE (spatial nav, not a content hotspot) ================= */
 

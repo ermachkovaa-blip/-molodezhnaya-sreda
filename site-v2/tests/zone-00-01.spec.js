@@ -102,9 +102,34 @@ for (const vp of VIEWPORTS) {
       if (vp.mobile) await btn.tap(); else await btn.click();
       await page.waitForTimeout(300);
       expect(popups).toHaveLength(0);
-      const caption = page.locator('.yh-hotspot-caption');
+      const caption = page.locator('.yh-object-hotspot__caption');
       await expect(caption).toBeVisible();
       await expect(caption).toHaveText('МАТЕРИАЛЫ БУДУТ ДОБАВЛЕНЫ');
+      // null URL -> nothing to navigate to -> must be a real <button>, not <a>
+      const tag = await page.locator('.yh-object-hotspot__item[data-hotspot-id="elabuga"]').evaluate((el) => el.tagName);
+      expect(tag).toBe('BUTTON');
+    });
+
+    test('Zone 01: once a URL exists, the hotspot becomes a real <a target=_blank rel=noopener noreferrer>', async ({ page }) => {
+      await page.goto(DEMO_URL + '?zone=01', { waitUntil: 'networkidle' });
+      await page.waitForTimeout(900);
+      await page.evaluate((origin) => {
+        window.__yhInstance.unmount();
+        const objs = window.YHApp.OBJECTS.map((o) => Object.assign({}, o));
+        objs.find((o) => o.id === 'elabuga').sourceMaterialsUrl = origin + '/site-v2/README.md?x';
+        window.__yhInstance = window.YHApp.mount(document.getElementById('youth-hackathon-app'), {
+          scenes: window.YHApp.SCENES_CONFIG, links: window.YHApp.LINKS, uiStrings: window.YHApp.UI_STRINGS,
+          objects: objs, initialZone: '01'
+        });
+      }, BASE);
+      await page.waitForTimeout(900);
+      const attrs = await page.locator('.yh-object-hotspot__item[data-hotspot-id="elabuga"]').evaluate((el) => ({
+        tag: el.tagName, target: el.getAttribute('target'), rel: el.getAttribute('rel'), href: el.getAttribute('href')
+      }));
+      expect(attrs.tag).toBe('A');
+      expect(attrs.target).toBe('_blank');
+      expect(attrs.rel).toBe('noopener noreferrer');
+      expect(attrs.href).toContain('/site-v2/README.md?x');
     });
 
     test('Zone 01: a substituted URL opens exactly that object\'s link (target=_blank, noopener), others unaffected', async ({ page, context }) => {
@@ -192,5 +217,29 @@ for (const vp of VIEWPORTS) {
         expect(after).toBe(before);
       });
     }
+
+    test('Zone 01: switching away and back leaves no orphan nodes/timers, listeners not duplicated', async ({ page }) => {
+      await page.goto(DEMO_URL + '?zone=01', { waitUntil: 'networkidle' });
+      await page.waitForTimeout(900);
+      const bugulma = page.locator('.yh-object-hotspot__item[data-hotspot-id="bugulma"]');
+      if (vp.mobile) await bugulma.tap(); else await bugulma.click();
+      await page.waitForTimeout(200);
+      await expect(page.locator('.yh-object-hotspot__caption')).toBeVisible();
+
+      await page.evaluate(() => window.__yhInstance.showZone('00', false));
+      await page.waitForTimeout(200);
+      await expect(page.locator('.yh-hotspot-layer, .yh-program-wall')).toHaveCount(0);
+
+      await page.evaluate(() => window.__yhInstance.showZone('01', false));
+      await page.waitForTimeout(900);
+      await expect(page.locator('.yh-object-hotspot__item')).toHaveCount(5);
+      await expect(page.locator('.yh-object-hotspot__caption')).toBeHidden();
+
+      const elabuga = page.locator('.yh-object-hotspot__item[data-hotspot-id="elabuga"]');
+      if (vp.mobile) await elabuga.tap(); else await elabuga.click();
+      await page.waitForTimeout(300);
+      const visibleCaptions = await page.locator('.yh-object-hotspot__caption:not([hidden])').count();
+      expect(visibleCaptions).toBe(1);
+    });
   });
 }

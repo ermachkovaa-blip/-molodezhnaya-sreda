@@ -26,15 +26,19 @@
     var objects = config.objects || YHApp.OBJECTS;
     var programStages = YHApp.ZONE_01_PROGRAM_STAGES;
     var passage = YHApp.ZONE_01_PASSAGE;
+    var presentation = YHApp.ZONE_01_OBJECT_PRESENTATION;
 
-    // ---- 1. object hotspots (explicit object id — never DOM index) ----
+    // ---- 1. object hotspots (explicit object id — never DOM index).
+    // Text (hoverLabel/emptyMessage) comes entirely from config/
+    // zone-01-content.js — this file only wires objects.js data to the
+    // generic hotspot-layer, it never invents presentation strings. ----
     var objectItems = objects.map(function (obj) {
       return {
         id: obj.id,
         ariaLabel: obj.number + ' ' + obj.title + ' — открыть материалы',
-        hoverLabel: 'ОТКРЫТЬ МАТЕРИАЛЫ +',
+        hoverLabel: presentation.hoverLabel,
         url: obj.sourceMaterialsUrl,
-        emptyMessage: 'МАТЕРИАЛЫ БУДУТ ДОБАВЛЕНЫ'
+        emptyMessage: presentation.emptyMessage
       };
     });
 

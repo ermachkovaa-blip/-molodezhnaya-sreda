@@ -39,6 +39,19 @@
   var MAP_IMAGE_DESKTOP = { src: ASSETS_BASE + 'scene-map.webp', w: 1689, h: 931 };
   var MAP_IMAGE_MOBILE = { src: ASSETS_BASE + 'scene-map-mobile.webp', w: 1024, h: 1536 };
 
+  // ВАЖНО (уточнение от 05.09, до реализации 02/03): sceneAsset() возвращает
+  // НОВЫЙ объект при каждом вызове — zone.desktop.asset и zone.mobile.asset
+  // для 00 и 01 (или любой другой пары) СЕГОДНЯ ссылаются на один и тот же
+  // файл только потому, что оба вызова передают один sceneId; это факт
+  // ДАННЫХ (ниже, в ZONES), а не архитектурное ограничение. SceneEngine и
+  // mount.js сравнивают только asset.src (строку) при решении, перезагружать
+  // ли <img> — ничего в рантайме не предполагает, что у двух зон общий файл.
+  // Если позже 00.desktop.asset / 00.mobile.asset / 01.desktop.asset /
+  // 01.mobile.asset понадобятся как четыре независимых изображения — это
+  // правится только здесь, в ZONES ниже (например, добавлением новой записи
+  // в SCENE_IMAGES и вызовом sceneAsset('новый-id') для нужной ветки) без
+  // единой правки SceneEngine/mount.js/hotspot-layer.js. Аналогично для
+  // будущих 02/03.
   function sceneAsset(sceneId) {
     var s = SCENE_IMAGES[sceneId];
     return { src: s.src, w: s.w, h: s.h, sceneId: sceneId };

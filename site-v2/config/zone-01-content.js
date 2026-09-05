@@ -14,6 +14,16 @@
 (function (YHApp) {
   'use strict';
 
+  // Presentation for the 5 objects (config/objects.js holds the objects
+  // THEMSELVES — id/title/urls, shared with the future Zone 04; this is
+  // Zone-01-only text, so it lives here, not there). hotspot-layer.js is
+  // generic and has no built-in text of its own — every string a hotspot
+  // shows comes from a config file like this one.
+  YHApp.ZONE_01_OBJECT_PRESENTATION = {
+    hoverLabel: 'ОТКРЫТЬ МАТЕРИАЛЫ +',
+    emptyMessage: 'МАТЕРИАЛЫ БУДУТ ДОБАВЛЕНЫ'
+  };
+
   YHApp.ZONE_01_PROGRAM_STAGES = [
     { id: 'listen', label: 'Слушать', coords: { x: 70, y: 56.5 } },
     { id: 'research', label: 'Исследовать', coords: { x: 70, y: 59.5 } },

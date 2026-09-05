@@ -166,12 +166,42 @@ async function main() {
         if (vp.mobile) { await btn.tap(); } else { await btn.click(); }
         await page.waitForTimeout(300);
         assert(popups.length === 0, 'null URL incorrectly opened a new tab/popup');
-        var caption = await page.$eval('.yh-hotspot-caption', el => ({ hidden: el.hidden, text: el.textContent }));
+        var caption = await page.$eval('.yh-object-hotspot__caption', el => ({ hidden: el.hidden, text: el.textContent }));
         assert(caption.hidden === false, 'caption did not appear for null URL');
         assert(caption.text === 'МАТЕРИАЛЫ БУДУТ ДОБАВЛЕНЫ', 'wrong caption text: ' + caption.text);
+        var tag = await page.$eval('.yh-object-hotspot__item[data-hotspot-id="elabuga"]', el => el.tagName);
+        assert(tag === 'BUTTON', 'null-URL hotspot should be a real <button> (nothing to navigate to), got <' + tag + '>');
       });
-      record(vp.name + ' [01]: null sourceMaterialsUrl shows correct caption, opens no tab', true);
+      record(vp.name + ' [01]: null sourceMaterialsUrl shows correct caption, opens no tab, is a <button>', true);
     } catch (e) { record(vp.name + ' [01]: null URL behavior', false, e.message); }
+
+    // 6b. once a URL exists, the SAME hotspot becomes a real <a> with target=_blank + rel=noopener noreferrer
+    // set directly on the element (not just enforced via JS) — this is the
+    // "button/a" duality the generic component is required to provide.
+    try {
+      await withPage(browser, vp, async (page) => {
+        await page.goto(DEMO_URL + '?zone=01', { waitUntil: 'networkidle' });
+        await page.waitForTimeout(900);
+        await page.evaluate((origin) => {
+          window.__yhInstance.unmount();
+          var objs = window.YHApp.OBJECTS.map(o => Object.assign({}, o));
+          objs.find(o => o.id === 'elabuga').sourceMaterialsUrl = origin + '/site-v2/README.md?x';
+          window.__yhInstance = window.YHApp.mount(document.getElementById('youth-hackathon-app'), {
+            scenes: window.YHApp.SCENES_CONFIG, links: window.YHApp.LINKS, uiStrings: window.YHApp.UI_STRINGS,
+            objects: objs, initialZone: '01'
+          });
+        }, BASE);
+        await page.waitForTimeout(900);
+        var attrs = await page.$eval('.yh-object-hotspot__item[data-hotspot-id="elabuga"]', el => ({
+          tag: el.tagName, target: el.getAttribute('target'), rel: el.getAttribute('rel'), href: el.getAttribute('href')
+        }));
+        assert(attrs.tag === 'A', 'hotspot with a URL should be a real <a>, got <' + attrs.tag + '>');
+        assert(attrs.target === '_blank', 'missing target=_blank on the anchor itself');
+        assert(attrs.rel === 'noopener noreferrer', 'missing/wrong rel on the anchor itself: ' + attrs.rel);
+        assert(attrs.href.indexOf('/site-v2/README.md?x') !== -1, 'href does not match the configured URL: ' + attrs.href);
+      });
+      record(vp.name + ' [01]: hotspot becomes a real <a target=_blank rel=noopener noreferrer> once a URL exists', true);
+    } catch (e) { record(vp.name + ' [01]: <a> vs <button> switching', false, e.message); }
 
     // 7. with a URL substituted, click opens exactly that object's URL, target=_blank + noopener/noreferrer
     try {
@@ -316,6 +346,44 @@ async function main() {
       record(vp.name + ' [01]: no BASE edge, CTA stays on top of local layers, bottom nav still works', true);
     } catch (e) { record(vp.name + ' [01]: layering/CTA/bottom-nav regression check', false, e.message); }
   }
+
+  // ---- switching away from Zone 01 and back leaves no orphan DOM nodes,
+  // no leaked caption timers, and an open caption is closed by the switch ----
+  try {
+    await withPage(browser, { width: 1600, height: 900, mobile: false }, async (page) => {
+      await page.goto(DEMO_URL + '?zone=01', { waitUntil: 'networkidle' });
+      await page.waitForTimeout(900);
+      // open a null-URL caption, then leave the zone WITHOUT it auto-dismissing first
+      var bugulma = await page.$('.yh-object-hotspot__item[data-hotspot-id="bugulma"]');
+      await bugulma.click();
+      await page.waitForTimeout(200);
+      var captionOpenBefore = await page.$eval('.yh-object-hotspot__caption', el => !el.hidden);
+      assert(captionOpenBefore, 'test setup: caption should be open before switching zones');
+
+      await page.evaluate(() => window.__yhInstance.showZone('00', false));
+      await page.waitForTimeout(200);
+      var leftoverNodes = await page.$$eval('.yh-hotspot-layer, .yh-program-wall', els => els.length);
+      assert(leftoverNodes === 0, 'Zone 01 left ' + leftoverNodes + ' orphan hotspot-layer/program-wall node(s) behind after switching to Zone 00');
+
+      // back into 01: a fresh instance must render correctly (no stale
+      // "already destroyed" state, no duplicate listeners causing double-fires)
+      await page.evaluate(() => window.__yhInstance.showZone('01', false));
+      await page.waitForTimeout(900);
+      var freshHotspots = await page.$$eval('.yh-object-hotspot__item', els => els.length);
+      assert(freshHotspots === 5, 'expected exactly 5 object hotspots after re-entering Zone 01, got ' + freshHotspots);
+      var freshCaptionHidden = await page.$eval('.yh-object-hotspot__caption', el => el.hidden);
+      assert(freshCaptionHidden, 'the fresh Zone 01 instance should start with its caption closed, not carry over the previous one\'s open state');
+
+      // a single click now must not double-navigate/double-open (would
+      // indicate two sets of listeners stacked from the two mounts)
+      var elabuga = await page.$('.yh-object-hotspot__item[data-hotspot-id="elabuga"]');
+      await elabuga.click();
+      await page.waitForTimeout(300);
+      var captionsVisible = await page.$$eval('.yh-object-hotspot__caption', els => els.filter(e => !e.hidden).length);
+      assert(captionsVisible === 1, 'expected exactly 1 caption element to be visible, got ' + captionsVisible + ' (possible duplicate/leaked listeners)');
+    });
+    record('Zone 01: switching away and back leaves no orphan nodes/timers, listeners not duplicated', true);
+  } catch (e) { record('Zone 01: cleanup on zone switch', false, e.message); }
 
   // ---- CSS still doesn't leak (re-check after Stage 2 additions) ----
   try {

@@ -1,20 +1,43 @@
-// createHotspotLayer — generic "url | null -> open tab / inline caption"
-// hotspot renderer. Built for Zone 01 objects now; Production-ТЗ requires
-// Zone 02/03 to use the SAME mechanism unchanged once they're in scope
-// ("02 и 03 реализовать одним HotspotScene") — this is that shared piece.
+// createHotspotLayer — GENERIC MECHANICS ONLY for "url | null -> external
+// link / inline architectural caption" hotspots. Zone 01 objects are the
+// first caller; Production-ТЗ requires Zone 02/03 to reuse this same
+// mechanism unchanged once they're in scope ("02 и 03 реализовать одним
+// HotspotScene") — this file is that shared piece.
+//
+// STRICT SEPARATION (see Этап 2 clarification, 05.09): this file owns only
+//   - absolute positioning from config (desktop/mobile coords resolved by
+//     the caller's getCoords(), this file just applies the result);
+//   - real <a> (when item.url) or <button> (when null / onActivate) —
+//     never a generic <div> with a synthetic click;
+//   - external link security (target=_blank, rel=noopener noreferrer);
+//   - the tap-vs-drag distinction — achieved by REUSE, not reimplementation:
+//     a plain `click` listener already only fires for genuine taps/real
+//     keyboard activation, because GestureController (gesture-controller.js)
+//     swallows the synthetic click that follows a real scene-drag before it
+//     reaches any descendant button/a — see that file's header for why;
+//   - aria-label passthrough;
+//   - the caption's scene-relative positioning + show/hide/auto-dismiss
+//     timing mechanics (not its appearance — see below);
+//   - lifecycle: destroy() removes every node this layer created and
+//     clears the caption's pending timer, so a zone switch (mount.js
+//     tears down the previous zone's behavior module before creating the
+//     next one) leaves no orphan nodes, timers, or listeners behind.
+//
+// It deliberately holds NO hardcoded text, NO fallback null-message, NO
+// "+" glyph, and NO opinion on caption/dot/label appearance beyond
+// structural CSS (position/transform) — all of that is supplied by the
+// caller via `items` (per-hotspot ariaLabel/hoverLabel/emptyMessage/url)
+// and via CSS keyed off `config.layerClass` (e.g. Zone 01 gives its dot a
+// visible resting state in app.css; a future Zone 02/03 layerClass would
+// style its dot fully transparent, since the "+" is already baked into
+// BASE there — this file never decides that, CSS does, per zone).
 //
 // Must be appended inside the SAME element the scene <img> lives in
 // (.yh-scene-stage), so left/top percentages resolve against the image's
 // own native pixel box, not the (scaled/panned) viewport — exactly the
-// coordinate space item.desktopCoords/mobileCoords are authored in.
-//
-// Click handling deliberately uses the hotspot <button>'s native `click`
-// event, not a custom pointer/tap handler: GestureController (see
-// gesture-controller.js) already swallows the synthetic click that would
-// otherwise follow a real scene-drag (capture-phase stopPropagation on
-// the ancestor scene-viewport), so a plain click listener here already
-// only fires for genuine taps/clicks AND real keyboard activation
-// (Enter/Space) — no duplicate tap-vs-drag logic needed at this layer.
+// coordinate space item coordinates are authored in. This is also why the
+// caption moves WITH the BASE image rather than being viewport-fixed: it
+// is a child of the same transformed stage, not of some fixed overlay.
 
 (function (YHApp) {
   'use strict';
@@ -27,17 +50,27 @@
   }
 
   // config:
-  //   layerClass      - CSS class for the wrapping layer + each button (BEM-ish)
-  //   items           - [{ id, ariaLabel, hoverLabel, url, emptyMessage, onActivate? }]
+  //   layerClass        - CSS class prefix (BEM-ish); ALSO used to derive
+  //                        the caption's class, so a zone can restyle its
+  //                        own caption in its own CSS without touching
+  //                        this generic file.
+  //   items             - [{ id, ariaLabel, hoverLabel?, url?, emptyMessage?, onActivate? }]
+  //                        — hoverLabel/emptyMessage text is 100% caller-
+  //                        supplied; this file never defaults or invents it.
   //   getCoords(item, isMobile) -> { x, y } (percent of the scene image)
-  //   isMobile()      -> bool
-  //   defaultEmptyMessage
-  //   captionDurationMs
+  //   isMobile()        -> bool
+  //   captionOffsetY    - vertical nudge (percent) for the caption relative
+  //                        to the hotspot it belongs to (mechanical, not visual)
+  //   captionDurationMs - auto-dismiss timing (mechanical, not visual)
   function createHotspotLayer(sceneStage, config) {
-    var layer = el('div', 'yh-hotspot-layer ' + (config.layerClass || ''));
+    var layerClass = config.layerClass || 'yh-hotspot';
+    var layer = el('div', 'yh-hotspot-layer ' + layerClass);
     sceneStage.appendChild(layer);
 
-    var caption = el('div', 'yh-hotspot-caption');
+    // caption class is layer-derived, not a single shared generic class —
+    // a future zone can give its own caption a different look in its own
+    // CSS block without this file (or any other zone's CSS) changing.
+    var caption = el('div', layerClass + '__caption');
     caption.hidden = true;
     layer.appendChild(caption);
     var captionTimer = null;
@@ -56,57 +89,59 @@
       captionTimer = setTimeout(hideCaption, config.captionDurationMs || 2600);
     }
 
-    var buttons = {};
+    var elements = {};
     config.items.forEach(function (item) {
-      var btn = el('button', (config.layerClass || 'yh-hotspot') + '__item', {
-        type: 'button',
-        'data-hotspot-id': item.id,
-        'aria-label': item.ariaLabel
-      });
-      var dot = el('span', (config.layerClass || 'yh-hotspot') + '__dot');
-      btn.appendChild(dot);
+      // Real <a> when there's somewhere to navigate (native target=_blank
+      // + rel=noopener/noreferrer — the browser handles the new tab and
+      // opener-severing itself; no window.open() needed, and no engine-
+      // specific edge cases to work around). Real <button> otherwise (null
+      // URL -> caption, or an in-page action via onActivate, e.g. the
+      // Zone 01 -> 02 passage) — there is nowhere an <a> could point.
+      var isLink = !!item.url;
+      var node = isLink
+        ? el('a', layerClass + '__item', { href: item.url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': item.ariaLabel })
+        : el('button', layerClass + '__item', { type: 'button', 'aria-label': item.ariaLabel });
+      node.setAttribute('data-hotspot-id', item.id);
+
+      var dot = el('span', layerClass + '__dot');
+      node.appendChild(dot);
       if (item.hoverLabel) {
-        var label = el('span', (config.layerClass || 'yh-hotspot') + '__label');
+        var label = el('span', layerClass + '__label');
         label.textContent = item.hoverLabel;
-        btn.appendChild(label);
+        node.appendChild(label);
       }
 
-      btn.addEventListener('click', function () {
+      node.addEventListener('click', function (e) {
         hideCaption();
+        if (isLink) return; // native <a> handles the navigation itself
         if (typeof item.onActivate === 'function') {
           item.onActivate(item);
           return;
         }
-        if (item.url) {
-          // rel="noopener noreferrer" equivalent for window.open: pass it
-          // in the features string AND null the opener directly as a
-          // belt-and-suspenders (some engines only honour rel on <a>).
-          var w = window.open(item.url, '_blank', 'noopener,noreferrer');
-          if (w) { try { w.opener = null; } catch (e) { /* noop */ } }
-        } else {
-          showCaption(item.emptyMessage || config.defaultEmptyMessage || 'Материалы будут добавлены', config.getCoords(item, config.isMobile()));
-        }
+        // null URL, no onActivate: this hotspot's only job is the inline
+        // architectural caption — text supplied entirely by the caller.
+        showCaption(item.emptyMessage, config.getCoords(item, config.isMobile()));
       });
 
-      layer.appendChild(btn);
-      buttons[item.id] = btn;
+      layer.appendChild(node);
+      elements[item.id] = node;
     });
 
     function layout() {
       var mobile = config.isMobile();
       config.items.forEach(function (item) {
         var coords = config.getCoords(item, mobile);
-        buttons[item.id].style.left = coords.x + '%';
-        buttons[item.id].style.top = coords.y + '%';
+        elements[item.id].style.left = coords.x + '%';
+        elements[item.id].style.top = coords.y + '%';
       });
     }
 
     function destroy() {
       hideCaption();
-      layer.remove();
+      layer.remove(); // removes every child node (buttons/links/dots/labels/caption) and their listeners in one step
     }
 
-    return { layout: layout, destroy: destroy, buttons: buttons, hideCaption: hideCaption, layer: layer };
+    return { layout: layout, destroy: destroy, elements: elements, hideCaption: hideCaption, layer: layer };
   }
 
   YHApp.createHotspotLayer = createHotspotLayer;
