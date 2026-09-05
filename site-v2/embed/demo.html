@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Молодёжная среда V2 — standalone demo</title>
+<link rel="stylesheet" href="../css/app.css">
+<style>
+  /* Всё, что в этом <style> — забота ДЕМО-страницы (хоста), а не модуля:
+     именно так выглядит место интеграции внутри Tilda — интегратор
+     отвечает за размер контейнера, модуль — за то, что происходит внутри
+     него. app.css модуля намеренно не знает о 100vh. */
+  html, body { margin: 0; padding: 0; height: 100%; background: #111; }
+  #youth-hackathon-app {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+  }
+  #demo-resize-controls {
+    position: fixed;
+    right: 8px;
+    bottom: 8px;
+    z-index: 100000;
+    display: flex;
+    gap: 6px;
+    font-family: sans-serif;
+    font-size: 11px;
+  }
+  #demo-resize-controls button {
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="youth-hackathon-app"></div>
+
+<!-- ручной ресайз-контрол для локальной проверки ResizeObserver на
+     РЕАЛЬНОМ изменении размера контейнера (не окна) — только для demo,
+     не часть модуля -->
+<div id="demo-resize-controls">
+  <button type="button" data-w="100vw">100%</button>
+  <button type="button" data-w="60vw">60%</button>
+  <button type="button" data-w="360px">360px</button>
+</div>
+
+<script src="../config/links.js"></script>
+<script src="../config/scenes.js"></script>
+<script src="../config/ui-strings.js"></script>
+<script src="../core/scene-engine.js"></script>
+<script src="../core/gesture-controller.js"></script>
+<script src="../core/global-nav.js"></script>
+<script src="../core/map-navigation.js"></script>
+<script src="../core/debug-overlay.js"></script>
+<script src="../core/mount.js"></script>
+<script>
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var root = document.getElementById('youth-hackathon-app');
+
+    var config = {
+      scenes: window.YHApp.SCENES_CONFIG,
+      links: window.YHApp.LINKS,
+      uiStrings: window.YHApp.UI_STRINGS,
+      debug: params.get('debug') === '1',
+      initialZone: params.get('zone')
+    };
+
+    var instance = window.YHApp.mount(root, config);
+
+    // exposed for Playwright / manual console poking in this demo only
+    window.__yhInstance = instance;
+
+    document.querySelectorAll('#demo-resize-controls button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        root.style.width = btn.getAttribute('data-w');
+      });
+    });
+  })();
+</script>
+</body>
+</html>

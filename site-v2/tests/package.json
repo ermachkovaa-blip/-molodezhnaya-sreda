@@ -1,0 +1,11 @@
+{
+  "name": "site-v2-tests",
+  "private": true,
+  "description": "Playwright test tooling for /site-v2 (dev-only — the shipped module itself has zero runtime dependencies).",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

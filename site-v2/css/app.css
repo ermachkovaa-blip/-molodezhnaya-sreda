@@ -1,0 +1,259 @@
+/* ==========================================================================
+   V2 APP STYLES — полностью scoped под .yh-app.
+   ==========================================================================
+   Каждое правило начинается с .yh-app — ни одного голого *, html, body, a,
+   button, img селектора. Это то самое архитектурное ограничение из
+   Production-ТЗ (п.0/16): модуль не должен влиять на элементы вне себя,
+   даже если его смонтируют прямо в DOM Tilda-страницы без iframe.
+
+   z-index — именованная шкала через custom properties на .yh-app, а не
+   магические числа россыпью (см. аудит, "z-index / stacking contexts").
+   Порядок соответствует Production-ТЗ п.17:
+   scene BASE < map/bottom-nav < header/CTA < debug.
+   Локальные интерактивы зон (Этап 3+) получат свои токены между
+   --yh-z-scene и --yh-z-bottom-nav.
+   ========================================================================== */
+
+.yh-app {
+  --yh-bg: #f4efe8;
+  --yh-ink: #1c1a17;
+  --yh-accent: #e0483e;
+  --yh-panel-bg: rgba(28, 26, 23, 0.88);
+  --yh-panel-fg: #f4efe8;
+  --yh-header-h: 64px;
+
+  --yh-z-scene: 1;
+  --yh-z-map: 2;
+  --yh-z-bottom-nav: 40;
+  --yh-z-header: 60;
+  --yh-z-debug: 999;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--yh-bg);
+  color: var(--yh-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.3;
+}
+
+.yh-app, .yh-app *, .yh-app *::before, .yh-app *::after {
+  box-sizing: border-box;
+}
+
+.yh-app button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.yh-app a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.yh-app :focus-visible {
+  outline: 3px solid #2f7dee;
+  outline-offset: 2px;
+}
+
+.yh-app[aria-disabled="true"],
+.yh-app a[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ================= HEADER ================= */
+
+.yh-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--yh-header-h);
+  z-index: var(--yh-z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--yh-bg);
+  border-bottom: 1px solid rgba(28, 26, 23, 0.08);
+}
+
+.yh-header__map-return {
+  border: none;
+  background: rgba(28, 26, 23, 0.06);
+  color: var(--yh-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 999px;
+  min-height: 44px;
+}
+
+.yh-header__map-return:hover { background: rgba(28, 26, 23, 0.12); }
+
+.yh-header__actions { display: flex; align-items: center; }
+
+/* .yh-app .yh-cta (not just .yh-cta): needs specificity ≥ ".yh-app a"
+   above, or that rule's color:inherit silently wins over color:#fff here
+   despite source order — the exact category of bug documented in the V1
+   audit ([hidden] vs. class specificity) and worth guarding against with
+   a comment, since it will recur anywhere a scoped a/button reset meets
+   a more specific component rule. */
+.yh-app .yh-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--yh-ink);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  pointer-events: auto;
+}
+
+.yh-app .yh-cta:hover { background: var(--yh-accent); }
+
+/* ================= BOTTOM NAV (00-07) ================= */
+
+.yh-bottom-nav {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: var(--yh-z-bottom-nav);
+  max-width: 94%;
+  background: var(--yh-panel-bg);
+  color: var(--yh-panel-fg);
+  border-radius: 999px;
+  padding: 8px;
+}
+
+.yh-bottom-nav[hidden] { display: none; }
+
+.yh-bottom-nav__rail {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.yh-bottom-nav__rail::-webkit-scrollbar { display: none; }
+
+.yh-bottom-nav__item {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  color: rgba(244, 239, 232, 0.6);
+  padding: 6px 12px;
+  border-radius: 999px;
+  min-height: 44px;
+  font-size: 0.65rem;
+}
+
+.yh-bottom-nav__item.is-active {
+  background: rgba(244, 239, 232, 0.12);
+  color: #fff;
+}
+
+.yh-bottom-nav__num { font-weight: 700; font-size: 0.75rem; }
+.yh-bottom-nav__title { white-space: nowrap; }
+
+/* ================= MAP VIEW ================= */
+
+.yh-map-view {
+  position: absolute;
+  inset: 0;
+  z-index: var(--yh-z-map);
+  padding-top: var(--yh-header-h);
+  overflow: auto;
+}
+
+.yh-map-view[hidden] { display: none; }
+
+.yh-map-stage { position: relative; width: 100%; }
+
+.yh-map-image { display: block; width: 100%; height: auto; }
+
+.yh-map-hotspots { position: absolute; inset: 0; pointer-events: none; }
+
+.yh-map-hotspot {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--yh-zone-color, var(--yh-accent));
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: auto;
+}
+
+.yh-map-hotspot:hover { background: rgba(255, 255, 255, 0.6); }
+
+/* ================= SCENE VIEW ================= */
+
+.yh-scene-view {
+  position: absolute;
+  inset: 0;
+  z-index: var(--yh-z-scene);
+  background: #0d0c0b;
+}
+
+.yh-scene-view[hidden] { display: none; }
+
+.yh-scene-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none; /* панорама полностью управляется Pointer Events/JS */
+}
+
+.yh-scene-viewport.is-dragging { cursor: grabbing; }
+
+.yh-scene-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.yh-scene-image {
+  display: block;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ================= DEBUG HUD (?debug=1 / config.debug) ================= */
+
+.yh-debug-hud {
+  position: absolute;
+  left: 12px;
+  bottom: 80px;
+  z-index: var(--yh-z-debug);
+  background: rgba(0, 0, 0, 0.75);
+  color: #7CFC9A;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 8px;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.yh-debug-hud[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .yh-app * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
