@@ -28,10 +28,6 @@ function record(name, pass, detail) {
   results.push({ name: name, pass: pass, detail: detail || '' });
   console.log((pass ? 'PASS' : 'FAIL') + '  ' + name + (detail ? '  — ' + detail : ''));
 }
-function skip(name, reason) {
-  results.push({ name: name, pass: null, detail: reason });
-  console.log('SKIP  ' + name + '  — ' + reason);
-}
 function assert(cond, msg) { if (!cond) throw new Error(msg || 'assertion failed'); }
 function isOnScreen(box, vp) { return !!box && box.x >= -5 && box.y >= -5 && box.x + box.width <= vp.width + 5 && box.y + box.height <= vp.height + 5; }
 
@@ -101,7 +97,7 @@ async function main() {
         await page.goto(DEMO_URL + '?zone=00', { waitUntil: 'networkidle' });
         await page.waitForTimeout(900);
         const domIds = await page.$$eval('.yh-zone00-hotspot__item', (els) => els.map((el) => el.getAttribute('data-hotspot-id')));
-        const expectedIds = vp.mobile ? ALL_IDS : ALL_IDS.concat(['cta']);
+        const expectedIds = ALL_IDS.concat(['cta']); // CTA hotspot renders on both platforms since the final mobile BASE also bakes it in
         assert(domIds.slice().sort().join(',') === expectedIds.slice().sort().join(','), 'id mismatch: ' + JSON.stringify(domIds));
         const config = await page.evaluate(() => window.YHApp.ZONE_00_NAV_HOTSPOTS);
         assert(config.length === 8, 'expected 8 nav hotspots in config, got ' + config.length);
@@ -134,13 +130,12 @@ async function main() {
 
     // 3: "00" reflects current location — no navigation, shows "ВЫ ЗДЕСЬ" caption
     try {
-      var skippedCurrent00 = false;
       await withPage(browser, vp, async (page) => {
         await page.goto(DEMO_URL + '?zone=00', { waitUntil: 'networkidle' });
         await page.waitForTimeout(900);
         const sel = '.yh-zone00-hotspot__item[data-hotspot-id="00"]';
-        const box = await page.locator(sel).boundingBox();
-        if (!isOnScreen(box, vp)) { skippedCurrent00 = true; return; }
+        const box = await panUntilOnScreen(page, vp, sel, 8);
+        assert(isOnScreen(box, vp), '"00" never reachable via pan at ' + vp.name);
         const tag = await page.locator(sel).evaluate((el) => el.tagName);
         assert(tag === 'BUTTON', '"00" should be a <button> (no navigation), got <' + tag + '>');
         if (vp.mobile) await page.locator(sel).tap(); else await page.locator(sel).click();
@@ -150,8 +145,7 @@ async function main() {
         const caption = await page.$eval('.yh-zone00-hotspot__caption', (el) => ({ hidden: el.hidden, text: el.textContent }));
         assert(caption.hidden === false && caption.text === 'ВЫ ЗДЕСЬ', 'expected "ВЫ ЗДЕСЬ" caption, got ' + JSON.stringify(caption));
       });
-      if (skippedCurrent00) skip(vp.name + ': "00" current-location behavior', 'off-screen by default, covered by pan-reachability elsewhere');
-      else record(vp.name + ': "00" is current-location marker (no nav, "ВЫ ЗДЕСЬ" caption)', true);
+      record(vp.name + ': "00" is current-location marker (no nav, "ВЫ ЗДЕСЬ" caption)', true);
     } catch (e) { record(vp.name + ': current-location "00"', false, e.message); }
 
     // 4: global MapNavigation ("КАРТА ↑") still works, unaffected by Zone 00's own map
@@ -175,26 +169,26 @@ async function main() {
       record(vp.name + ': global MapNavigation ("КАРТА ↑") unaffected, still 8 hotspots, still navigates', true);
     } catch (e) { record(vp.name + ': global MapNavigation regression', false, e.message); }
 
-    if (!vp.mobile) {
-      // 5: desktop CTA hotspot -> real <a href=APPLICATION_URL target=_blank rel=noopener noreferrer>
-      try {
-        await withPage(browser, vp, async (page) => {
-          await page.goto(DEMO_URL + '?zone=00', { waitUntil: 'networkidle' });
-          await page.waitForTimeout(900);
-          const attrs = await page.locator('.yh-zone00-hotspot__item[data-hotspot-id="cta"]').evaluate((el) => ({
-            tag: el.tagName, href: el.getAttribute('href'), target: el.getAttribute('target'), rel: el.getAttribute('rel')
-          }));
-          assert(attrs.tag === 'A', 'CTA hotspot should be a real <a>, got <' + attrs.tag + '>');
-          const appUrl = await page.evaluate(() => window.YHApp.LINKS.APPLICATION_URL);
-          assert(attrs.href && attrs.href.indexOf(appUrl.replace(/^\.\.\//, '')) !== -1 || attrs.href === appUrl, 'CTA href does not match APPLICATION_URL: ' + attrs.href + ' vs ' + appUrl);
-          assert(attrs.target === '_blank', 'CTA missing target=_blank');
-          assert(attrs.rel && attrs.rel.indexOf('noopener') !== -1 && attrs.rel.indexOf('noreferrer') !== -1, 'CTA rel missing noopener/noreferrer');
-        });
-        record(vp.name + ': desktop CTA hotspot is a real <a> -> APPLICATION_URL, target=_blank, noopener noreferrer', true);
-      } catch (e) { record(vp.name + ': CTA hotspot', false, e.message); }
-    } else {
-      skip(vp.name + ': CTA hotspot', 'desktop-only by design (mobile BASE has no baked CTA graphic)');
-    }
+    // 5: CTA hotspot (both platforms — final mobile BASE also bakes in the
+    // CTA graphic) -> real <a href=APPLICATION_URL target=_blank rel=noopener noreferrer>
+    try {
+      await withPage(browser, vp, async (page) => {
+        await page.goto(DEMO_URL + '?zone=00', { waitUntil: 'networkidle' });
+        await page.waitForTimeout(900);
+        const sel = '.yh-zone00-hotspot__item[data-hotspot-id="cta"]';
+        const box = await panUntilOnScreen(page, vp, sel, 8);
+        assert(isOnScreen(box, vp), 'CTA hotspot never reachable via pan at ' + vp.name);
+        const attrs = await page.locator(sel).evaluate((el) => ({
+          tag: el.tagName, href: el.getAttribute('href'), target: el.getAttribute('target'), rel: el.getAttribute('rel')
+        }));
+        assert(attrs.tag === 'A', 'CTA hotspot should be a real <a>, got <' + attrs.tag + '>');
+        const appUrl = await page.evaluate(() => window.YHApp.LINKS.APPLICATION_URL);
+        assert(attrs.href && attrs.href.indexOf(appUrl.replace(/^\.\.\//, '')) !== -1 || attrs.href === appUrl, 'CTA href does not match APPLICATION_URL: ' + attrs.href + ' vs ' + appUrl);
+        assert(attrs.target === '_blank', 'CTA missing target=_blank');
+        assert(attrs.rel && attrs.rel.indexOf('noopener') !== -1 && attrs.rel.indexOf('noreferrer') !== -1, 'CTA rel missing noopener/noreferrer');
+      });
+      record(vp.name + ': CTA hotspot is a real <a> -> APPLICATION_URL, target=_blank, noopener noreferrer', true);
+    } catch (e) { record(vp.name + ': CTA hotspot', false, e.message); }
 
     // 6: a real drag does not trigger navigation, even starting on a hotspot
     try {
@@ -219,21 +213,19 @@ async function main() {
     if (vp.mobile) {
       // 7: mobile tap on a hotspot does not pan the scene
       try {
-        var skippedTapPan = false;
         await withPage(browser, vp, async (page) => {
           await page.goto(DEMO_URL + '?zone=00', { waitUntil: 'networkidle' });
           await page.waitForTimeout(900);
           const sel = '.yh-zone00-hotspot__item[data-hotspot-id="00"]';
-          const box = await page.locator(sel).boundingBox();
-          if (!isOnScreen(box, vp)) { skippedTapPan = true; return; }
+          const box = await panUntilOnScreen(page, vp, sel, 8);
+          assert(isOnScreen(box, vp), '"00" never reachable via pan for tap-does-not-pan test');
           const before = await page.locator('.yh-scene-stage').evaluate((el) => getComputedStyle(el).transform);
           await page.locator(sel).tap();
           await page.waitForTimeout(250);
           const after = await page.locator('.yh-scene-stage').evaluate((el) => getComputedStyle(el).transform);
           assert(after === before, 'tapping a Zone 00 hotspot panned the scene');
         });
-        if (skippedTapPan) skip(vp.name + ': mobile tap does not pan', '"00" off-screen by default at ' + vp.name);
-        else record(vp.name + ': mobile tap on hotspot does not pan the scene', true);
+        record(vp.name + ': mobile tap on hotspot does not pan the scene', true);
       } catch (e) { record(vp.name + ': mobile tap does not pan', false, e.message); }
     }
 
@@ -262,7 +254,7 @@ async function main() {
         await page.goto(DEMO_URL + '?zone=00', { waitUntil: 'networkidle' });
         await page.waitForTimeout(900);
         const count0 = await page.$$eval('.yh-zone00-hotspot__item', (els) => els.length);
-        assert(count0 === (vp.mobile ? 8 : 9), 'expected ' + (vp.mobile ? 8 : 9) + ' Zone 00 hotspots before switching, got ' + count0);
+        assert(count0 === 9, 'expected 9 Zone 00 hotspots (8 nav + CTA) before switching, got ' + count0);
 
         await page.evaluate(() => window.__yhInstance.showZone('01', false));
         await page.waitForTimeout(900);
@@ -272,16 +264,15 @@ async function main() {
         await page.evaluate(() => window.__yhInstance.showZone('00', false));
         await page.waitForTimeout(900);
         const count0b = await page.$$eval('.yh-zone00-hotspot__item', (els) => els.length);
-        assert(count0b === (vp.mobile ? 8 : 9), 'Zone 00 did not recreate cleanly on return');
+        assert(count0b === 9, 'Zone 00 did not recreate cleanly on return, got ' + count0b);
 
         const sel = '.yh-zone00-hotspot__item[data-hotspot-id="00"]';
-        const box = await page.locator(sel).boundingBox();
-        if (isOnScreen(box, vp)) {
-          if (vp.mobile) await page.locator(sel).tap(); else await page.locator(sel).click();
-          await page.waitForTimeout(200);
-          const visible = await page.$$eval('.yh-zone00-hotspot__caption:not([hidden])', (els) => els.length);
-          assert(visible === 1, 'expected exactly 1 visible caption after re-entering Zone 00, got ' + visible + ' (possible duplicate listeners)');
-        }
+        const box = await panUntilOnScreen(page, vp, sel, 8);
+        assert(isOnScreen(box, vp), '"00" never reachable via pan for duplicate-listener check');
+        if (vp.mobile) await page.locator(sel).tap(); else await page.locator(sel).click();
+        await page.waitForTimeout(200);
+        const visible = await page.$$eval('.yh-zone00-hotspot__caption:not([hidden])', (els) => els.length);
+        assert(visible === 1, 'expected exactly 1 visible caption after re-entering Zone 00, got ' + visible + ' (possible duplicate listeners)');
       });
       record(vp.name + ': 00<->01 lifecycle — no orphan DOM, clean recreation, no duplicate listeners', true);
     } catch (e) { record(vp.name + ': lifecycle', false, e.message); }

@@ -60,7 +60,11 @@
     // трогалась). Desktop BASE содержит запечённые intro/CTA/карту —
     // сознательное решение (см. отчёт п.3), не перерисовывается.
     'zone-00-desktop': { src: ASSETS_BASE + 'zone-00-base-clean-map-4k-sharp-v3.png', w: 3840, h: 2160 },
-    'zone-00-mobile': { src: ASSETS_BASE + 'zone-00-mobile-base-clean-4k.png', w: 2160, h: 3840 }
+    // Zone 00 mobile FINAL RECALIBRATION: заменяет provisional
+    // zone-00-mobile-base-clean-4k.png (удалён из репозитория — тот BASE
+    // не содержал ни intro-стенда, ни стенда "КАРТА ХАКАТОНА"). Новый
+    // BASE показывает оба физических стенда сразу, с запасом для pan.
+    'zone-00-mobile': { src: ASSETS_BASE + 'zone-00-mobile-base-expanded-centered-v2-2160x3840.png', w: 2160, h: 3840 }
   };
 
   var MAP_IMAGE_DESKTOP = { src: ASSETS_BASE + 'scene-map.webp', w: 1689, h: 931 };
@@ -96,7 +100,11 @@
       map: { x: 7.4, y: 69.2 },
       mapMobile: { x: 8.3, y: 64.9 },
       desktop: { asset: sceneAsset('zone-00-desktop'), cameraPreset: { x: 45, y: 55, scale: 1.2 }, hotspots: [] },
-      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 50, y: 50, scale: 1.6 }, hotspots: [] }
+      // mobile FINAL RECALIBRATION: centered so the initial composition
+      // shows BOTH physical stands (intro ~x:26-45,y:52-72 and
+      // "КАРТА ХАКАТОНА" ~x:48-70,y:50-73) at once, with headroom for pan
+      // in every direction — not a perimeter-tight crop.
+      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 48, y: 62, scale: 1.3 }, hotspots: [] }
     },
     '01': {
       shared: { id: '01', title: 'ХОЛЛ', color: '#f07a1f', behavior: 'object-links' },

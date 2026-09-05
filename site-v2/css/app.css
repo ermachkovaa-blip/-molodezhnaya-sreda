@@ -488,10 +488,11 @@
    "ПОДАТЬ ЗАЯВКУ →" pill graphic, sized to match it (not the default
    44x44 circle every other Zone 00 hotspot uses). No visible ring at
    rest: the pill is already a complete visual button in the artwork,
-   drawing a second marker on top of it would just duplicate it. */
+   drawing a second marker on top of it would just duplicate it.
+   width/height are set inline per-platform in core/zone-00-map.js (the
+   desktop and mobile pill graphics are proportioned differently on their
+   own BASE images — see config/zone-00-content.js ZONE_00_CTA). */
 .yh-zone00-hotspot__item[data-hotspot-id="cta"] {
-  width: 10%;
-  height: 3.8%;
   border-radius: 999px;
 }
 

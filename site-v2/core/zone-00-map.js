@@ -17,11 +17,10 @@
 // hotspot in the app already uses; no special-casing needed in
 // hotspot-layer.js.
 //
-// The CTA hotspot (desktop only) sits over the BASE's baked "ПОДАТЬ
-// ЗАЯВКУ" graphic — a real <a href=APPLICATION_URL> via the layer's
-// existing url-branch. Not rendered on mobile: that BASE has no baked CTA
-// graphic to make clickable, and the persistent GlobalNav CTA already
-// covers mobile end-to-end.
+// The CTA hotspot sits over each platform's BASE's baked "ПОДАТЬ ЗАЯВКУ"
+// graphic — a real <a href=APPLICATION_URL> via the layer's existing
+// url-branch. Rendered on both platforms since the final mobile BASE
+// (post-recalibration) bakes in the same CTA graphic as desktop.
 
 (function (YHApp) {
   'use strict';
@@ -30,7 +29,6 @@
 
   function createZone00Behavior(sceneStage, zone, config, callbacks) {
     var isMobile = callbacks.isMobile;
-    var mobile = isMobile();
     var zones = config.scenes.zones;
     var navHotspots = YHApp.ZONE_00_NAV_HOTSPOTS;
     var cta = YHApp.ZONE_00_CTA;
@@ -47,21 +45,18 @@
       };
     });
 
-    var items = navItems.slice();
-    if (!mobile) {
-      items.push({
-        id: cta.id,
-        ariaLabel: 'Подать заявку на хакатон',
-        url: config.links.APPLICATION_URL
-      });
-    }
+    var items = navItems.concat([{
+      id: cta.id,
+      ariaLabel: 'Подать заявку на хакатон',
+      url: config.links.APPLICATION_URL
+    }]);
 
     var layer = YHApp.createHotspotLayer(sceneStage, {
       layerClass: 'yh-zone00-hotspot',
       items: items,
       isMobile: isMobile,
       getCoords: function (item, isMobileNow) {
-        if (item.id === cta.id) return cta.desktopCoords;
+        if (item.id === cta.id) return isMobileNow ? cta.mobileCoords : cta.desktopCoords;
         var h = navHotspots.filter(function (x) { return x.id === item.id; })[0];
         return isMobileNow ? h.mobileCoords : h.desktopCoords;
       }
@@ -77,6 +72,16 @@
     });
     if (layer.elements['00']) {
       layer.elements['00'].classList.add('yh-zone00-hotspot--current');
+    }
+
+    // the baked CTA pill has different proportions on each platform's own
+    // BASE — sized here from config rather than a single fixed CSS
+    // percentage (see config/zone-00-content.js ZONE_00_CTA comment).
+    var ctaNode = layer.elements[cta.id];
+    if (ctaNode) {
+      var ctaSize = isMobile() ? cta.mobileSize : cta.desktopSize;
+      ctaNode.style.width = ctaSize.w + '%';
+      ctaNode.style.height = ctaSize.h + '%';
     }
 
     function destroy() { layer.destroy(); }
