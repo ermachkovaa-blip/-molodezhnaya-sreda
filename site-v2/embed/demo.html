@@ -48,11 +48,15 @@
 <script src="../config/links.js"></script>
 <script src="../config/scenes.js"></script>
 <script src="../config/ui-strings.js"></script>
+<script src="../config/objects.js"></script>
+<script src="../config/zone-01-content.js"></script>
 <script src="../core/scene-engine.js"></script>
 <script src="../core/gesture-controller.js"></script>
 <script src="../core/global-nav.js"></script>
 <script src="../core/map-navigation.js"></script>
 <script src="../core/debug-overlay.js"></script>
+<script src="../core/hotspot-layer.js"></script>
+<script src="../core/zone-01-hall.js"></script>
 <script src="../core/mount.js"></script>
 <script>
   (function () {
@@ -63,6 +67,7 @@
       scenes: window.YHApp.SCENES_CONFIG,
       links: window.YHApp.LINKS,
       uiStrings: window.YHApp.UI_STRINGS,
+      objects: window.YHApp.OBJECTS,
       debug: params.get('debug') === '1',
       initialZone: params.get('zone')
     };

@@ -40,6 +40,13 @@
         'aria-label': zoneId + ' — ' + zone.shared.title
       });
       dot.style.setProperty('--yh-zone-color', zone.shared.color);
+      var label = el('span', 'yh-map-hotspot__label');
+      label.textContent = zoneId + ' ' + zone.shared.title;
+      dot.appendChild(label);
+      // single tap/click -> navigate directly, no separate "select" step —
+      // an intermediate select-then-navigate step was considered and
+      // rejected (Production-ТЗ Этап 2: "если ухудшает UX на mobile,
+      // используй прямой single tap → navigate").
       dot.addEventListener('click', function () { onZoneSelect(zoneId); });
       hotspotsLayer.appendChild(dot);
       dots[zoneId] = dot;
@@ -63,9 +70,15 @@
     function show() { view.hidden = false; layout(); }
     function hide() { view.hidden = true; }
 
+    function setLastVisited(zoneId) {
+      zoneOrder.forEach(function (id) {
+        dots[id].classList.toggle('yh-map-hotspot--last-visited', id === zoneId);
+      });
+    }
+
     function destroy() { view.remove(); }
 
-    return { view: view, show: show, hide: hide, layout: layout, destroy: destroy };
+    return { view: view, show: show, hide: hide, layout: layout, setLastVisited: setLastVisited, destroy: destroy };
   }
 
   YHApp.createMapNavigation = createMapNavigation;

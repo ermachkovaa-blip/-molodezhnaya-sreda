@@ -29,9 +29,10 @@
     var scenesConfig = config.scenes || YHApp.SCENES_CONFIG;
     var links = config.links || YHApp.LINKS;
     var uiStrings = config.uiStrings || YHApp.UI_STRINGS;
+    var objects = config.objects || YHApp.OBJECTS || [];
     var debugFlag = !!config.debug;
 
-    var fullConfig = { scenes: scenesConfig, links: links, uiStrings: uiStrings };
+    var fullConfig = { scenes: scenesConfig, links: links, uiStrings: uiStrings, objects: objects };
 
     root.classList.add('yh-app');
     root.setAttribute('tabindex', '-1');
@@ -92,14 +93,32 @@
     var currentZoneId = null;
     var currentSceneSrc = null;
     var showingMap = true;
+    var lastVisitedZoneId = null;
+    try { lastVisitedZoneId = window.localStorage.getItem(STORAGE_KEY); } catch (err) { /* storage unavailable — non-critical */ }
 
     function resolveBranch(zone) {
       return isMobile() ? zone.mobile : zone.desktop;
     }
 
+    // ---- per-zone local interactivity (Zone 01 objects/program/passage,
+    // and later 02/03/04/05/06/07) — one behavior module instantiated at a
+    // time, torn down before the next one mounts so listeners never pile
+    // up across zone switches. Keyed by zone.shared.behavior, registered
+    // into YHApp.ZONE_BEHAVIORS by each zone's own file (see zone-01-hall.js). ----
+    var activeZoneBehavior = null;
+    function teardownZoneBehavior() {
+      if (activeZoneBehavior) { activeZoneBehavior.destroy(); activeZoneBehavior = null; }
+    }
+
     function showZone(zoneId, animated) {
       var zone = scenesConfig.zones[zoneId];
       if (!zone) return;
+
+      teardownZoneBehavior();
+
+      if (currentZoneId && currentZoneId !== zoneId) {
+        lastVisitedZoneId = currentZoneId;
+      }
       currentZoneId = zoneId;
       showingMap = false;
 
@@ -118,14 +137,25 @@
       sceneEngine.setSceneSize(asset.w, asset.h);
       sceneEngine.setCameraTo(branch.cameraPreset, animated);
 
+      var behaviorFactory = YHApp.ZONE_BEHAVIORS && YHApp.ZONE_BEHAVIORS[zone.shared.behavior];
+      if (behaviorFactory) {
+        activeZoneBehavior = behaviorFactory(sceneStage, zone, fullConfig, {
+          isMobile: isMobile,
+          onNavigateZone: function (id) { showZone(id, true); }
+        });
+      }
+
       try { window.localStorage.setItem(STORAGE_KEY, zoneId); } catch (err) { /* storage unavailable — non-critical */ }
     }
 
     function showMap() {
+      teardownZoneBehavior();
+      if (currentZoneId) lastVisitedZoneId = currentZoneId;
       showingMap = true;
       sceneView.hidden = true;
       globalNav.setBottomNavVisible(isMobile()); // на mobile нижний route виден и на карте (см. V1-паттерн)
       mapNav.show();
+      mapNav.setLastVisited(lastVisitedZoneId);
     }
 
     // ---- gesture: pan the scene (Pointer Events, replaces V1's separate
@@ -214,6 +244,7 @@
     }
 
     function unmount() {
+      teardownZoneBehavior();
       sceneEngine.destroy();
       gesture.destroy();
       mapNav.destroy();
@@ -232,7 +263,7 @@
       unmount: unmount,
       setDebug: function (v) { debugOverlay.setEnabled(v); },
       getState: function () {
-        return { currentZoneId: currentZoneId, showingMap: showingMap, isMobile: isMobile() };
+        return { currentZoneId: currentZoneId, showingMap: showingMap, isMobile: isMobile(), lastVisitedZoneId: lastVisitedZoneId };
       }
     };
   }

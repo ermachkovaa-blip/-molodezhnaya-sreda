@@ -24,6 +24,7 @@
 
   --yh-z-scene: 1;
   --yh-z-map: 2;
+  --yh-z-local: 10;
   --yh-z-bottom-nav: 40;
   --yh-z-header: 60;
   --yh-z-debug: 999;
@@ -194,9 +195,224 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.35);
   pointer-events: auto;
+  transition: opacity 200ms ease, box-shadow 200ms ease;
 }
 
-.yh-map-hotspot:hover { background: rgba(255, 255, 255, 0.6); }
+/* hover/focus one zone -> that zone stays fully visible, the rest dim
+   (Production-ТЗ Этап 2: "выделяется только выбранная зона; остальные
+   части карты слегка приглушаются"). :has() is well-supported in current
+   evergreen browsers (Chromium/Safari/Firefox) — no JS fallback needed. */
+.yh-map-hotspots:has(.yh-map-hotspot:hover) .yh-map-hotspot:not(:hover),
+.yh-map-hotspots:has(.yh-map-hotspot:focus-visible) .yh-map-hotspot:not(:focus-visible) {
+  opacity: 0.4;
+}
+
+.yh-map-hotspot:hover,
+.yh-map-hotspot:focus-visible {
+  background: rgba(255, 255, 255, 0.65);
+  /* thin colored glow instead of the generic focus ring — "тонкий
+     outline/glow", "focus state визуально понятен" */
+  box-shadow: 0 0 0 2px var(--yh-zone-color, var(--yh-accent)), 0 0 10px 2px var(--yh-zone-color, var(--yh-accent));
+  outline: none;
+}
+
+.yh-map-hotspot--last-visited {
+  border-style: dashed;
+}
+
+.yh-map-hotspot__label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.yh-map-hotspot:hover .yh-map-hotspot__label,
+.yh-map-hotspot:focus-visible .yh-map-hotspot__label {
+  opacity: 1;
+}
+
+/* ================= GENERIC HOTSPOT LAYER (Zone 01 objects + passage;
+   Production-ТЗ: Zone 02/03 reuse this same layer unchanged later) ================= */
+
+.yh-hotspot-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--yh-z-local);
+  pointer-events: none;
+}
+
+.yh-object-hotspot__item,
+.yh-passage-hotspot__item {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* small coded "+" — the approved Zone 01 illustration has no pre-drawn
+   marker at these positions (unlike Zone 02/03's baked "+"), so
+   Production-ТЗ explicitly allows a small code-drawn one here. Subtle at
+   rest, matching "визуальный язык должен оставаться частью архитектурной
+   сцены" — not a bold UI chip. */
+.yh-object-hotspot__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1.5px solid rgba(28, 26, 23, 0.55);
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.yh-object-hotspot__item:hover .yh-object-hotspot__dot,
+.yh-object-hotspot__item:focus-visible .yh-object-hotspot__dot {
+  transform: scale(1.6);
+  background: #fff;
+}
+
+.yh-object-hotspot__item:focus-visible {
+  outline: none;
+}
+
+.yh-object-hotspot__item:focus-visible .yh-object-hotspot__dot {
+  box-shadow: 0 0 0 3px rgba(47, 125, 238, 0.7);
+}
+
+.yh-object-hotspot__label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.yh-object-hotspot__item:hover .yh-object-hotspot__label,
+.yh-object-hotspot__item:focus-visible .yh-object-hotspot__label {
+  opacity: 1;
+}
+
+.yh-hotspot-caption {
+  position: absolute;
+  transform: translate(-50%, 0);
+  background: rgba(28, 26, 23, 0.92);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  max-width: 180px;
+  pointer-events: none;
+  white-space: pre-line;
+}
+
+.yh-hotspot-caption[hidden] { display: none; }
+
+/* ================= PASSAGE (spatial nav, not a content hotspot) ================= */
+
+.yh-passage-hotspot__dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  background: rgba(28, 26, 23, 0.25);
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.yh-passage-hotspot__dot::before { content: '→'; }
+
+.yh-passage-hotspot__item:hover .yh-passage-hotspot__dot,
+.yh-passage-hotspot__item:focus-visible .yh-passage-hotspot__dot {
+  background: rgba(28, 26, 23, 0.6);
+  transform: scale(1.1);
+}
+
+.yh-passage-hotspot__item:focus-visible {
+  outline: none;
+}
+
+.yh-passage-hotspot__item:focus-visible .yh-passage-hotspot__dot {
+  box-shadow: 0 0 0 3px rgba(47, 125, 238, 0.7);
+}
+
+.yh-passage-hotspot__label {
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.yh-passage-hotspot__item:hover .yh-passage-hotspot__label,
+.yh-passage-hotspot__item:focus-visible .yh-passage-hotspot__label {
+  opacity: 1;
+}
+
+/* ================= PROGRAM WALL (Zone 01, hover-only, no click, no
+   keyboard focus — a focusable element with no action would be an
+   accessibility anti-pattern, see Этап 2 report "known issues") ================= */
+
+.yh-program-wall {
+  position: absolute;
+  inset: 0;
+  z-index: var(--yh-z-local);
+  pointer-events: none;
+}
+
+.yh-program-wall__stage {
+  position: absolute;
+  width: 13%;
+  height: 4%;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  pointer-events: auto;
+  transition: box-shadow 150ms ease, background 150ms ease;
+}
+
+.yh-program-wall__stage:hover {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
 
 /* ================= SCENE VIEW ================= */
 
@@ -253,6 +469,36 @@
 }
 
 .yh-debug-hud[hidden] { display: none; }
+
+/* ================= DEBUG: hotspot bounds (?debug=1 / config.debug) =================
+   Production-ТЗ: "debug mode ?debug=1 для дальнейшей настройки координат
+   hotspots" — visible bounding boxes + always-on labels, so exact
+   placement can be judged and adjusted against the real BASE artwork. */
+
+.yh-app--debug .yh-object-hotspot__item,
+.yh-app--debug .yh-passage-hotspot__item {
+  outline: 1px dashed rgba(255, 0, 60, 0.85);
+  outline-offset: -1px;
+}
+
+.yh-app--debug .yh-object-hotspot__dot {
+  width: 16px;
+  height: 16px;
+  background: rgba(255, 0, 60, 0.55);
+  border-color: rgba(255, 0, 60, 0.9);
+}
+
+.yh-app--debug .yh-object-hotspot__label,
+.yh-app--debug .yh-passage-hotspot__label,
+.yh-app--debug .yh-map-hotspot__label {
+  opacity: 1 !important;
+}
+
+.yh-app--debug .yh-program-wall__stage {
+  outline: 1px dashed rgba(0, 140, 255, 0.75);
+  outline-offset: -1px;
+  background: rgba(0, 140, 255, 0.08);
+}
 
 @media (prefers-reduced-motion: reduce) {
   .yh-app * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }

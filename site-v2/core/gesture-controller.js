@@ -10,12 +10,23 @@
 //     onDragStart(x, y), onDragMove(dx, dy, x, y), onDragEnd(wasDrag),
 //     onTap(x, y, originalEvent)
 //   });
-// target получает pointerdown/move/up/cancel через setPointerCapture —
-// работает одинаково для мыши, touch и pen без отдельных веток кода.
 //
-// Второе назначение: подавление "призрачного" click на дочернем hotspot,
-// если жест на самом деле был drag'ом сцены (см. suppressNextClick) —
-// в V1 это не было явно реализовано (см. аудит, п.8/10).
+// setPointerCapture is called LAZILY — only once real movement crosses
+// the tap/drag threshold, not on pointerdown. Found during Этап 2 testing:
+// capturing immediately on pointerdown retargets the resulting synthetic
+// `click` event to the CAPTURING element (target, e.g. the scene
+// viewport) instead of the real hit-tested element (a hotspot <button>
+// underneath the pointer) — even for a plain, zero-movement click. That
+// silently broke every hotspot living inside a gesture-controlled area
+// (Zone 01 objects, passage) for real mouse/touch input, while appearing
+// to work under `element.click()`-style test helpers that bypass actual
+// pointer dispatch. Deferring capture to "only once a real drag begins"
+// fixes this: a plain tap never captures, so the button receives its own
+// native click exactly as if no gesture layer existed; only a confirmed
+// drag captures the pointer (so it keeps tracking correctly even if the
+// pointer moves off the original element), and it's on THAT branch that
+// the phantom post-drag click still needs swallowing (see
+// suppressClickCapture below).
 
 (function (YHApp) {
   'use strict';
@@ -31,6 +42,7 @@
     var onTap = handlers.onTap || function () {};
 
     var active = false;
+    var captured = false;
     var pointerId = null;
     var startX = 0, startY = 0, startTime = 0;
     var moved = false;
@@ -46,15 +58,13 @@
     function onPointerDown(e) {
       if (e.button !== undefined && e.button !== 0) return; // primary button/touch only
       active = true;
+      captured = false;
       moved = false;
       pointerId = e.pointerId;
       startX = e.clientX;
       startY = e.clientY;
       startTime = Date.now();
-      if (target.setPointerCapture) {
-        try { target.setPointerCapture(pointerId); } catch (err) { /* noop */ }
-      }
-      onDragStart(startX, startY);
+      // deliberately NOT calling setPointerCapture here — see file header.
     }
 
     function onPointerMove(e) {
@@ -63,22 +73,33 @@
       var dy = e.clientY - startY;
       if (!moved && (Math.abs(dx) > TAP_THRESHOLD_PX || Math.abs(dy) > TAP_THRESHOLD_PX)) {
         moved = true;
+        // NOW it's a real drag: capture so tracking continues correctly
+        // even if the pointer moves off target's descendants, and fire
+        // the deferred drag-start signal.
+        if (target.setPointerCapture) {
+          try { target.setPointerCapture(pointerId); captured = true; } catch (err) { /* noop */ }
+        }
+        onDragStart(startX, startY);
       }
-      onDragMove(dx, dy, e.clientX, e.clientY);
+      if (moved) onDragMove(dx, dy, e.clientX, e.clientY);
     }
 
     function onPointerUp(e) {
       if (!active || e.pointerId !== pointerId) return;
       active = false;
-      if (target.releasePointerCapture) {
+      if (captured && target.releasePointerCapture) {
         try { target.releasePointerCapture(pointerId); } catch (err) { /* noop */ }
       }
+      captured = false;
       var duration = Date.now() - startTime;
       var wasTap = !moved && duration < TAP_MAX_DURATION_MS;
-      onDragEnd(!wasTap);
       if (wasTap) {
+        // no capture was ever engaged for a plain tap, so the native click
+        // about to follow this pointerup already targets the real element
+        // (e.g. a hotspot <button>) untouched — nothing to do here.
         onTap(e.clientX, e.clientY, e);
       } else {
+        onDragEnd(true);
         // this pointer gesture was a drag: the browser will still fire a
         // synthetic click on whatever element is under the pointer right
         // after pointerup — swallow exactly that one click so a hotspot
@@ -93,12 +114,15 @@
     function onPointerCancel(e) {
       if (!active || e.pointerId !== pointerId) return;
       active = false;
-      onDragEnd(true);
+      if (moved) onDragEnd(true);
+      captured = false;
     }
 
     target.addEventListener('pointerdown', onPointerDown);
-    // move/up listen on the target itself (pointer capture redirects all
-    // subsequent events to it regardless of where the pointer physically is)
+    // move/up listen on the target itself — once a real drag captures the
+    // pointer, subsequent events are redirected to it regardless of where
+    // the pointer physically is; before that (plain hover/tap), they still
+    // reach target normally via bubbling since target covers the area.
     target.addEventListener('pointermove', onPointerMove);
     target.addEventListener('pointerup', onPointerUp);
     target.addEventListener('pointercancel', onPointerCancel);
