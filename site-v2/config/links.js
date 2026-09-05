@@ -40,10 +40,27 @@
     },
 
     // Зона 02 — материалы исследования, по типу материала. Ключи — id
-    // hotspot'ов, значения — url|null. Заполняется по мере передачи ссылок.
-    RESEARCH_MATERIAL_URLS: {},
+    // hotspot'ов из config/zone-02-content.js (ZONE_02_HOTSPOTS), значения —
+    // url|null. Заполняется по мере передачи ссылок — сейчас все null,
+    // ничего не выдумано.
+    RESEARCH_MATERIAL_URLS: {
+      'site-visit': null,
+      'interview': null,
+      'observation': null,
+      'photo-fixation': null,
+      'territory-research': null,
+      'plans-work': null
+    },
 
-    // Зона 03 — материалы проектирования, по типу материала.
-    PROJECT_MATERIAL_URLS: {}
+    // Зона 03 — материалы проектирования, по типу материала. Ключи — id
+    // hotspot'ов из config/zone-03-content.js (ZONE_03_HOTSPOTS).
+    PROJECT_MATERIAL_URLS: {
+      'plan': null,
+      'tracing-paper': null,
+      'model': null,
+      'laptop': null,
+      'schemes': null,
+      'materials': null
+    }
   };
 })(window.YHApp = window.YHApp || {});

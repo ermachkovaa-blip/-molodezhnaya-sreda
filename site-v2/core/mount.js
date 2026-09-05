@@ -177,10 +177,19 @@
         isDragging = false;
         sceneViewport.classList.remove('is-dragging');
       },
-      onTap: function () {
-        // Reserved for Этап 3+ (hotspot taps go through their own buttons,
-        // which receive the pointer event directly — this onTap fires only
-        // for taps on empty scene background).
+      onTap: function (x, y, e) {
+        // Fires for EVERY tap inside sceneViewport, including ones that
+        // land on a hotspot — it does not know or care what's under the
+        // pointer. Close-open-captions-on-outside-tap therefore needs an
+        // explicit guard here: only close when the tap did NOT hit a
+        // hotspot. When it DID hit one, that hotspot's own click handler
+        // (native, fires right after this synchronously-run onTap — see
+        // gesture-controller.js) manages that item's own caption; this
+        // handler must not undo it a moment later.
+        var hitHotspot = e && e.target && typeof e.target.closest === 'function' && e.target.closest('[data-hotspot-id]');
+        if (!hitHotspot && activeZoneBehavior && typeof activeZoneBehavior.closeAllCaptions === 'function') {
+          activeZoneBehavior.closeAllCaptions();
+        }
       }
     });
 

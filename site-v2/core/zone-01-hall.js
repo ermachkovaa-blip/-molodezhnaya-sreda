@@ -85,7 +85,19 @@
       programLayer.remove();
     }
 
-    return { destroy: destroy, layout: function () { objectHotspots.layout(); passageLayer.layout(); } };
+    // retrofitted alongside Zone 02/03 (Этап 3): click/tap on empty scene
+    // background closes any open caption — same mechanism, applied here
+    // too for consistency rather than only in the newer zones.
+    function closeAllCaptions() {
+      objectHotspots.hideCaption();
+      passageLayer.hideCaption();
+    }
+
+    return {
+      destroy: destroy,
+      layout: function () { objectHotspots.layout(); passageLayer.layout(); },
+      closeAllCaptions: closeAllCaptions
+    };
   }
 
   YHApp.ZONE_BEHAVIORS['object-links'] = createZone01Behavior;

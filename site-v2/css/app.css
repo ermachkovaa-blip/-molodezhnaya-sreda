@@ -396,6 +396,99 @@
   opacity: 1;
 }
 
+/* ================= MATERIAL HOTSPOTS (Zone 02/03, shared layerClass —
+   see core/zone-hotspot-scene.js). The "+" is already baked into BASE
+   here (unlike Zone 01), so — unlike .yh-object-hotspot__dot — this dot
+   is fully invisible at rest: no new visible marker drawn over the
+   image, only a transparent hit-area plus a very soft hover/focus glow
+   "underlining" the existing mark. ================= */
+
+.yh-material-hotspot__item {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yh-material-hotspot__dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 200ms ease, box-shadow 200ms ease;
+}
+
+.yh-material-hotspot__item:hover .yh-material-hotspot__dot,
+.yh-material-hotspot__item:focus-visible .yh-material-hotspot__dot {
+  /* soft radial glow, not a hard-edged second "+" */
+  background: radial-gradient(circle, rgba(255, 244, 214, 0.55) 0%, rgba(255, 244, 214, 0) 72%);
+}
+
+.yh-material-hotspot__item:focus-visible { outline: none; }
+
+.yh-material-hotspot__item:focus-visible .yh-material-hotspot__dot {
+  box-shadow: 0 0 0 2px rgba(47, 125, 238, 0.65);
+}
+
+.yh-material-hotspot__label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.yh-material-hotspot__item:hover .yh-material-hotspot__label,
+.yh-material-hotspot__item:focus-visible .yh-material-hotspot__label {
+  opacity: 1;
+}
+
+.yh-material-hotspot__caption {
+  position: absolute;
+  transform: translate(-50%, 0);
+  background: rgba(28, 26, 23, 0.92);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  max-width: 190px;
+  pointer-events: none;
+  white-space: pre-line;
+}
+
+.yh-material-hotspot__caption[hidden] { display: none; }
+
+.yh-app--debug .yh-material-hotspot__item {
+  outline: 1px dashed rgba(0, 200, 120, 0.85);
+  outline-offset: -1px;
+}
+
+.yh-app--debug .yh-material-hotspot__dot {
+  background: rgba(0, 200, 120, 0.35);
+}
+
+.yh-app--debug .yh-material-hotspot__label {
+  opacity: 1 !important;
+}
+
 /* ================= PROGRAM WALL (Zone 01, hover-only, no click, no
    keyboard focus — a focusable element with no action would be an
    accessibility anti-pattern, see Этап 2 report "known issues") ================= */
