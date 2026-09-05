@@ -31,9 +31,21 @@
   // что в V1 js/config.js — числа не придуманы, взяты из реального проекта)
   var SCENE_IMAGES = {
     'scene-00-01': { src: ASSETS_BASE + 'scene-00-01.webp', w: 1536, h: 1024 },
-    'scene-02-03': { src: ASSETS_BASE + 'scene-02-03.webp', w: 1716, h: 916 },
     'scene-04-05': { src: ASSETS_BASE + 'scene-04-05.webp', w: 1689, h: 931 },
-    'scene-06-07': { src: ASSETS_BASE + 'scene-06-07.webp', w: 1672, h: 941 }
+    'scene-06-07': { src: ASSETS_BASE + 'scene-06-07.webp', w: 1672, h: 941 },
+
+    // Zone 02/03 Visual Integration (после Этапа 3): старый общий widescreen
+    // scene-02-03.webp (одна картинка на обе зоны, разные cameraPreset)
+    // БОЛЬШЕ НЕ source of truth для 02/03 — заменён четырьмя независимыми
+    // production-BASE (см. отчёт Visual Integration). Сам файл
+    // scene-02-03.webp не удалён (это существующий V1-asset, V1 его
+    // по-прежнему использует) — здесь просто больше нет на него ссылки.
+    // Имена файлов — фактические, переданные заказчиком, не переименованы
+    // "для единообразия".
+    'zone-02-desktop': { src: ASSETS_BASE + 'zone-02-base-clean-4k.png', w: 3840, h: 2160 },
+    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-2160x3840.png', w: 2160, h: 3840 },
+    'zone-03-desktop': { src: ASSETS_BASE + 'zone-03-project-workshop-realistic-expanded-4k.png', w: 3840, h: 2160 },
+    'zone-03-mobile': { src: ASSETS_BASE + 'zone-03-mobile-base-clean-realistic-4k.png', w: 2160, h: 3840 }
   };
 
   var MAP_IMAGE_DESKTOP = { src: ASSETS_BASE + 'scene-map.webp', w: 1689, h: 931 };
@@ -78,15 +90,18 @@
       shared: { id: '02', title: 'ИССЛЕДОВАТЕЛЬСКАЯ', color: '#e8b923', behavior: 'hotspot-scene' },
       map: { x: 33.4, y: 69.2 },
       mapMobile: { x: 34.8, y: 64.33 },
-      desktop: { asset: sceneAsset('scene-02-03'), cameraPreset: { x: 24, y: 40, scale: 1.15 }, hotspots: [] },
-      mobile: { asset: sceneAsset('scene-02-03'), cameraPreset: { x: 24, y: 35, scale: 1.5 }, hotspots: [] }
+      // Visual Integration (Этап 3+): независимый production BASE, своя
+      // калибровка camera под новую композицию (см. отчёт) — не перенос
+      // чисел со старого общего scene-02-03.
+      desktop: { asset: sceneAsset('zone-02-desktop'), cameraPreset: { x: 45, y: 42, scale: 1.15 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-02-mobile'), cameraPreset: { x: 50, y: 48, scale: 1.5 }, hotspots: [] }
     },
     '03': {
       shared: { id: '03', title: 'ПРОЕКТНАЯ МАСТЕРСКАЯ', color: '#3f6fd1', behavior: 'hotspot-scene' },
       map: { x: 43.8, y: 35.9 },
       mapMobile: { x: 51.74, y: 45.65 },
-      desktop: { asset: sceneAsset('scene-02-03'), cameraPreset: { x: 76, y: 45, scale: 1.15 }, hotspots: [] },
-      mobile: { asset: sceneAsset('scene-02-03'), cameraPreset: { x: 74, y: 42, scale: 1.5 }, hotspots: [] }
+      desktop: { asset: sceneAsset('zone-03-desktop'), cameraPreset: { x: 55, y: 63, scale: 1.15 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-03-mobile'), cameraPreset: { x: 50, y: 65, scale: 1.5 }, hotspots: [] }
     },
     '04': {
       shared: { id: '04', title: 'АРХИВ / КАРТОТЕКА', color: '#1f8f5f', behavior: 'archive-drawers' },
