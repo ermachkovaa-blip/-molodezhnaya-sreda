@@ -396,6 +396,128 @@
   opacity: 1;
 }
 
+/* ================= ZONE 00 MAP NAVIGATION (in-scene "КАРТА ХАКАТОНА"
+   stand, 8 hotspots 00-07 — distinct from the separate full-screen Map
+   view in .yh-map-view/.yh-map-hotspot above, which is untouched). Visual
+   language matches that existing Map view (visible ring marker, tooltip
+   label on hover/focus) rather than inventing a third convention. ================= */
+
+.yh-zone00-hotspot__item {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yh-zone00-hotspot__dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--yh-zone-color, var(--yh-accent));
+  background: rgba(255, 255, 255, 0.35);
+  transition: background 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.yh-zone00-hotspot__item:hover .yh-zone00-hotspot__dot,
+.yh-zone00-hotspot__item:focus-visible .yh-zone00-hotspot__dot {
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 0 2px var(--yh-zone-color, var(--yh-accent)), 0 0 10px 2px var(--yh-zone-color, var(--yh-accent));
+}
+
+.yh-zone00-hotspot__item:focus-visible { outline: none; }
+
+/* current-location marker — the one hotspot meant to be understood at a
+   glance, without hovering (a first-time visitor has no reason to hover
+   "00" to learn they're already there) */
+.yh-zone00-hotspot--current .yh-zone00-hotspot__dot {
+  background: var(--yh-zone-color, var(--yh-accent));
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85);
+}
+
+.yh-zone00-hotspot--current .yh-zone00-hotspot__label {
+  opacity: 1;
+}
+
+.yh-zone00-hotspot__label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.yh-zone00-hotspot__item:hover .yh-zone00-hotspot__label,
+.yh-zone00-hotspot__item:focus-visible .yh-zone00-hotspot__label {
+  opacity: 1;
+}
+
+.yh-zone00-hotspot__caption {
+  position: absolute;
+  transform: translate(-50%, 0);
+  background: rgba(28, 26, 23, 0.92);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  max-width: 180px;
+  pointer-events: none;
+  white-space: pre-line;
+}
+
+.yh-zone00-hotspot__caption[hidden] { display: none; }
+
+/* CTA hotspot — a transparent hit-area over the BASE's already-drawn
+   "ПОДАТЬ ЗАЯВКУ →" pill graphic, sized to match it (not the default
+   44x44 circle every other Zone 00 hotspot uses). No visible ring at
+   rest: the pill is already a complete visual button in the artwork,
+   drawing a second marker on top of it would just duplicate it. */
+.yh-zone00-hotspot__item[data-hotspot-id="cta"] {
+  width: 10%;
+  height: 3.8%;
+  border-radius: 999px;
+}
+
+.yh-zone00-hotspot__item[data-hotspot-id="cta"] .yh-zone00-hotspot__dot {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.yh-zone00-hotspot__item[data-hotspot-id="cta"]:hover .yh-zone00-hotspot__dot,
+.yh-zone00-hotspot__item[data-hotspot-id="cta"]:focus-visible .yh-zone00-hotspot__dot {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+}
+
+.yh-app--debug .yh-zone00-hotspot__item {
+  outline: 1px dashed rgba(0, 120, 255, 0.85);
+  outline-offset: -1px;
+}
+
+.yh-app--debug .yh-zone00-hotspot__label {
+  opacity: 1 !important;
+}
+
 /* ================= MATERIAL HOTSPOTS (Zone 02/03, shared layerClass —
    see core/zone-hotspot-scene.js). The "+" is already baked into BASE
    here (unlike Zone 01), so — unlike .yh-object-hotspot__dot — this dot

@@ -125,7 +125,13 @@ async function main() {
         for (var zoneId of ZONE_ORDER) {
           var btn = await page.$('.yh-bottom-nav__item[data-zone="' + zoneId + '"]');
           await btn.click();
-          await page.waitForTimeout(350);
+          // 900ms, not 350ms: past the 800ms zone-switch transition (see the
+          // identical reasoning above, test #1) — Zone 00 Visual Integration
+          // gave it its own distinct asset, so every switch into/out of it now
+          // does a real image swap + camera jump instead of a same-image
+          // camera-only move, and 350ms started catching the transition's
+          // transient overshoot as a false "edge visible" failure.
+          await page.waitForTimeout(900);
           var state = await page.evaluate(() => window.__yhInstance.getState());
           assert(state.currentZoneId === zoneId, 'bottom-nav zone mismatch: ' + zoneId + ' vs ' + state.currentZoneId);
           await assertNoVisibleEdge(page);

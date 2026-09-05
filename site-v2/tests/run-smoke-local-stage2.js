@@ -360,10 +360,16 @@ async function main() {
       var captionOpenBefore = await page.$eval('.yh-object-hotspot__caption', el => !el.hidden);
       assert(captionOpenBefore, 'test setup: caption should be open before switching zones');
 
-      await page.evaluate(() => window.__yhInstance.showZone('00', false));
+      // Zone 04 target (not '00'): Zone 00 got its own local behavior/
+      // hotspot-layer in Visual Integration, so a `.yh-hotspot-layer` count
+      // of 0 there would no longer mean "no orphan", it would mean "Zone
+      // 00's OWN legitimate layer didn't mount" — the wrong thing to assert
+      // here. Zone 04 has no local behavior implemented yet, so it's still
+      // the correct "definitely zero layers if Zone 01 cleaned up" target.
+      await page.evaluate(() => window.__yhInstance.showZone('04', false));
       await page.waitForTimeout(200);
       var leftoverNodes = await page.$$eval('.yh-hotspot-layer, .yh-program-wall', els => els.length);
-      assert(leftoverNodes === 0, 'Zone 01 left ' + leftoverNodes + ' orphan hotspot-layer/program-wall node(s) behind after switching to Zone 00');
+      assert(leftoverNodes === 0, 'Zone 01 left ' + leftoverNodes + ' orphan hotspot-layer/program-wall node(s) behind after switching to Zone 04');
 
       // back into 01: a fresh instance must render correctly (no stale
       // "already destroyed" state, no duplicate listeners causing double-fires)

@@ -52,7 +52,15 @@
     'zone-02-desktop': { src: ASSETS_BASE + 'zone-02-desktop-base-research-wall-v2-4k.png', w: 3840, h: 2160 },
     'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-research-wall-v2-2160x3840.png', w: 2160, h: 3840 },
     'zone-03-desktop': { src: ASSETS_BASE + 'zone-03-project-workshop-realistic-expanded-4k.png', w: 3840, h: 2160 },
-    'zone-03-mobile': { src: ASSETS_BASE + 'zone-03-mobile-base-clean-realistic-4k.png', w: 2160, h: 3840 }
+    'zone-03-mobile': { src: ASSETS_BASE + 'zone-03-mobile-base-clean-realistic-4k.png', w: 2160, h: 3840 },
+
+    // Zone 00 Visual Integration: Zone 00 получает СОБСТВЕННЫЙ независимый
+    // BASE (больше не делит scene-00-01 с Zone 01 — см. отчёт). Zone 01
+    // продолжает использовать 'scene-00-01' без изменений (запись ниже не
+    // трогалась). Desktop BASE содержит запечённые intro/CTA/карту —
+    // сознательное решение (см. отчёт п.3), не перерисовывается.
+    'zone-00-desktop': { src: ASSETS_BASE + 'zone-00-base-clean-map-4k-sharp-v3.png', w: 3840, h: 2160 },
+    'zone-00-mobile': { src: ASSETS_BASE + 'zone-00-mobile-base-clean-4k.png', w: 2160, h: 3840 }
   };
 
   var MAP_IMAGE_DESKTOP = { src: ASSETS_BASE + 'scene-map.webp', w: 1689, h: 931 };
@@ -80,11 +88,15 @@
   // (js/config.js ZONES) — это REUSE утверждённых чисел, не новые данные.
   var ZONES = {
     '00': {
-      shared: { id: '00', title: 'УЛИЦА / ВХОД', color: '#e0483e', behavior: 'scene-only' },
+      // Zone 00 Visual Integration: первый локальный интерактив у Zone 00
+      // (было 'scene-only' — вообще без поведения). Собственный BASE,
+      // собственная калибровка камеры — не перенос чисел от старого
+      // scene-00-01.
+      shared: { id: '00', title: 'УЛИЦА / ВХОД', color: '#e0483e', behavior: 'zone-00-map' },
       map: { x: 7.4, y: 69.2 },
       mapMobile: { x: 8.3, y: 64.9 },
-      desktop: { asset: sceneAsset('scene-00-01'), cameraPreset: { x: 50, y: 23, scale: 1.3 }, hotspots: [] },
-      mobile: { asset: sceneAsset('scene-00-01'), cameraPreset: { x: 50, y: 18, scale: 1.9 }, hotspots: [] }
+      desktop: { asset: sceneAsset('zone-00-desktop'), cameraPreset: { x: 45, y: 55, scale: 1.2 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 50, y: 50, scale: 1.6 }, hotspots: [] }
     },
     '01': {
       shared: { id: '01', title: 'ХОЛЛ', color: '#f07a1f', behavior: 'object-links' },
