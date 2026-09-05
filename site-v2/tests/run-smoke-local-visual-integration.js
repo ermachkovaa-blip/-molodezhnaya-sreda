@@ -85,7 +85,7 @@ async function panUntilOnScreen(page, vp, targetSelector, maxAttempts) {
 }
 
 var ZONE_ASSET_EXPECT = {
-  '02': { desktop: 'zone-02-base-clean-4k.png', mobile: 'zone-02-mobile-base-2160x3840.png', w: 3840, h: 2160, mw: 2160, mh: 3840 },
+  '02': { desktop: 'zone-02-desktop-base-research-wall-v2-4k.png', mobile: 'zone-02-mobile-base-research-wall-v2-2160x3840.png', w: 3840, h: 2160, mw: 2160, mh: 3840 },
   '03': { desktop: 'zone-03-project-workshop-realistic-expanded-4k.png', mobile: 'zone-03-mobile-base-clean-realistic-4k.png', w: 3840, h: 2160, mw: 2160, mh: 3840 }
 };
 

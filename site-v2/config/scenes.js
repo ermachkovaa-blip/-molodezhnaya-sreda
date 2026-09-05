@@ -36,14 +36,21 @@
 
     // Zone 02/03 Visual Integration (после Этапа 3): старый общий widescreen
     // scene-02-03.webp (одна картинка на обе зоны, разные cameraPreset)
-    // БОЛЬШЕ НЕ source of truth для 02/03 — заменён четырьмя независимыми
+    // БОЛЬШЕ НЕ source of truth для 02/03 — заменён независимыми
     // production-BASE (см. отчёт Visual Integration). Сам файл
     // scene-02-03.webp не удалён (это существующий V1-asset, V1 его
     // по-прежнему использует) — здесь просто больше нет на него ссылки.
     // Имена файлов — фактические, переданные заказчиком, не переименованы
     // "для единообразия".
-    'zone-02-desktop': { src: ASSETS_BASE + 'zone-02-base-clean-4k.png', w: 3840, h: 2160 },
-    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-2160x3840.png', w: 2160, h: 3840 },
+    //
+    // Zone 02 BASE UPDATE (после Visual Integration): первая версия
+    // (zone-02-base-clean-4k.png / zone-02-mobile-base-2160x3840.png)
+    // заменена заказчиком версией v2 (изменено содержимое исследовательской
+    // стены — карты/схемы/материалы интервью/отчёты вместо фотогалереи).
+    // Старые файлы удалены из репозитория (это V2-специфичные assets, не
+    // общие с V1, в отличие от scene-02-03.webp — удалять их безопасно).
+    'zone-02-desktop': { src: ASSETS_BASE + 'zone-02-desktop-base-research-wall-v2-4k.png', w: 3840, h: 2160 },
+    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-research-wall-v2-2160x3840.png', w: 2160, h: 3840 },
     'zone-03-desktop': { src: ASSETS_BASE + 'zone-03-project-workshop-realistic-expanded-4k.png', w: 3840, h: 2160 },
     'zone-03-mobile': { src: ASSETS_BASE + 'zone-03-mobile-base-clean-realistic-4k.png', w: 2160, h: 3840 }
   };
