@@ -5,16 +5,17 @@
 // как сущность — один и тот же, поэтому одна запись с двумя полями).
 //
 // explicit id — НЕ DOM-index. desktopCoords/mobileCoords — проценты от
-// картинки сцены scene-00-01 (те же координаты, что видит камера в обоих
-// режимах, если явно не указано иначе).
+// картинки сцены zone-01-desktop/zone-01-mobile соответственно (раздельные
+// координаты, композиции не идентичны между breakpoint'ами).
 //
-// ВАЖНО (см. отчёт по Этапу 2, known issues): точные координаты — первое
-// приближение, откалиброванное по общей композиции approved-иллюстрации
-// (полка с фото слева / карта-стенд / инфостойка / доска с фото справа /
-// скамья справа), а не по пиксельно-точной разметке — в approved-артворке
-// нет 5 явно обособленных "стендов объекта", какими их описывает
-// Production-ТЗ. Требуется финальная калибровка через ?debug=1 совместно
-// с заказчиком, как это делалось для V1.
+// FAST MODE production pass (01+06+07): Zone 01 получила собственный
+// production BASE взамен старого общего scene-00-01 placeholder'а — та же
+// сущность (5 объектов), но артворк теперь рисует их как 5 физических
+// стендов-карточек на столе ("ОБЪЕКТЫ ХАКАТОНА"), а не как элементы общей
+// композиции ресепшена. Координаты ниже — первое приближение по
+// percentage-grid поверх самого BASE (см. preflight), не финальная
+// пиксельная калибровка через ?debug=1 — она обычно уточняется после
+// первого визуального прохода.
 //
 // sourceMaterialsUrl / archiveFolderUrl — оба null, пока заказчик не
 // передал ссылки. Ничего не выдумано (см. решение от 05.09, п.5).
@@ -27,9 +28,8 @@
       id: 'bugulma',
       number: '01',
       title: 'Бугульма',
-      // на полке с фото у левого окна (было: прямо на строке текста)
-      desktopCoords: { x: 6.8, y: 72.5 },
-      mobileCoords: { x: 6.8, y: 72.5 },
+      desktopCoords: { x: 47, y: 70 },
+      mobileCoords: { x: 40, y: 69 },
       sourceMaterialsUrl: null,
       archiveFolderUrl: null
     },
@@ -37,9 +37,8 @@
       id: 'elabuga',
       number: '02',
       title: 'Елабуга',
-      // на самом стенде-карте (уже хорошо совпадало по debug-скрину)
-      desktopCoords: { x: 32, y: 63 },
-      mobileCoords: { x: 32, y: 63 },
+      desktopCoords: { x: 54, y: 70 },
+      mobileCoords: { x: 47, y: 69 },
       sourceMaterialsUrl: null,
       archiveFolderUrl: null
     },
@@ -47,9 +46,8 @@
       id: 'shemordan',
       number: '03',
       title: 'Шемордан',
-      // ближе к инфостойке/ноутбуку у ресепшена (было: в воздухе на фигуре человека)
-      desktopCoords: { x: 57.5, y: 71 },
-      mobileCoords: { x: 57.5, y: 71 },
+      desktopCoords: { x: 61, y: 70 },
+      mobileCoords: { x: 54, y: 69 },
       sourceMaterialsUrl: null,
       archiveFolderUrl: null
     },
@@ -57,10 +55,8 @@
       id: 'laishevo',
       number: '04',
       title: 'Лаишево',
-      // сдвинуто вправо и ниже — было: пересекалось с program wall
-      // (см. отчёт по Этапу 2, найденный и исправленный баг)
-      desktopCoords: { x: 84.5, y: 61 },
-      mobileCoords: { x: 84.5, y: 61 },
+      desktopCoords: { x: 68, y: 70 },
+      mobileCoords: { x: 61, y: 69 },
       sourceMaterialsUrl: null,
       archiveFolderUrl: null
     },
@@ -68,8 +64,8 @@
       id: 'stolbishche',
       number: '05',
       title: 'Столбище',
-      desktopCoords: { x: 89, y: 70 },
-      mobileCoords: { x: 89, y: 70 },
+      desktopCoords: { x: 75, y: 70 },
+      mobileCoords: { x: 68, y: 69 },
       sourceMaterialsUrl: null,
       archiveFolderUrl: null
     }

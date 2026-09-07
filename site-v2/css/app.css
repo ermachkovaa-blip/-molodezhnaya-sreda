@@ -27,6 +27,7 @@
   --yh-z-local: 10;
   --yh-z-bottom-nav: 40;
   --yh-z-header: 60;
+  --yh-z-overlay: 80;
   --yh-z-debug: 999;
 
   position: relative;
@@ -82,6 +83,7 @@
 }
 
 .yh-header__map-return {
+  flex: 0 0 auto;
   border: none;
   background: rgba(28, 26, 23, 0.06);
   color: var(--yh-ink);
@@ -94,7 +96,82 @@
 
 .yh-header__map-return:hover { background: rgba(28, 26, 23, 0.12); }
 
-.yh-header__actions { display: flex; align-items: center; }
+.yh-header__actions { flex: 0 0 auto; display: flex; align-items: center; }
+
+/* ---- top content nav — independent of the bottom spatial route; see
+   core/global-nav.js header comment. Desktop: a plain inline row,
+   centered in the remaining header space between КАРТА ↑ and the CTA.
+   Mobile (<=767px, same breakpoint SceneEngine already uses for
+   desktop/mobile scene selection): collapses behind a "МЕНЮ" toggle so
+   it never crowds the two buttons that must stay visible. ---- */
+.yh-header__content-nav {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.yh-header__content-nav-toggle {
+  display: none;
+  border: none;
+  background: rgba(28, 26, 23, 0.06);
+  color: var(--yh-ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 10px 14px;
+  border-radius: 999px;
+  min-height: 44px;
+}
+
+.yh-header__content-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.yh-app .yh-header__content-nav-link {
+  color: var(--yh-ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 6px 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.yh-app .yh-header__content-nav-link:hover,
+.yh-app .yh-header__content-nav-link:focus-visible {
+  border-bottom-color: var(--yh-ink);
+}
+
+@media (max-width: 767px) {
+  .yh-header__content-nav { flex: 0 0 auto; position: relative; justify-content: flex-start; }
+  .yh-header__content-nav-toggle { display: inline-block; }
+  .yh-header__content-nav-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    background: var(--yh-bg);
+    border: 1px solid rgba(28, 26, 23, 0.12);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    min-width: 180px;
+  }
+  .yh-header__content-nav.is-open .yh-header__content-nav-list { display: flex; }
+  .yh-app .yh-header__content-nav-link { padding: 10px 12px; min-height: 44px; display: flex; align-items: center; width: 100%; box-sizing: border-box; border-bottom: none; border-radius: 8px; }
+  .yh-app .yh-header__content-nav-link:hover,
+  .yh-app .yh-header__content-nav-link:focus-visible { background: rgba(28, 26, 23, 0.06); border-bottom: none; }
+}
 
 /* .yh-app .yh-cta (not just .yh-cta): needs specificity ≥ ".yh-app a"
    above, or that rule's color:inherit silently wins over color:#fff here
@@ -154,19 +231,36 @@
   border: none;
   background: transparent;
   color: rgba(244, 239, 232, 0.6);
-  padding: 6px 12px;
-  border-radius: 999px;
+  padding: 6px 14px;
+  border-radius: 18px;
   min-height: 44px;
   font-size: 0.65rem;
+  transition: background 150ms ease, color 150ms ease;
 }
 
+/* active zone — real color distinction (customer request: "пусть просто
+   отличается по цвету как активная"), not just a subtle white tint.
+   Uses that zone's own --yh-zone-color (same per-zone color already used
+   for the Zone 00 map dots and the global Map view — one convention, not
+   a new one). Dark text throughout: readable against every zone color in
+   config/scenes.js, including the lighter ones (yellow, orange). */
 .yh-bottom-nav__item.is-active {
-  background: rgba(244, 239, 232, 0.12);
-  color: #fff;
+  background: var(--yh-zone-color, rgba(244, 239, 232, 0.12));
+  color: #16140f;
 }
 
 .yh-bottom-nav__num { font-weight: 700; font-size: 0.75rem; }
 .yh-bottom-nav__title { white-space: nowrap; }
+
+.yh-bottom-nav__here {
+  white-space: nowrap;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-top: 1px;
+}
+
+.yh-bottom-nav__here[hidden] { display: none; }
 
 /* ================= MAP VIEW ================= */
 
@@ -447,18 +541,40 @@
 .yh-zone00-hotspot__label {
   position: absolute;
   left: 50%;
-  bottom: calc(100% + 6px);
+  bottom: calc(100% + 11px);
   transform: translateX(-50%);
   white-space: nowrap;
   background: rgba(28, 26, 23, 0.88);
   color: #fff;
-  font-size: 0.68rem;
+  /* 1.8x per customer request ("увеличь масштаб этих кнопок" — the
+     title+description tag over the map circles, not the circles
+     themselves): font-size, padding, radius and the description's
+     max-width all scaled by the same 1.8 factor from their prior values
+     (0.68rem/5px 9px/6px/160px). */
+  font-size: 1.224rem;
   font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 9px 16px;
+  border-radius: 11px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 150ms ease;
+  text-align: center;
+}
+
+/* title + description on the map itself, on hover (see
+   core/zone-00-map.js labelText — the bottom-nav no longer carries this
+   text, per customer follow-up: "прям на карте при наведении на
+   кружочек высвечивается название и описание"). */
+.yh-zone00-hotspot__label-title { display: block; }
+
+.yh-zone00-hotspot__label-desc {
+  display: block;
+  font-weight: 400;
+  font-size: 0.9em;
+  opacity: 0.85;
+  margin-top: 4px;
+  white-space: normal;
+  max-width: 288px;
 }
 
 .yh-zone00-hotspot__item:hover .yh-zone00-hotspot__label,
@@ -612,31 +728,1110 @@
   opacity: 1 !important;
 }
 
-/* ================= PROGRAM WALL (Zone 01, hover-only, no click, no
-   keyboard focus — a focusable element with no action would be an
-   accessibility anti-pattern, see Этап 2 report "known issues") ================= */
+/* ================= WORKSHOP CALLOUTS (Zone 02/03 — see
+   core/zone-hotspot-scene.js buildCallouts). Purely decorative,
+   pointer-events:none throughout: the real click target stays the
+   existing invisible .yh-material-hotspot__item dot, exactly where it
+   already was — this overlay just labels it from a nearby, less
+   crowded anchor point, connected by a thin line. ================= */
 
-.yh-program-wall {
+.yh-workshop-callouts {
   position: absolute;
   inset: 0;
-  z-index: var(--yh-z-local);
+  pointer-events: none;
+  z-index: 12;
+}
+
+.yh-workshop-callouts__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.yh-workshop-callouts__line {
+  stroke: var(--yh-callout-color, var(--yh-accent));
+  stroke-width: 2;
+  opacity: 0.8;
+}
+
+.yh-workshop-callouts__badge {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--yh-callout-color, var(--yh-accent));
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.yh-workshop-callouts__card {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  margin-top: -12px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #1c1a17;
+  border-radius: 10px;
+  padding: 8px 13px 9px 14px;
+  max-width: 168px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.yh-workshop-callouts__card::before {
+  content: '+';
+  position: absolute;
+  left: -8px;
+  bottom: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--yh-callout-color, var(--yh-accent));
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.yh-workshop-callouts__title {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+
+.yh-workshop-callouts__desc {
+  margin-top: 3px;
+  font-size: 0.56rem;
+  line-height: 1.35;
+  color: #4a4640;
+}
+
+/* mobile: title only, no description line — explicit customer direction
+   ("на мобильной версии только названия, без описаний") */
+@media (max-width: 767px) {
+  .yh-workshop-callouts__desc { display: none; }
+  .yh-workshop-callouts__card { max-width: 128px; padding: 6px 10px; }
+  .yh-workshop-callouts__badge { width: 22px; height: 22px; font-size: 0.56rem; }
+}
+
+/* ================= ZONE 03 ANNOTATIONS (see
+   core/zone-03-workshop.js) — "architectural exhibition" look per
+   customer spec: saturated blue accent, white label, dark text, small
+   radius, no shadow/blur/glassmorphism. Distinct from, and independent
+   of, Zone 02's .yh-workshop-callouts above. ================= */
+
+.yh-workshop-annotation-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.yh-workshop-annotation__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.yh-workshop-annotation__line {
+  /* thinner per customer request ("уменьшить выноски") — was 1.5/2.25 */
+  stroke: #2f6fed;
+  stroke-width: 1;
+  opacity: 0.7;
+  transition: opacity 150ms ease, stroke-width 150ms ease;
+}
+
+.yh-workshop-annotation__line.is-emphasized {
+  opacity: 1;
+  stroke-width: 1.6;
+}
+
+/* the real click target, sitting exactly on the physical object */
+.yh-workshop-annotation__plus {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #2f6fed;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  pointer-events: auto;
+  cursor: pointer;
+  box-shadow: 0 1px 5px rgba(20, 40, 90, 0.35);
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.yh-workshop-annotation__plus:hover,
+.yh-workshop-annotation__plus:focus-visible {
+  transform: translate(-50%, -50%) scale(1.12);
+  background: #1c56d6;
+}
+
+.yh-workshop-annotation__plus:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* the white annotation card — badge attached/overlapping its left edge,
+   per the reference ("[ 01 ] [ TITLE / short description ]"). Anchored by
+   left/top = its own left-center edge (translateY only, no translateX),
+   so the badge sits exactly on that edge via a negative left offset. */
+.yh-workshop-annotation__card {
+  position: absolute;
+  transform: translateY(-50%);
+  background: #fff;
+  color: #16140f;
+  border-radius: 11px;
+  /* further ~+15% per customer request ("нужно увеличить карточки") on
+     top of the earlier 1.7x pass (was 12px 20px 12px 51px / 323px). Then
+     narrowed + fonts bumped again ("увеличим карточки, шрифт... можно
+     сделать вытянутыми вертикально") — a narrower max-width plus bigger
+     type makes the card wrap into more vertical lines instead of staying
+     wide, which is the "вытянутыми вертикально" shape requested. */
+  padding: 16px 24px 16px 60px;
+  max-width: 300px;
+  box-shadow: 0 2px 8px rgba(20, 30, 60, 0.18);
+}
+
+/* no numbered badge (e.g. Zone 06 role cards — a person isn't part of a
+   numbered sequence) — same card otherwise, just symmetric padding since
+   there's no badge notch on the left to clear. */
+.yh-workshop-annotation__card--no-badge {
+  padding-left: 23px;
+}
+
+.yh-workshop-annotation__badge {
+  position: absolute;
+  left: -27px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: #2f6fed;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 1.28rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(20, 40, 90, 0.3);
+}
+
+.yh-workshop-annotation__title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.yh-workshop-annotation__desc {
+  margin-top: 6px;
+  font-size: 1.18rem;
+  line-height: 1.32;
+  color: rgba(22, 20, 15, 0.72);
+}
+
+/* mobile: cards stay ALWAYS VISIBLE here too — but TITLE ONLY, no
+   description (customer follow-up: "в мобильной версии нужно чтобы
+   оставались только названия, без описания" — reverses the earlier
+   "description too" direction for mobile specifically). Compact
+   typography/padding (still 1.7x'd from their own prior compact values)
+   + a larger "+" hit area (≥44px touch target). */
+@media (max-width: 767px) {
+  /* bigger jump than desktop's — "нужно увеличить карточки, на телефоне
+     особенно" (was 8px 15px 8px 37px / 58vw / 8px). */
+  .yh-workshop-annotation__card {
+    /* "увеличим карточки, шрифт... на телефоне главное чтобы было видно
+       текст" — bumped again, and narrowed (72vw -> 58vw) so the card
+       grows taller/vertical instead of wider, per "вытянутыми
+       вертикально". */
+    padding: 14px 20px 14px 50px;
+    max-width: 58vw;
+    border-radius: 10px;
+  }
+  .yh-workshop-annotation__card--no-badge {
+    padding-left: 20px;
+  }
+  .yh-workshop-annotation__badge {
+    width: 42px;
+    height: 42px;
+    left: -21px;
+    font-size: 1.05rem;
+  }
+  .yh-workshop-annotation__title { font-size: 1.18rem; }
+  /* default (Zone 02): description STAYS on mobile, just sized down —
+     explicit, distinct instruction from Zone 03's mobile ("Do NOT hide
+     the description simply because it is mobile"). */
+  .yh-workshop-annotation__desc { font-size: 1.02rem; margin-top: 6px; }
+  .yh-workshop-annotation__plus {
+    /* the visible circle itself IS the ≥44px touch target here — a
+       padding-based hit-area trick would draw the white ring/border at
+       the padded (larger) box while the blue fill stayed small, leaving
+       a visible gap between them, so the honest fix is just sizing the
+       whole circle to the real minimum. */
+    width: 44px;
+    height: 44px;
+    font-size: 1.05rem;
+  }
+
+  /* Zone 03 opts into titles-only on mobile (its own explicit, separate
+     instruction) via this modifier class — see core/zone-03-workshop.js */
+  .yh-workshop-annotation-layer--titles-only .yh-workshop-annotation__desc {
+    display: none;
+  }
+  .yh-workshop-annotation-layer--titles-only .yh-workshop-annotation__card {
+    max-width: 50vw;
+  }
+}
+
+.yh-app--debug .yh-workshop-annotation__plus {
+  outline: 1px dashed rgba(255, 40, 40, 0.9);
+  outline-offset: 2px;
+}
+
+.yh-app--debug .yh-workshop-annotation__card {
+  outline: 1px dashed rgba(0, 120, 255, 0.9);
+}
+
+/* invisible outside ?debug=1 — marks the physical object/target position
+   for hotspots that have no real "+" yet (see core/zone-03-workshop.js) */
+.yh-workshop-annotation__target-debug { display: none; }
+
+.yh-app--debug .yh-workshop-annotation__target-debug {
+  display: block;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 40, 40, 0.85);
+  outline: 1px dashed rgba(255, 40, 40, 0.9);
+  outline-offset: 3px;
+}
+
+/* ================= ZONE 04 ARCHIVE DRAWERS ================= */
+
+.yh-archive-hotspot__item {
+  position: absolute;
+  width: 6%;
+  height: 6.5%;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.yh-archive-hotspot__dot {
+  display: none; /* the drawer plate itself is the visible affordance — no extra dot needed */
+}
+
+.yh-archive-hotspot__item:focus-visible {
+  outline: 2px solid rgba(47, 125, 238, 0.85);
+  outline-offset: 2px;
+}
+
+/* desktop hover/focus glow — code-only, no image asset (see
+   core/zone-04-archive.js header: the simulated physical pull-out never
+   read as realistic, simplified to a plain glow). Lives inside
+   .yh-scene-stage (a sibling of .yh-scene-image, NOT the viewport-fixed
+   overlayRoot the lightbox uses) so it inherits the same pan/zoom
+   transform as the BASE and never screen-centers. Sized to that drawer's
+   own row (config peekBoxCoords/peekBoxSize); the radial-gradient itself
+   fades to transparent before the box edge, so the glow reads as soft/
+   feathered rather than a hard-edged rectangle.
+   mix-blend-mode:soft-light — the fix for "looks like a separate object
+   on top": blends into the ACTUAL drawer-face pixels underneath instead of
+   painting an opaque-ish shape over them, so the face itself reads as lit
+   up rather than something floating in front of it. soft-light specifically
+   (not screen, which was tried first) — screen pushes already-light pixels
+   (the cream number plate, its text) all the way to white, erasing the
+   text; soft-light has a much gentler curve on light pixels while still
+   visibly brightening the darker wood around them. */
+.yh-archive-peek-glow {
+  position: absolute;
+  z-index: 4;
+  background: radial-gradient(ellipse at center, rgba(255, 214, 130, 0.9) 0%, rgba(255, 200, 110, 0.5) 45%, rgba(255, 200, 110, 0) 78%);
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 220ms ease-out;
   pointer-events: none;
 }
 
-.yh-program-wall__stage {
-  position: absolute;
-  width: 13%;
-  height: 4%;
-  transform: translate(-50%, -50%);
-  border-radius: 4px;
-  pointer-events: auto;
-  transition: box-shadow 150ms ease, background 150ms ease;
+.yh-archive-peek-glow.is-active { opacity: 1; }
+
+/* cursor-following "ОТКРОЙ" hint — lives in the viewport-fixed
+   .yh-overlay-root (not sceneStage), positioned via left/top in px set
+   directly from clientX/clientY, so position:fixed resolves against the
+   real viewport untouched by the scene's own pan/zoom transform. */
+.yh-archive-hover-hint {
+  position: fixed;
+  z-index: 90;
+  transform: translate(0, -50%);
+  background: rgba(28, 26, 23, 0.92);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border-radius: 999px;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
-.yh-program-wall__stage:hover {
-  background: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+.yh-archive-hover-hint[hidden] { display: none; }
+
+/* .yh-overlay-root (mount.js) — inert wrapper, empty until a zone behavior
+   uses it. Fixed to the real viewport (sibling of the transformed scene,
+   see mount.js comment), so a lightbox anchored here never inherits the
+   scene's pan/zoom. pointer-events:none at rest so an empty overlay layer
+   never blocks clicks meant for the page underneath. */
+.yh-overlay-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--yh-z-overlay); /* above header/bottom-nav too — a true lightbox covers everything */
+  pointer-events: none;
 }
+
+.yh-archive-lightbox {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.yh-archive-lightbox[hidden] { display: none; }
+
+.yh-archive-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 9, 8, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: background 260ms ease-out, backdrop-filter 260ms ease-out, -webkit-backdrop-filter 260ms ease-out;
+}
+
+.yh-archive-lightbox.is-open .yh-archive-lightbox__backdrop {
+  background: rgba(10, 9, 8, 0.62);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.yh-archive-lightbox__content {
+  position: relative;
+  z-index: 1;
+  max-width: min(88vw, 1100px);
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+
+.yh-archive-lightbox.is-open .yh-archive-lightbox__content {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.yh-archive-lightbox__image {
+  max-width: 100%;
+  max-height: 62vh;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.yh-archive-lightbox__image[hidden] { display: none; }
+
+/* compact architectural signage, not a big white modal card */
+.yh-archive-lightbox__panel {
+  margin-top: 14px;
+  min-width: 220px;
+  max-width: 320px;
+  background: rgba(250, 247, 240, 0.97);
+  color: #1c1a17;
+  border-radius: 8px;
+  padding: 12px 16px 14px;
+  text-align: center;
+}
+
+.yh-archive-lightbox__title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+
+.yh-archive-lightbox__body { font-size: 0.76rem; line-height: 1.4; }
+
+.yh-archive-lightbox__link {
+  color: #1f8f5f;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.yh-archive-lightbox__link:hover,
+.yh-archive-lightbox__link:focus-visible { text-decoration: underline; }
+
+.yh-archive-lightbox__empty {
+  color: rgba(28, 26, 23, 0.65);
+  font-style: italic;
+}
+
+.yh-archive-lightbox__close {
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(250, 247, 240, 0.97);
+  font-size: 1.3rem;
+  line-height: 1;
+  color: #1c1a17;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.yh-archive-lightbox__close:hover,
+.yh-archive-lightbox__close:focus-visible { color: #000; }
+
+/* ================= ZONE 05 GALLERY / LIBRARY ================= */
+
+/* static placed objects — always visible, never swapped. object-fit:
+   contain so the source PNG's own aspect ratio is preserved inside its
+   percent box regardless of viewport, never stretched. */
+.yh-gallery-shelf-image,
+.yh-gallery-fabric-image {
+  position: absolute;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* delicate shelf affordance ("небольшим свечением") — a soft glow behind
+   the shelf face, shown on desktop cursor-proximity (140-180px, see
+   zone-05-gallery.js) and pulsed briefly on every tap/click release
+   trigger on mobile. Same soft-light blend approach as Zone 04's drawer
+   glow so it reads as the shelf itself lighting up, not an overlay shape
+   pasted on top. */
+.yh-gallery-shelf-glow {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(ellipse at center, rgba(255, 214, 130, 0.85) 0%, rgba(255, 200, 110, 0.45) 45%, rgba(255, 200, 110, 0) 78%);
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+.yh-gallery-shelf-glow.is-active { opacity: 1; }
+
+/* shelf rests on the floor -> anchor from the BOTTOM of its box (any
+   leftover space from object-fit:contain collapses to the top, which is
+   correct — floors don't float). */
+.yh-gallery-shelf-image { object-position: center bottom; }
+
+/* fabric hangs from the ceiling -> anchor from the TOP of its box instead.
+   With object-position:center bottom (shelf's rule) any leftover vertical
+   space collapses to the TOP, which is exactly backwards for something
+   hung by its top edge — that leftover gap was the real cause of "floats
+   in mid-air with no visible attachment" (real bug, not just an offset to
+   nudge: the box was tall enough that ~23% of it sat empty above the
+   rendered banner). Anchoring top instead makes the banner start exactly
+   at the box's own top edge, at ceiling height, with no arbitrary gap.
+   A slight rotation toward the shelf reads as natural sway/perspective
+   rather than a perfectly flat rectangle. */
+.yh-gallery-fabric-image {
+  object-position: center top;
+  transform-origin: 50% 0;
+  /* "колыхался словно легкая ткань под ветром" — code-only, no new asset:
+     a slow keyframe loop varies the same rotateY (+ a touch of skew/scaleX)
+     the static rule below used to fix in place, so the banner keeps its
+     3D lean toward the shelf but never holds perfectly still. */
+  animation: yh-fabric-wave 6s ease-in-out infinite;
+}
+
+@keyframes yh-fabric-wave {
+  0%   { transform: perspective(900px) rotateY(18deg) skewX(0deg) scaleX(1); }
+  25%  { transform: perspective(900px) rotateY(19.5deg) skewX(0.8deg) scaleX(0.993); }
+  50%  { transform: perspective(900px) rotateY(16.5deg) skewX(-0.6deg) scaleX(1.005); }
+  75%  { transform: perspective(900px) rotateY(18.8deg) skewX(0.5deg) scaleX(0.996); }
+  100% { transform: perspective(900px) rotateY(18deg) skewX(0deg) scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yh-gallery-fabric-image { animation: none; transform: perspective(900px) rotateY(18deg); }
+}
+
+/* shelf + fabric hotspots — transparent click targets, no visible dot
+   (the shelf/banner graphics are themselves the affordance) */
+.yh-gallery-hotspot__item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.yh-gallery-hotspot__dot { display: none; }
+
+.yh-gallery-hotspot__item:hover,
+.yh-gallery-hotspot__item:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.yh-gallery-hotspot__item:focus-visible {
+  outline: 2px solid rgba(47, 125, 238, 0.85);
+  outline-offset: 2px;
+}
+
+.yh-gallery-hotspot__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.yh-gallery-hotspot__item:hover .yh-gallery-hotspot__label,
+.yh-gallery-hotspot__item:focus-visible .yh-gallery-hotspot__label {
+  opacity: 1;
+}
+
+.yh-gallery-hotspot__caption {
+  position: absolute;
+  transform: translate(-50%, 0);
+  background: rgba(28, 26, 23, 0.92);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  max-width: 180px;
+  pointer-events: none;
+  white-space: pre-line;
+}
+
+.yh-gallery-hotspot__caption[hidden] { display: none; }
+
+/* flying pages — real <button>s so the existing gesture-controller's
+   tap-vs-drag arbitration (a scene drag suppresses the synthetic click
+   that follows it) applies automatically; no bespoke drag-detection here. */
+.yh-gallery-page {
+  position: absolute;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  width: 4.6%;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  pointer-events: auto;
+}
+
+.yh-gallery-page--depth1 { width: 3.7%; opacity: 0.85; }
+.yh-gallery-page--depth2 { width: 2.9%; filter: blur(0.4px); opacity: 1; }
+/* depth0 (nearest/largest) is the most transparent of the three, depth2
+   (farthest/smallest) the most opaque — an inverted-from-usual depth cue
+   requested explicitly over the default "near=sharp,far=hazy" convention:
+   the big close pages would otherwise dominate/clutter the scene, so they
+   recede via transparency instead of via size alone. */
+.yh-gallery-page--depth0 { opacity: 0.7; }
+
+.yh-gallery-page__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.yh-gallery-page:focus-visible {
+  outline: 2px solid rgba(47, 125, 238, 0.85);
+  outline-offset: 3px;
+}
+
+.yh-gallery-page.is-hovered {
+  filter: none;
+  opacity: 1;
+}
+
+.yh-gallery-page.is-hovered .yh-gallery-page__img {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* reader — same contract as .yh-archive-lightbox (Zone 04): darken+blur
+   backdrop, image at its own aspect ratio, close ×/Escape/backdrop */
+.yh-gallery-reader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.yh-gallery-reader[hidden] { display: none; }
+
+.yh-gallery-reader__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 9, 8, 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: background 260ms ease-out, backdrop-filter 260ms ease-out, -webkit-backdrop-filter 260ms ease-out;
+}
+
+.yh-gallery-reader.is-open .yh-gallery-reader__backdrop {
+  background: rgba(10, 9, 8, 0.66);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.yh-gallery-reader__content {
+  position: relative;
+  z-index: 1;
+  max-width: min(70vw, 720px);
+  max-height: 86vh;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+
+.yh-gallery-reader.is-open .yh-gallery-reader__content {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.yh-gallery-reader__image {
+  display: block;
+  max-width: 100%;
+  max-height: 86vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.yh-gallery-reader__close {
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(250, 247, 240, 0.97);
+  font-size: 1.3rem;
+  line-height: 1;
+  color: #1c1a17;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.yh-gallery-reader__close:hover,
+.yh-gallery-reader__close:focus-visible { color: #000; }
+
+/* ================= ZONE 06 TEAM / CHAIR ================= */
+
+.yh-team-chair-image {
+  position: absolute;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+  z-index: 3;
+  transition: transform 260ms ease;
+  transform-origin: 50% 100%;
+}
+
+/* "выдвигается" on hover/focus of the chair hotspot (see
+   core/zone-06-team.js) — a code-only pulled-toward-viewer nudge, same
+   spirit as Zone 04's code-only drawer glow (no new asset needed). */
+.yh-team-chair-image.is-pulled {
+  transform: translateY(4%) scale(1.06);
+}
+
+/* same generic dot/label/caption look as Zone 01's object hotspots —
+   deliberately reused, not reinvented, per "минимальный интерфейс". */
+.yh-team-hotspot__item {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yh-team-hotspot__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1.5px solid rgba(28, 26, 23, 0.55);
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.yh-team-hotspot__item:hover .yh-team-hotspot__dot,
+.yh-team-hotspot__item:focus-visible .yh-team-hotspot__dot {
+  transform: scale(1.6);
+  background: #fff;
+}
+
+.yh-team-hotspot__item:focus-visible { outline: none; }
+
+.yh-team-hotspot__item:focus-visible .yh-team-hotspot__dot {
+  box-shadow: 0 0 0 3px rgba(47, 125, 238, 0.7);
+}
+
+.yh-team-hotspot__label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.yh-team-hotspot__item:hover .yh-team-hotspot__label,
+.yh-team-hotspot__item:focus-visible .yh-team-hotspot__label {
+  opacity: 1;
+}
+
+/* the chair's hotspot box is tall (covers its whole footprint, not a small
+   dot — see ZONE_06_CHAIR.hotspotDesktopSize), so the generic
+   bottom:calc(100% + 4px) label rule above anchors "ПОДАТЬ ЗАЯВКУ" to the
+   TOP of that tall box — far above the chair itself, near the people's
+   heads. Override just for the chair: anchor it lower, over the chair's
+   own backrest area, and size it up slightly per customer request. */
+.yh-team-hotspot__item[data-hotspot-id="chair"] .yh-team-hotspot__label {
+  left: 50%;
+  top: 64%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  padding: 7px 14px;
+}
+
+.yh-team-hotspot__caption {
+  position: absolute;
+  transform: translate(-50%, 0);
+  background: rgba(28, 26, 23, 0.92);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  max-width: 180px;
+  pointer-events: none;
+  white-space: pre-line;
+}
+
+.yh-team-hotspot__caption[hidden] { display: none; }
+
+/* ================= ZONE 07 APPLY CTA ================= */
+
+.yh-apply-hotspot__item {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.yh-apply-hotspot__item:hover,
+.yh-apply-hotspot__item:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.yh-apply-hotspot__item:focus-visible {
+  outline: 2px solid rgba(47, 125, 238, 0.85);
+  outline-offset: 2px;
+}
+
+/* ---- application / contact banner ----
+   Lives inside .yh-scene-stage (percent box, set inline from
+   config/zone-07-content.js) — it is NOT viewport-fixed and scales/pans
+   with the camera like any other scene object, by design (a real poster
+   would too). Opaque solid panel (no glass/blur/white-SaaS-card look),
+   sharp corners, thin rules — reads as a printed exhibition panel rather
+   than a web card. Font stack is the project's existing system stack
+   (see :root) — see core/zone-07-cta.js header for why "Druk Cond Cy
+   Super"/"Apercu Pro" aren't used (neither exists anywhere in this repo,
+   no license/files delivered — not introduced here either). */
+/* LIGHT theme (customer revision, replaces the earlier dark-panel pass):
+   same "printed poster, not a web card" sharp-corner/thin-rule language,
+   just inverted to a light surface — dark ink text on the project's cream
+   background instead of the reverse. Centered on screen (both axes,
+   within the space that keeps the right Zone 07 wall/board/speaker
+   clear — see config/zone-07-content.js for the exact box), primary CTA
+   block enlarged, secondary contact-form block shrunk, and the same
+   proportions/typography used on both desktop and mobile (only the
+   outer box's position/size is calibrated per breakpoint). */
+.yh-apply-banner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  /* semi-transparent — customer revision: the scene behind should still
+     read through the panel, not a fully opaque surface. */
+  background: rgba(244, 239, 232, 0.86);
+  color: var(--yh-ink);
+  /* REAL BUG (found via computed-style inspection, not a guess): percent
+     padding always resolves against the CONTAINING BLOCK's width (the
+     scene stage, which is huge) for an absolutely-positioned element —
+     never against the padded element's own box, even for top/bottom.
+     At this banner's old, much larger size that mistake was invisible
+     (the resulting px value was still small relative to the box); at
+     this shrunk size the same percentages computed to ~157px of
+     left+right padding on a ~316px-wide box, leaving ~2px for content
+     and collapsing every child to 0 width. Values below are sized
+     against the STAGE width for the CURRENT banner box, not a percent
+     of the box itself. */
+  padding: 0.7% 0.9%;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid rgba(28, 26, 23, 0.12);
+}
+
+.yh-apply-banner__section { display: flex; flex-direction: column; }
+/* primary (CTA) now the dominant block; secondary (form) deliberately
+   small — customer revision, was roughly the reverse before. */
+.yh-apply-banner__section--primary { flex: 0 0 50%; min-height: 0; }
+.yh-apply-banner__section--secondary {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.yh-apply-banner__eyebrow {
+  font-size: 0.44rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(28, 26, 23, 0.55);
+  margin: 0 0 2px;
+}
+
+.yh-apply-banner__heading {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin: 0 0 3px;
+}
+
+.yh-apply-banner__lead {
+  font-size: 0.56rem;
+  line-height: 1.3;
+  color: rgba(28, 26, 23, 0.75);
+  margin: 0 0 6px;
+}
+
+/* .yh-app .yh-apply-banner__cta (not just .yh-apply-banner__cta): the
+   broad ".yh-app a { color: inherit }" reset (see HEADER section, same
+   fix already applied to .yh-cta) otherwise wins on specificity — this
+   keeps the button's own colors regardless of that reset. Solid ink
+   button (same language as the header's .yh-cta pill) for a strong,
+   enlarged primary action against the now-light panel. */
+.yh-app .yh-apply-banner__cta {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--yh-bg);
+  background: var(--yh-ink);
+  padding: 7px 12px;
+  border-radius: 0;
+}
+
+.yh-app .yh-apply-banner__cta:hover { background: #000; }
+.yh-app .yh-apply-banner__cta[aria-disabled='true'] { opacity: 0.5; cursor: default; }
+
+.yh-apply-banner__rule {
+  height: 1px;
+  background: rgba(28, 26, 23, 0.15);
+  margin: 4px 0;
+  flex: 0 0 auto;
+}
+
+/* eyebrow + subheading share one line ("ЕСТЬ ВОПРОС?" / "НАПИШИ НАМ") —
+   both copy strings kept, just laid out side by side rather than
+   stacked. Customer revision: both halves now the SAME font size/weight
+   (were two different sizes/weights before) and pushed a bit further
+   below the button/rule with extra top margin. */
+.yh-apply-banner__subheading-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 4px 0 3px;
+}
+.yh-apply-banner__subheading-row .yh-apply-banner__eyebrow {
+  margin: 0;
+  font-size: 0.46rem;
+  font-weight: 700;
+  color: rgba(28, 26, 23, 0.85);
+}
+
+.yh-apply-banner__subheading {
+  font-size: 0.46rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  margin: 0;
+  color: rgba(28, 26, 23, 0.85);
+}
+
+.yh-apply-banner__form {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* name + email share a row on anything wide enough to fit two fields —
+   pure spatial economy, still stacks on narrow mobile banners. */
+.yh-apply-banner__form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+}
+
+.yh-apply-banner__form-row .yh-apply-banner__field { flex: 1 1 70px; }
+
+/* message + submit share a row instead of the button stacking below —
+   saves a full row's height; button aligns to the textarea's baseline.
+   Still wraps to its own stacked rows below when the panel is too
+   narrow for both side by side. */
+.yh-apply-banner__form-row--message { align-items: flex-end; }
+.yh-apply-banner__form-row--message .yh-apply-banner__field { flex: 1 1 60px; min-width: 0; }
+
+.yh-apply-banner__field {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.yh-apply-banner__field-label {
+  font-size: 0.4rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(28, 26, 23, 0.5);
+}
+
+/* minimal input styling — a single underline rule, no border-radius, no
+   box-shadow, no generic "form card" chrome. */
+.yh-apply-banner__field-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(28, 26, 23, 0.25);
+  border-radius: 0;
+  color: var(--yh-ink);
+  font-size: 0.46rem;
+  font-family: inherit;
+  padding: 1px 2px;
+  outline: none;
+  resize: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.yh-apply-banner__field-input::placeholder { color: rgba(28, 26, 23, 0.3); }
+
+.yh-apply-banner__field-input:focus {
+  border-bottom-color: var(--yh-ink);
+}
+
+textarea.yh-apply-banner__field-input { min-height: 1em; }
+
+.yh-apply-banner__submit {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  white-space: nowrap;
+  background: transparent;
+  border: 1px solid var(--yh-ink);
+  border-radius: 0;
+  color: var(--yh-ink);
+  font-size: 0.42rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  cursor: pointer;
+}
+
+.yh-apply-banner__submit:hover { background: var(--yh-ink); color: var(--yh-bg); }
+.yh-apply-banner__submit:disabled { opacity: 0.5; cursor: default; }
+
+.yh-apply-banner__status {
+  font-size: 0.6rem;
+  line-height: 1.3;
+  min-height: 1em;
+  margin-top: 2px;
+}
+
+.yh-apply-banner__status--error { color: #c0392b; }
+.yh-apply-banner__status--success { color: #2e7d32; }
+.yh-apply-banner__status--info { color: rgba(28, 26, 23, 0.65); }
 
 /* ================= SCENE VIEW ================= */
 
@@ -716,12 +1911,6 @@
 .yh-app--debug .yh-passage-hotspot__label,
 .yh-app--debug .yh-map-hotspot__label {
   opacity: 1 !important;
-}
-
-.yh-app--debug .yh-program-wall__stage {
-  outline: 1px dashed rgba(0, 140, 255, 0.75);
-  outline-offset: -1px;
-  background: rgba(0, 140, 255, 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {

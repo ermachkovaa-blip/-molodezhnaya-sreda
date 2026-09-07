@@ -64,7 +64,57 @@
     // zone-00-mobile-base-clean-4k.png (удалён из репозитория — тот BASE
     // не содержал ни intro-стенда, ни стенда "КАРТА ХАКАТОНА"). Новый
     // BASE показывает оба физических стенда сразу, с запасом для pan.
-    'zone-00-mobile': { src: ASSETS_BASE + 'zone-00-mobile-base-expanded-centered-v2-2160x3840.png', w: 2160, h: 3840 }
+    'zone-00-mobile': { src: ASSETS_BASE + 'zone-00-mobile-base-expanded-centered-v2-2160x3840.png', w: 2160, h: 3840 },
+
+    // Zone 04 (АРХИВ / КАРТОТЕКА): СОБСТВЕННЫЙ независимый BASE — больше не
+    // делит scene-04-05 с Zone 05 (та запись ниже не трогалась, Zone 05 вне
+    // скоупа). "closed" — это состояние ВСЕХ 5 ящиков закрыты; открытые
+    // per-town foreground'ы — отдельные full-canvas RGBA-оверлеи того же
+    // размера, регистрируются в config/zone-04-content.js, не здесь (эта
+    // секция только про сами SCENE_IMAGES/BASE зоны).
+    'zone-04-desktop': { src: ASSETS_BASE + 'zone-04-desktop-base-closed-4k.png', w: 3840, h: 2160 },
+    'zone-04-mobile': { src: ASSETS_BASE + 'zone-04-mobile-base-closed-2160x3840.png', w: 2160, h: 3840 },
+
+    // Zone 05 (ГАЛЕРЕЯ / БИБЛИОТЕКА): СОБСТВЕННЫЙ независимый BASE —
+    // больше не делит scene-04-05 с Zone 04 (та запись выше не трогалась,
+    // Zone 04 уже реализована отдельно). Комната пустая — сам стеллаж,
+    // полотно и летающие страницы — отдельные PNG-оверлеи поверх этого
+    // BASE, регистрируются в config/zone-05-content.js.
+    'zone-05-desktop': { src: ASSETS_BASE + 'zone-05-desktop-base-4k.png', w: 3840, h: 2161 },
+    'zone-05-mobile': { src: ASSETS_BASE + 'zone-05-mobile-base-2160x3840.png', w: 2160, h: 3840 },
+
+    // Zone 01 (ХОЛЛ) FAST MODE production pass: СОБСТВЕННЫЙ независимый
+    // BASE — больше не делит scene-00-01 с Zone 00. Redesign vs. the old
+    // shared placeholder: bakes in all 5 program stages (was a known 4-vs-5
+    // mismatch), a "принципы хакатона" block, and the 5 objects as physical
+    // standing cards on a table, plus the passage-to-02 door.
+    'zone-01-desktop': { src: ASSETS_BASE + 'zone-01-desktop-3840x2160.png', w: 3840, h: 2160 },
+    'zone-01-mobile': { src: ASSETS_BASE + 'zone-01-mobile-2160x3840.png', w: 2160, h: 3840 },
+
+    // Zone 06 (КОМАНДА) FAST MODE production pass: own dedicated BASE,
+    // no longer sharing scene-06-07 with Zone 07 (that entry below is left
+    // untouched — Zone 07 gets its own dedicated entry too). This is the
+    // "clean" variant (no chair baked in) — the empty chair + "+твоё
+    // место" jacket is a separate foreground overlay, see
+    // config/zone-06-content.js. Below the project's usual 4K convention
+    // (delivered at ~1671x941 / 941x1672) — usable, flagged in preflight.
+    // FAST QA replacement (customer-provided high-resolution re-render,
+    // 05.09 upload): same approved composition, confirmed by direct visual
+    // comparison against the previous file before swapping — camera/
+    // hotspots/annotations untouched, only src+w/h updated.
+    'zone-06-desktop': { src: ASSETS_BASE + 'zone-06-desktop-base.png', w: 3840, h: 2162 },
+    'zone-06-mobile': { src: ASSETS_BASE + 'zone-06-mobile-base.png', w: 2161, h: 3840 },
+
+    // Zone 07 (АМФИТЕАТР) FAST MODE production pass: own dedicated BASE.
+    // Desktop delivered at an unusual ~2.45:1 aspect (1964x801, not the
+    // usual 16:9) and below the 4K convention — SceneEngine's cover-scale
+    // math is aspect-agnostic so this isn't a hard blocker, just flagged.
+    // FAST QA replacement (customer-provided high-resolution re-render,
+    // 05.09 upload): same approved composition, confirmed by direct visual
+    // comparison against the previous file before swapping — camera/
+    // hotspots/CTA/banner untouched, only src+w/h updated.
+    'zone-07-desktop': { src: ASSETS_BASE + 'zone-07-desktop-base.png', w: 4096, h: 1671 },
+    'zone-07-mobile': { src: ASSETS_BASE + 'zone-07-mobile-base.png', w: 2305, h: 4096 }
   };
 
   var MAP_IMAGE_DESKTOP = { src: ASSETS_BASE + 'scene-map.webp', w: 1689, h: 931 };
@@ -96,7 +146,7 @@
       // (было 'scene-only' — вообще без поведения). Собственный BASE,
       // собственная калибровка камеры — не перенос чисел от старого
       // scene-00-01.
-      shared: { id: '00', title: 'УЛИЦА / ВХОД', color: '#e0483e', behavior: 'zone-00-map' },
+      shared: { id: '00', title: 'УЛИЦА / ВХОД', color: '#e0483e', behavior: 'zone-00-map', navDescription: 'Вход и карта хакатона' },
       map: { x: 7.4, y: 69.2 },
       mapMobile: { x: 8.3, y: 64.9 },
       desktop: { asset: sceneAsset('zone-00-desktop'), cameraPreset: { x: 45, y: 55, scale: 1.2 }, hotspots: [] },
@@ -107,14 +157,18 @@
       mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 48, y: 62, scale: 1.3 }, hotspots: [] }
     },
     '01': {
-      shared: { id: '01', title: 'ХОЛЛ', color: '#f07a1f', behavior: 'object-links' },
+      // FAST MODE production pass: own dedicated BASE (was sharing
+      // scene-00-01 with Zone 00 as a placeholder — see SCENE_IMAGES
+      // above). cameraPreset framed to show the objects table + passage
+      // door together at rest.
+      shared: { id: '01', title: 'ХОЛЛ', color: '#f07a1f', behavior: 'object-links', navDescription: 'Пять объектов хакатона' },
       map: { x: 22.4, y: 34.1 },
       mapMobile: { x: 28.31, y: 45.26 },
-      desktop: { asset: sceneAsset('scene-00-01'), cameraPreset: { x: 40, y: 75, scale: 1.05 }, hotspots: [] },
-      mobile: { asset: sceneAsset('scene-00-01'), cameraPreset: { x: 35, y: 78, scale: 1.7 }, hotspots: [] }
+      desktop: { asset: sceneAsset('zone-01-desktop'), cameraPreset: { x: 55, y: 60, scale: 1.05 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-01-mobile'), cameraPreset: { x: 55, y: 62, scale: 1.15 }, hotspots: [] }
     },
     '02': {
-      shared: { id: '02', title: 'ИССЛЕДОВАТЕЛЬСКАЯ', color: '#e8b923', behavior: 'hotspot-scene' },
+      shared: { id: '02', title: 'ИССЛЕДОВАТЕЛЬСКАЯ', color: '#e8b923', behavior: 'zone-02-annotations', navDescription: 'С чего начинается пространство' },
       map: { x: 33.4, y: 69.2 },
       mapMobile: { x: 34.8, y: 64.33 },
       // Visual Integration (Этап 3+): независимый production BASE, своя
@@ -124,39 +178,62 @@
       mobile: { asset: sceneAsset('zone-02-mobile'), cameraPreset: { x: 50, y: 48, scale: 1.5 }, hotspots: [] }
     },
     '03': {
-      shared: { id: '03', title: 'ПРОЕКТНАЯ МАСТЕРСКАЯ', color: '#3f6fd1', behavior: 'hotspot-scene' },
+      shared: { id: '03', title: 'ПРОЕКТНАЯ МАСТЕРСКАЯ', color: '#3f6fd1', behavior: 'zone-03-annotations', navDescription: 'От идей к реальным пространствам' },
       map: { x: 43.8, y: 35.9 },
       mapMobile: { x: 51.74, y: 45.65 },
       desktop: { asset: sceneAsset('zone-03-desktop'), cameraPreset: { x: 55, y: 63, scale: 1.15 }, hotspots: [] },
       mobile: { asset: sceneAsset('zone-03-mobile'), cameraPreset: { x: 50, y: 65, scale: 1.5 }, hotspots: [] }
     },
     '04': {
-      shared: { id: '04', title: 'АРХИВ / КАРТОТЕКА', color: '#1f8f5f', behavior: 'archive-drawers' },
+      // Zone 04 Visual Integration: собственный production BASE (шкаф
+      // "АРХИВ И КАРТОТЕКА", 5 подписанных ящиков), своя калибровка
+      // камеры под новую композицию — не перенос чисел со старого общего
+      // scene-04-05 (тот был V1-заглушкой без реального шкафа).
+      shared: { id: '04', title: 'АРХИВ / КАРТОТЕКА', color: '#1f8f5f', behavior: 'archive-drawers', navDescription: 'Архив объектов по городам' },
       map: { x: 55.7, y: 69.0 },
       mapMobile: { x: 59.3, y: 64.16 },
-      desktop: { asset: sceneAsset('scene-04-05'), cameraPreset: { x: 24, y: 52, scale: 1.2 }, hotspots: [] },
-      mobile: { asset: sceneAsset('scene-04-05'), cameraPreset: { x: 22, y: 52, scale: 1.55 }, hotspots: [] }
+      desktop: { asset: sceneAsset('zone-04-desktop'), cameraPreset: { x: 44, y: 46, scale: 1.35 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-04-mobile'), cameraPreset: { x: 50.9, y: 47, scale: 1.32 }, hotspots: [] }
     },
     '05': {
-      shared: { id: '05', title: 'ГАЛЕРЕЯ / БИБЛИОТЕКА', color: '#d63e8a', behavior: 'gallery-complex' },
+      // Zone 05 Visual Integration: собственный production BASE (двухэтажная
+      // библиотека, пустой центр пола под стеллаж), своя калибровка камеры —
+      // не перенос чисел со старого общего scene-04-05 (та была V1-заглушкой).
+      shared: { id: '05', title: 'ГАЛЕРЕЯ / БИБЛИОТЕКА', color: '#d63e8a', behavior: 'gallery-complex', navDescription: 'Стандарт и материалы проекта' },
       map: { x: 59.2, y: 34.5 },
       mapMobile: { x: 70.01, y: 45.87 },
-      desktop: { asset: sceneAsset('scene-04-05'), cameraPreset: { x: 78, y: 50, scale: 1.2 }, hotspots: [] },
-      mobile: { asset: sceneAsset('scene-04-05'), cameraPreset: { x: 80, y: 48, scale: 1.55 }, hotspots: [] }
+      desktop: { asset: sceneAsset('zone-05-desktop'), cameraPreset: { x: 45, y: 55, scale: 1.15 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-05-mobile'), cameraPreset: { x: 45, y: 60, scale: 1.15 }, hotspots: [] }
     },
     '06': {
-      shared: { id: '06', title: 'КОМАНДА', color: '#7a4fc9', behavior: 'team-roles-chair' },
+      // FAST MODE production pass: own dedicated BASE (was sharing the
+      // scene-06-07 placeholder with Zone 07 — see SCENE_IMAGES above).
+      shared: { id: '06', title: 'КОМАНДА', color: '#7a4fc9', behavior: 'team-roles-chair', navDescription: 'Кто создаёт этот хакатон' },
       map: { x: 75.4, y: 68.9 },
       mapMobile: { x: 81.53, y: 64.79 },
-      desktop: { asset: sceneAsset('scene-06-07'), cameraPreset: { x: 22, y: 48, scale: 1.2 }, hotspots: [] },
-      mobile: { asset: sceneAsset('scene-06-07'), cameraPreset: { x: 18, y: 48, scale: 1.55 }, hotspots: [] }
+      desktop: { asset: sceneAsset('zone-06-desktop'), cameraPreset: { x: 48, y: 55, scale: 1.05 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-06-mobile'), cameraPreset: { x: 50, y: 55, scale: 1.1 }, hotspots: [] }
     },
     '07': {
-      shared: { id: '07', title: 'АМФИТЕАТР', color: '#e0692a', behavior: 'apply-cta' },
+      // FAST MODE production pass: own dedicated BASE (was sharing
+      // scene-06-07 with Zone 06 — see SCENE_IMAGES above).
+      shared: { id: '07', title: 'АМФИТЕАТР', color: '#e0692a', behavior: 'apply-cta', navDescription: 'Подать заявку на участие' },
       map: { x: 91.8, y: 37.5 },
       mapMobile: { x: 91.17, y: 46.38 },
-      desktop: { asset: sceneAsset('scene-06-07'), cameraPreset: { x: 78, y: 48, scale: 1.2 }, hotspots: [] },
-      mobile: { asset: sceneAsset('scene-06-07'), cameraPreset: { x: 80, y: 48, scale: 1.55 }, hotspots: [] }
+      // Zone 07 recalibration pass: slight zoom-out on both platforms — the
+      // right information wall was partially cut off at 1.05/1.1.
+      // IMPORTANT: SceneEngine clamps focus.scale to [coverScale, 2.6x
+      // coverScale] (minScale = base cover scale, i.e. "just barely fills
+      // the viewport, no empty margins") — any value below 1.0 collapses
+      // to the SAME effective scale as exactly 1.0, since 1.0 already IS
+      // that floor. So the requested "5-8% less zoom" from 1.05 can only
+      // really reach 1.0 (~4.8% less, the architectural floor) without
+      // changing SceneEngine itself (out of scope for this pass) — using
+      // a value like 0.97 here would silently do nothing different from
+      // 1.0, so this is written as exactly 1.0. Mobile's target (~4-7%
+      // less than 1.1) stays above that floor, so 1.03 is fully honored.
+      desktop: { asset: sceneAsset('zone-07-desktop'), cameraPreset: { x: 51, y: 50, scale: 1.0 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-07-mobile'), cameraPreset: { x: 46, y: 48, scale: 1.03 }, hotspots: [] }
     }
   };
 

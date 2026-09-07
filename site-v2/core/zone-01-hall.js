@@ -1,10 +1,14 @@
 // Zone 01 (ХОЛЛ) behavior — registered under shared.behavior:'object-links'
 // in config/scenes.js, instantiated/torn down by mount.js on zone switch.
 //
-// Builds three independent layers inside .yh-scene-stage:
+// Builds two independent layers inside .yh-scene-stage:
 //   1. object hotspots (5 объектов, via the shared createHotspotLayer)
-//   2. program wall hover-only highlights (4 пункта, см. config/zone-01-content.js)
-//   3. passage-to-02 spatial hotspot
+//   2. passage-to-02 spatial hotspot
+//
+// FAST MODE production pass (01+06+07): the old third layer (a decorative
+// hover-only "program wall" highlight, 4 regions) is retired — see
+// config/zone-01-content.js header for why. The new dedicated BASE bakes
+// the full 5-stage program in as legible text; no HTML layer duplicates it.
 //
 // Explicitly NOT the V1 content-card interaction — see Production-ТЗ
 // decision 05.09 п.1: старые раскрывающиеся карточки не переносятся.
@@ -14,19 +18,13 @@
 
   YHApp.ZONE_BEHAVIORS = YHApp.ZONE_BEHAVIORS || {};
 
-  function el(tag, className, attrs) {
-    var e = document.createElement(tag);
-    if (className) e.className = className;
-    if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
-    return e;
-  }
-
   function createZone01Behavior(sceneStage, zone, config, callbacks) {
     var isMobile = callbacks.isMobile;
+    var mobile = isMobile();
     var objects = config.objects || YHApp.OBJECTS;
-    var programStages = YHApp.ZONE_01_PROGRAM_STAGES;
     var passage = YHApp.ZONE_01_PASSAGE;
     var presentation = YHApp.ZONE_01_OBJECT_PRESENTATION;
+    var hotspotSize = mobile ? YHApp.ZONE_01_HOTSPOT_SIZE.mobile : YHApp.ZONE_01_HOTSPOT_SIZE.desktop;
 
     // ---- 1. object hotspots (explicit object id — never DOM index).
     // Text (hoverLabel/emptyMessage) comes entirely from config/
@@ -53,19 +51,17 @@
     });
     objectHotspots.layout();
 
-    // ---- 2. program wall — hover-only, no click, no keyboard focus
-    // (a focusable element with no action is a known a11y anti-pattern —
-    // see Этап 2 report "known issues" for the reasoning) ----
-    var programLayer = el('div', 'yh-program-wall');
-    sceneStage.appendChild(programLayer);
-    programStages.forEach(function (stage) {
-      var region = el('div', 'yh-program-wall__stage', { 'aria-hidden': 'true' });
-      region.style.left = stage.coords.x + '%';
-      region.style.top = stage.coords.y + '%';
-      programLayer.appendChild(region);
+    // size overrides — see config/zone-01-content.js (ZONE_01_HOTSPOT_SIZE)
+    // for why the generic 44px default isn't enough on this BASE.
+    objects.forEach(function (obj) {
+      var node = objectHotspots.elements[obj.id];
+      if (node) {
+        node.style.width = hotspotSize.w + '%';
+        node.style.height = hotspotSize.h + '%';
+      }
     });
 
-    // ---- 3. passage to 02 — spatial navigation, not a content hotspot ----
+    // ---- 2. passage to 02 — spatial navigation, not a content hotspot ----
     var passageLayer = YHApp.createHotspotLayer(sceneStage, {
       layerClass: 'yh-passage-hotspot',
       items: [{
@@ -75,19 +71,23 @@
         onActivate: function () { callbacks.onNavigateZone(passage.targetZoneId); }
       }],
       isMobile: isMobile,
-      getCoords: function () { return passage.coords; }
+      getCoords: function (item, mobile) {
+        return mobile ? passage.mobileCoords : passage.desktopCoords;
+      }
     });
     passageLayer.layout();
+    if (passageLayer.elements[passage.id]) {
+      passageLayer.elements[passage.id].style.width = hotspotSize.w + '%';
+      passageLayer.elements[passage.id].style.height = hotspotSize.h + '%';
+    }
 
     function destroy() {
       objectHotspots.destroy();
       passageLayer.destroy();
-      programLayer.remove();
     }
 
-    // retrofitted alongside Zone 02/03 (Этап 3): click/tap on empty scene
-    // background closes any open caption — same mechanism, applied here
-    // too for consistency rather than only in the newer zones.
+    // click/tap on empty scene background closes any open caption — same
+    // mechanism used across every other zone.
     function closeAllCaptions() {
       objectHotspots.hideCaption();
       passageLayer.hideCaption();

@@ -40,6 +40,12 @@
         id: h.id,
         ariaLabel: h.id + ' — ' + zoneMeta.shared.title + (isCurrent ? ' (текущая зона)' : ''),
         hoverLabel: h.id + ' ' + zoneMeta.shared.title,
+        // название + описание прямо на карте при наведении на кружочек
+        // (customer: "прям на карте при наведении на кружочек высвечивается
+        // название и описание") — same navDescription already used
+        // elsewhere (previously also shown in the bottom nav; removed
+        // there per her follow-up, this is now its only surface).
+        labelText: zoneMeta.shared.navDescription || null,
         onActivate: isCurrent ? null : function () { callbacks.onNavigateZone(h.id); },
         emptyMessage: isCurrent ? 'ВЫ ЗДЕСЬ' : null
       };

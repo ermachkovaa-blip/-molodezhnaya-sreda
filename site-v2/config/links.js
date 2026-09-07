@@ -27,6 +27,21 @@
     // разные destinations до явного подтверждения обратного.
     RENOVATION_ARCHIVE_URL: null,
 
+    // Полная программа хакатона (PDF/документ) — top-nav "ПРОГРАММА" пункт,
+    // вторичный CTA "ПОЛНАЯ ПРОГРАММА ↓". Открывается в новом табе
+    // (target=_blank, rel=noopener noreferrer), никогда не встраивается в
+    // сцену. null, пока заказчик не передал ссылку — ничего не выдумано.
+    PROGRAM_URL: null,
+
+    // Zone 07 contact/application banner (core/zone-07-cta.js). Submission
+    // priority: CONTACT_FORM_ENDPOINT (real POST) > CONTACT_EMAIL (mailto
+    // fallback — opens the visitor's own mail client, never claimed as a
+    // confirmed "sent") > both null (no fake submission — shows "КОНТАКТ
+    // ДЛЯ ОБРАТНОЙ СВЯЗИ БУДЕТ ДОБАВЛЕН"). Neither invented — null until
+    // the заказчик provides one.
+    CONTACT_EMAIL: null,
+    CONTACT_FORM_ENDPOINT: null,
+
     // Зона 01 — прямые ссылки на папки материалов по объекту (Яндекс.Диск
     // и т.п.). Зона 04 — ссылки на папку архива по объекту. Поля намеренно
     // раздельные (sourceMaterialsUrl / archiveFolderUrl) — не предполагаем,
@@ -42,14 +57,20 @@
     // Зона 02 — материалы исследования, по типу материала. Ключи — id
     // hotspot'ов из config/zone-02-content.js (ZONE_02_HOTSPOTS), значения —
     // url|null. Заполняется по мере передачи ссылок — сейчас все null,
-    // ничего не выдумано.
+    // ничего не выдумано. 'research-materials' — новый 5-й annotation
+    // (стопка методических материалов на столе), добавлен вместе с
+    // остальными при переходе Zone 02 на единую annotation-систему.
+    // 'site-visit' / 'plans-work' больше не рендерятся как отдельные
+    // annotations (см. zone-02-content.js), но ключи оставлены на случай,
+    // если этот контент понадобится позже — не удалены, не потеряны.
     RESEARCH_MATERIAL_URLS: {
       'site-visit': null,
       'interview': null,
       'observation': null,
       'photo-fixation': null,
       'territory-research': null,
-      'plans-work': null
+      'plans-work': null,
+      'research-materials': null
     },
 
     // Зона 03 — материалы проектирования, по типу материала. Ключи — id

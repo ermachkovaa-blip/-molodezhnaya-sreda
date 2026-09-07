@@ -54,9 +54,15 @@
   //                        the caption's class, so a zone can restyle its
   //                        own caption in its own CSS without touching
   //                        this generic file.
-  //   items             - [{ id, ariaLabel, hoverLabel?, url?, emptyMessage?, onActivate? }]
-  //                        — hoverLabel/emptyMessage text is 100% caller-
-  //                        supplied; this file never defaults or invents it.
+  //   items             - [{ id, ariaLabel, hoverLabel?, labelText?, url?, emptyMessage?, onActivate? }]
+  //                        — hoverLabel/labelText/emptyMessage text is
+  //                        100% caller-supplied; this file never defaults
+  //                        or invents it. labelText is optional: when
+  //                        present it renders as a second (description)
+  //                        line under hoverLabel's title line; omitted
+  //                        entirely, hoverLabel renders as plain single-
+  //                        line text exactly as before (Zone 00's map is
+  //                        the only current user of labelText).
   //   getCoords(item, isMobile) -> { x, y } (percent of the scene image)
   //   isMobile()        -> bool
   //   captionOffsetY    - vertical nudge (percent) for the caption relative
@@ -107,7 +113,19 @@
       node.appendChild(dot);
       if (item.hoverLabel) {
         var label = el('span', layerClass + '__label');
-        label.textContent = item.hoverLabel;
+        // optional second line (e.g. Zone 00's map callout: title +
+        // description) — plain single-line text when absent, exactly as
+        // before, so every other caller is unaffected.
+        if (item.labelText) {
+          var labelTitle = el('span', layerClass + '__label-title');
+          labelTitle.textContent = item.hoverLabel;
+          var labelDesc = el('span', layerClass + '__label-desc');
+          labelDesc.textContent = item.labelText;
+          label.appendChild(labelTitle);
+          label.appendChild(labelDesc);
+        } else {
+          label.textContent = item.hoverLabel;
+        }
         node.appendChild(label);
       }
 

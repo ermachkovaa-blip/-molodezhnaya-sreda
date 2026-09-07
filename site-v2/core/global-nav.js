@@ -36,6 +36,47 @@
     mapReturnBtn.addEventListener('click', onMapReturn);
     header.appendChild(mapReturnBtn);
 
+    // ---- top content nav — a SECOND, independent nav system (content
+    // sections, not the spatial zone route). Reuses the exact same
+    // onZoneSelect callback the bottom nav calls: each item just jumps to
+    // the zone that owns that content, no new navigation mechanism, no
+    // second camera/state model. Desktop: inline row. Mobile: collapses
+    // behind a toggle so it doesn't crowd the CTA/КАРТА ↑, which always
+    // stay visible per spec. ----
+    var topNavItems = YHApp.TOP_NAV_ITEMS || [];
+    var contentNav = el('nav', 'yh-header__content-nav', { 'aria-label': 'Разделы проекта' });
+    var contentNavToggle = el('button', 'yh-header__content-nav-toggle', { type: 'button', 'aria-expanded': 'false' });
+    contentNavToggle.textContent = strings.topNavMenuLabel;
+    var contentNavList = el('ul', 'yh-header__content-nav-list');
+    topNavItems.forEach(function (item) {
+      var li = el('li');
+      var link = el('a', 'yh-header__content-nav-link', { href: '#' });
+      link.textContent = item.label;
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        closeContentNav();
+        onZoneSelect(item.zoneId);
+      });
+      li.appendChild(link);
+      contentNavList.appendChild(li);
+    });
+    function closeContentNav() {
+      contentNav.classList.remove('is-open');
+      contentNavToggle.setAttribute('aria-expanded', 'false');
+    }
+    contentNavToggle.addEventListener('click', function () {
+      var open = contentNav.classList.toggle('is-open');
+      contentNavToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    contentNav.appendChild(contentNavToggle);
+    contentNav.appendChild(contentNavList);
+    header.appendChild(contentNav);
+
+    function onDocumentPointerDown(e) {
+      if (!contentNav.contains(e.target)) closeContentNav();
+    }
+    document.addEventListener('pointerdown', onDocumentPointerDown);
+
     var actions = el('div', 'yh-header__actions');
     var ctaLink = el('a', 'yh-cta', { href: links.APPLICATION_URL || '#' });
     ctaLink.textContent = strings.applyCta;
@@ -53,15 +94,29 @@
     var rail = el('div', 'yh-bottom-nav__rail');
 
     var itemButtons = {};
+    var hereLabels = {};
     zoneOrder.forEach(function (zoneId) {
       var zone = zones[zoneId];
       var btn = el('button', 'yh-bottom-nav__item', { type: 'button', 'data-zone': zoneId });
+      btn.style.setProperty('--yh-zone-color', zone.shared.color);
       var num = el('span', 'yh-bottom-nav__num');
       num.textContent = zoneId;
       var title = el('span', 'yh-bottom-nav__title');
       title.textContent = zone.shared.title;
       btn.appendChild(num);
       btn.appendChild(title);
+      // per-zone description text lives only in the Zone 00 map's own
+      // hover callout now (core/zone-00-map.js labelText) — the customer
+      // asked for it there instead, not duplicated onto every bottom-nav
+      // button (see her follow-up message removing it from here).
+      // "ТЫ ЗДЕСЬ" — shown only on the active zone's own button (see
+      // setActiveZone below), not baked into every button's aria-label to
+      // avoid a stale "ты здесь" being read out on zones the user isn't on.
+      var here = el('span', 'yh-bottom-nav__here');
+      here.textContent = strings.bottomNavHereLabel;
+      here.hidden = true;
+      btn.appendChild(here);
+      hereLabels[zoneId] = here;
       btn.addEventListener('click', function () { onZoneSelect(zoneId); });
       rail.appendChild(btn);
       itemButtons[zoneId] = btn;
@@ -72,8 +127,10 @@
 
     function setActiveZone(zoneId) {
       zoneOrder.forEach(function (id) {
-        itemButtons[id].classList.toggle('is-active', id === zoneId);
-        itemButtons[id].setAttribute('aria-current', id === zoneId ? 'true' : 'false');
+        var isActive = id === zoneId;
+        itemButtons[id].classList.toggle('is-active', isActive);
+        itemButtons[id].setAttribute('aria-current', isActive ? 'true' : 'false');
+        hereLabels[id].hidden = !isActive;
       });
     }
 
@@ -82,6 +139,7 @@
     }
 
     function destroy() {
+      document.removeEventListener('pointerdown', onDocumentPointerDown);
       header.remove();
       bottomNav.remove();
     }

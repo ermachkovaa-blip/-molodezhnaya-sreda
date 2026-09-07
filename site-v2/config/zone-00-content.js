@@ -12,37 +12,45 @@
 // package's own routes[].label used an older/different nomenclature —
 // deliberately not reused, per the confirmed preflight decision).
 //
-// desktopCoords — calibrated against the isometric building diagram baked
-// into zone-00-base-clean-map-4k-sharp-v3.png (percentage grid + ?debug=1
-// verification, see report). Each of the 8 numbers was placed on a
-// distinct visible "room" cell of that diagram, ordered roughly nearest
-// (00, bottom) to farthest/highest (07, the top peak) — a readable but
-// non-literal mapping, since the diagram is decorative isometric art, not
-// a literal floor plan cross-referenced against real room content.
-//
-// mobileCoords — FINAL RECALIBRATION against
-// zone-00-mobile-base-expanded-centered-v2-2160x3840.png, which replaces
-// the earlier provisional mobile BASE (that one had neither physical
-// stand in frame at all — see the Zone 00 Visual Integration report's
-// "important caveat"). This BASE shows the SAME "КАРТА ХАКАТОНА"
-// isometric diagram as desktop, but its own independent composition/
-// framing — coordinates below are a fresh calibration against this
-// image's own pixels (percentage grid + ?debug=1 verification), not
-// derived from desktopCoords and not the old placeholder free-floating
-// values.
+// desktopCoords/mobileCoords — RECALIBRATED (customer report: "на карте
+// смещены кружочки с карты, поправь чтобы они находились на самой
+// карте" — the previous numbers floated to the right of the actual
+// isometric diagram instead of sitting on it). Re-measured per platform
+// directly off that platform's own BASE pixels: crop the diagram region,
+// overlay a fine pixel grid, read off each distinct room cell's center,
+// convert back to percent-of-image, then render the candidate markers
+// onto the real image and visually confirm each one lands on its room
+// before adopting (not eyeballed against the full scene at a glance,
+// which is what produced the offset in the first place). Ordered roughly
+// nearest (00, bottom) to farthest/highest (07, the top peak) — a
+// readable but non-literal mapping, since the diagram is decorative
+// isometric art, not a literal floor plan cross-referenced against real
+// room content. Desktop against zone-00-base-clean-map-4k-sharp-v3.png,
+// mobile against zone-00-mobile-base-expanded-centered-v2-2160x3840.png —
+// two independent compositions, two independent calibrations, neither
+// derived from the other.
 
 (function (YHApp) {
   'use strict';
 
+  // RECALIBRATED (customer report: "на карте смещены кружочки с карты,
+  // поправь чтобы они находились на самой карте") — the values below were
+  // measured directly off each platform's own BASE pixels (percentage
+  // grid overlay + crop verification against the actual room cells of the
+  // isometric diagram, not eyeballed), confirmed with a rendered
+  // marker-on-image check before adopting. Each id sits on its own
+  // distinct room, ordered bottom (00) to the topmost peak room (07) —
+  // same non-literal "readable but decorative" mapping as before, just
+  // actually landing on the artwork this time.
   YHApp.ZONE_00_NAV_HOTSPOTS = [
-    { id: '00', desktopCoords: { x: 58, y: 74 }, mobileCoords: { x: 64, y: 63.8 } },
-    { id: '01', desktopCoords: { x: 50, y: 67 }, mobileCoords: { x: 60, y: 63 } },
-    { id: '02', desktopCoords: { x: 56, y: 60 }, mobileCoords: { x: 56, y: 61.5 } },
-    { id: '03', desktopCoords: { x: 64, y: 55 }, mobileCoords: { x: 60, y: 59 } },
-    { id: '04', desktopCoords: { x: 68, y: 65 }, mobileCoords: { x: 66, y: 56.5 } },
-    { id: '05', desktopCoords: { x: 74, y: 61 }, mobileCoords: { x: 71, y: 59 } },
-    { id: '06', desktopCoords: { x: 64, y: 73 }, mobileCoords: { x: 72, y: 62 } },
-    { id: '07', desktopCoords: { x: 70, y: 48 }, mobileCoords: { x: 68, y: 63 } }
+    { id: '00', desktopCoords: { x: 57.27, y: 70.65 }, mobileCoords: { x: 62.6, y: 62.8 } },
+    { id: '01', desktopCoords: { x: 54.14, y: 67.18 }, mobileCoords: { x: 59.5, y: 63.5 } },
+    { id: '02', desktopCoords: { x: 65.21, y: 63.47 }, mobileCoords: { x: 60.5, y: 62.3 } },
+    { id: '03', desktopCoords: { x: 53.75, y: 62.31 }, mobileCoords: { x: 68.3, y: 60.0 } },
+    { id: '04', desktopCoords: { x: 62.21, y: 61.16 }, mobileCoords: { x: 64.3, y: 61.6 } },
+    { id: '05', desktopCoords: { x: 55.05, y: 57.69 }, mobileCoords: { x: 63.1, y: 61.0 } },
+    { id: '06', desktopCoords: { x: 58.57, y: 53.19 }, mobileCoords: { x: 65.75, y: 58.7 } },
+    { id: '07', desktopCoords: { x: 60.78, y: 47.04 }, mobileCoords: { x: 67.52, y: 56.47 } }
   ];
 
   // A real, transparent hotspot placed exactly over the "ПОДАТЬ ЗАЯВКУ →"

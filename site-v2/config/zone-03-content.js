@@ -2,16 +2,36 @@
 // centrally in config/links.js (LINKS.PROJECT_MATERIAL_URLS), same
 // pattern as Zone 02.
 //
-// description — семантическая подпись категории (title → description,
-// например "ПЛАН → ФУНКЦИОНАЛЬНОЕ ЗОНИРОВАНИЕ" из Production-ТЗ),
-// используется в aria-label.
+// ZONE 03 — REBUILD HOTSPOT PRESENTATION TO MATCH PROVIDED REFERENCE
+// (customer spec): label/text below are the APPROVED wording from that
+// spec (matches her original reference image text verbatim) — replacing
+// the earlier interim copy this file had (a generic "Скоро появится" for
+// 4 of 6 items, and a self-written AI-tools paragraph for 'laptop') now
+// that real approved wording exists for all six. Nothing here is invented
+// — every string is copied from the spec's own numbered list.
 //
-// Visual Integration (после Этапа 3): координаты откалиброваны заново под
-// независимый production BASE (zone-03-project-workshop-realistic-expanded-4k.png
-// / mobile zone-03-mobile-base-clean-realistic-4k.png — см.
-// config/scenes.js), НЕ перенесены со старого общего scene-02-03.webp.
-// desktopCoords и mobileCoords — самостоятельные калибровки, mobile — не
-// crop desktop, а собственная вертикальная композиция того же стола.
+// desktopCoords/mobileCoords — the real "+" button position, i.e. exactly
+// on the physical object (unchanged from the earlier calibration, still
+// valid): this is the actual click target, never moved just to make room
+// for a label.
+//
+// desktopCalloutCoords/mobileCalloutCoords — the white annotation card's
+// own anchor point per platform (badge attached to its left edge,
+// connected to the "+"/object by a thin line — see
+// core/zone-03-workshop.js). CARDS ARE ALWAYS VISIBLE ON BOTH PLATFORMS
+// (customer follow-up: "Stop using expand/collapse as the default
+// interaction model... cards visible immediately").
+//
+// RECOMPOSED (customer follow-up: "RECOMPOSE ANNOTATIONS CLOSER TO
+// OBJECTS" — the first pass spread cards out across the whole scene with
+// long connectors; that read as scattered, not attached). Every card
+// below sits within roughly 8-13% of image-space from its own object —
+// as close as the object cluster's own tightness allows without two
+// neighboring cards overlapping (several of these six physical objects
+// are themselves only a few percent apart on the table, e.g. plan/
+// tracing-paper/model) — verified via screenshot, direction (above/
+// below/left/right) chosen per item specifically to dodge its nearest
+// neighbors rather than defaulting to "up" for everyone.
 //
 // Физические привязки (см. отчёт Visual Integration, ?debug=1 скриншоты):
 //   laptop         — ноутбук на столе (экран с фото здания)
@@ -24,17 +44,60 @@
 (function (YHApp) {
   'use strict';
 
+  // Currently unused by core/zone-03-workshop.js: per the customer's
+  // explicit interaction rule ("+' must only ever mean "there is
+  // something to open" — no material means no "+" at all, not an
+  // inactive one that pops up this text on click). Kept here, not
+  // deleted, in case a future direction wants the optional subtle
+  // "material coming" state the spec allows for (it explicitly warned
+  // against showing it on every card at once, which is what all six
+  // being null right now would mean).
   YHApp.ZONE_03_PRESENTATION = {
-    hoverLabel: 'ОТКРЫТЬ +',
     emptyMessage: 'МАТЕРИАЛЫ ПОЯВЯТСЯ\nВ ПРОЦЕССЕ ПРОЕКТИРОВАНИЯ'
   };
 
   YHApp.ZONE_03_HOTSPOTS = [
-    { id: 'plan', title: 'План', description: 'Функциональное зонирование', desktopCoords: { x: 47.5, y: 74 }, mobileCoords: { x: 49, y: 71 } },
-    { id: 'tracing-paper', title: 'Калька', description: 'Сценарии использования', desktopCoords: { x: 45, y: 69 }, mobileCoords: { x: 50, y: 66 } },
-    { id: 'model', title: 'Макет', description: 'Архитектурная концепция', desktopCoords: { x: 51, y: 65 }, mobileCoords: { x: 62, y: 63 } },
-    { id: 'laptop', title: 'Ноутбук', description: 'AI-инструменты', desktopCoords: { x: 36, y: 70 }, mobileCoords: { x: 25, y: 67 } },
-    { id: 'schemes', title: 'Схемы', description: 'Планировочные решения', desktopCoords: { x: 46, y: 46.5 }, mobileCoords: { x: 51, y: 46.5 } },
-    { id: 'materials', title: 'Материалы', description: 'Образ и атмосфера пространства', desktopCoords: { x: 58.5, y: 78 }, mobileCoords: { x: 78, y: 72.5 } }
+    {
+      id: 'plan', title: 'План', order: 1,
+      label: 'ФУНКЦИОНАЛЬНОЕ ЗОНИРОВАНИЕ',
+      text: 'Изучаем территорию и определяем, какие пространства нужны молодёжи.',
+      desktopCoords: { x: 47.5, y: 74 }, mobileCoords: { x: 49, y: 71 },
+      desktopCalloutCoords: { x: 54, y: 66 }, mobileCalloutCoords: { x: 49, y: 60 }
+    },
+    {
+      id: 'tracing-paper', title: 'Калька', order: 2,
+      label: 'СЦЕНАРИИ ИСПОЛЬЗОВАНИЯ',
+      text: 'Придумываем, как пространство будет работать в жизни: события, форматы, аудитории.',
+      desktopCoords: { x: 45, y: 69 }, mobileCoords: { x: 50, y: 66 },
+      desktopCalloutCoords: { x: 36, y: 62 }, mobileCalloutCoords: { x: 38, y: 64 }
+    },
+    {
+      id: 'model', title: 'Макет', order: 3,
+      label: 'АРХИТЕКТУРНАЯ КОНЦЕПЦИЯ',
+      text: 'Создаём объёмные и пространственные решения.',
+      desktopCoords: { x: 51, y: 65 }, mobileCoords: { x: 62, y: 63 },
+      desktopCalloutCoords: { x: 51, y: 56 }, mobileCalloutCoords: { x: 70, y: 55 }
+    },
+    {
+      id: 'laptop', title: 'Ноутбук', order: 4,
+      label: 'AI-ИНСТРУМЕНТЫ',
+      text: 'Используем современные технологии для поиска идей, анализа и визуализации.',
+      desktopCoords: { x: 36, y: 70 }, mobileCoords: { x: 25, y: 67 },
+      desktopCalloutCoords: { x: 28, y: 78 }, mobileCalloutCoords: { x: 25, y: 56 }
+    },
+    {
+      id: 'schemes', title: 'Схемы', order: 5,
+      label: 'ПЛАНИРОВОЧНЫЕ РЕШЕНИЯ',
+      text: 'Прорабатываем планы, связи и логику перемещений в пространстве.',
+      desktopCoords: { x: 46, y: 46.5 }, mobileCoords: { x: 51, y: 46.5 },
+      desktopCalloutCoords: { x: 46, y: 38 }, mobileCalloutCoords: { x: 51, y: 36 }
+    },
+    {
+      id: 'materials', title: 'Материалы', order: 6,
+      label: 'ПОЛЕЗНЫЕ МАТЕРИАЛЫ',
+      text: 'Навигация смыслов и Стандарт деятельности молодёжных центров.',
+      desktopCoords: { x: 58.5, y: 78 }, mobileCoords: { x: 78, y: 72.5 },
+      desktopCalloutCoords: { x: 70, y: 72 }, mobileCalloutCoords: { x: 60, y: 68 }
+    }
   ];
 })(window.YHApp = window.YHApp || {});

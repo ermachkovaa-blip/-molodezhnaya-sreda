@@ -58,6 +58,17 @@
     sceneView.appendChild(sceneViewport);
     root.appendChild(sceneView);
 
+    // ---- viewport-fixed overlay layer — for zone UI that must NOT pan/
+    // zoom with the scene (a lightbox-style "open" image, e.g. Zone 04's
+    // archive drawers). sceneStage carries a live CSS transform, so a
+    // fixed-position child of IT would resolve against that transform, not
+    // the real viewport (per spec, a transformed ancestor creates a new
+    // containing block) — this sits outside sceneStage instead, as a
+    // sibling of sceneView, so position:fixed inside it behaves normally.
+    // Empty/inert until a zone behavior uses it (see callbacks.overlayRoot).
+    var overlayRoot = el('div', 'yh-overlay-root');
+    root.appendChild(overlayRoot);
+
     var sceneEngine = YHApp.createSceneEngine(sceneViewport, sceneStage, {
       reducedMotion: reducedMotion,
       onDebugUpdate: function (state) {
@@ -82,7 +93,13 @@
     // ---- global nav ----
     var globalNav = YHApp.createGlobalNav(root, fullConfig, {
       onZoneSelect: function (zoneId) { showZone(zoneId, true); },
-      onMapReturn: function () { showMap(); }
+      // КАРТА ↑ used to open a separate hand-drawn overview map screen —
+      // removed from the reachable UI per customer instruction: Zone 00
+      // now covers what that screen was for, so КАРТА ↑ goes straight to
+      // it instead. showMap()/mapNav are left in place (not deleted) in
+      // case this needs to be reverted, they're just no longer wired to
+      // any control.
+      onMapReturn: function () { showZone('00', true); }
     });
 
     // ---- debug overlay ----
@@ -108,7 +125,14 @@
     var activeZoneBehavior = null;
     function teardownZoneBehavior() {
       if (activeZoneBehavior) { activeZoneBehavior.destroy(); activeZoneBehavior = null; }
+      panDisabled = false;
     }
+
+    // ---- pan/parallax pause — first consumer is Zone 04's open drawer
+    // (camera must hold still while a full-canvas foreground overlay is
+    // shown, per FAST MODE spec), exposed generically so any future zone
+    // behavior can request the same without a new one-off hook. ----
+    var panDisabled = false;
 
     function showZone(zoneId, animated) {
       var zone = scenesConfig.zones[zoneId];
@@ -141,7 +165,9 @@
       if (behaviorFactory) {
         activeZoneBehavior = behaviorFactory(sceneStage, zone, fullConfig, {
           isMobile: isMobile,
-          onNavigateZone: function (id) { showZone(id, true); }
+          onNavigateZone: function (id) { showZone(id, true); },
+          setPanDisabled: function (v) { panDisabled = !!v; if (panDisabled) sceneEngine.resetParallaxTarget(); },
+          overlayRoot: overlayRoot
         });
       }
 
@@ -165,15 +191,18 @@
 
     var gesture = YHApp.createGestureController(sceneViewport, {
       onDragStart: function () {
+        if (panDisabled) return;
         isDragging = true;
         dragBaseTx = sceneEngine.state.tx;
         dragBaseTy = sceneEngine.state.ty;
         sceneViewport.classList.add('is-dragging');
       },
       onDragMove: function (dx, dy) {
+        if (!isDragging) return; // panDisabled suppressed the matching onDragStart — ignore its moves too
         sceneEngine.panBy(dx, dy, dragBaseTx, dragBaseTy);
       },
       onDragEnd: function () {
+        if (!isDragging) return;
         isDragging = false;
         sceneViewport.classList.remove('is-dragging');
       },
@@ -198,7 +227,7 @@
     // actively dragging or zoomed. ----
     var hoverFineMQ = window.matchMedia('(hover: hover) and (pointer: fine)');
     sceneViewport.addEventListener('pointermove', function (e) {
-      if (isDragging || !hoverFineMQ.matches || reducedMotion()) return;
+      if (isDragging || panDisabled || !hoverFineMQ.matches || reducedMotion()) return;
       var rect = sceneViewport.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       var nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
@@ -209,14 +238,30 @@
       sceneEngine.resetParallaxTarget();
     });
 
-    // ---- keyboard: M returns to map. Scoped to the ROOT container (not
+    // ---- native-scroll guard: panning here is 100% CSS-transform driven
+    // (see gesture onDragMove above) — sceneViewport's scrollLeft/scrollTop
+    // must always stay 0. Chromium/WebKit auto-scroll the nearest
+    // overflow:hidden ancestor to "reveal" any element that receives focus
+    // (e.g. a hotspot <button>/<a> after a click) using its untransformed
+    // layout box, which is wrong here since sceneStage is scaled/translated
+    // — a real, reproducible bug found via Zone 05's flying pages: clicking
+    // a hotspot silently set scrollLeft/scrollTop to non-zero, visibly
+    // yanking the whole scene sideways. Any non-zero scroll is illegitimate
+    // by construction, so just snap it back every time.
+    sceneViewport.addEventListener('scroll', function () {
+      sceneViewport.scrollLeft = 0;
+      sceneViewport.scrollTop = 0;
+    });
+
+    // ---- keyboard: M returns to Zone 00 (was the separate map screen —
+    // see onMapReturn above for why). Scoped to the ROOT container (not
     // document) so the module never hijacks keystrokes on the rest of a
     // Tilda page — only fires while focus is within this module. ----
     function onKeydown(e) {
       if (e.key === 'm' || e.key === 'M') {
         var tag = (document.activeElement && document.activeElement.tagName) || '';
         if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-        showMap();
+        showZone('00', true);
       }
     }
     root.addEventListener('keydown', onKeydown);
@@ -245,11 +290,13 @@
 
     // ---- initial view: deep-link via ?zone= is a DEMO/standalone concern
     // (see embed/demo.html) — mount() itself only accepts config.initialZone
-    // so it stays agnostic of how the host page structures its URL. ----
+    // so it stays agnostic of how the host page structures its URL.
+    // Default (no ?zone=) lands on Zone 00 — was the separate map screen,
+    // see onMapReturn above for why that's no longer used. ----
     if (config.initialZone && scenesConfig.zones[config.initialZone]) {
       showZone(config.initialZone, false);
     } else {
-      showMap();
+      showZone('00', false);
     }
 
     function unmount() {
@@ -262,6 +309,7 @@
       root.removeEventListener('keydown', onKeydown);
       if (rootResizeObserver) rootResizeObserver.disconnect();
       sceneView.remove();
+      overlayRoot.remove();
       root.classList.remove('yh-app', 'yh-app--debug');
       root.removeAttribute('tabindex');
     }
