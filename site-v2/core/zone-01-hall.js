@@ -61,6 +61,55 @@
       }
     });
 
+    // ---- 1b. FAST PASS material-link action-markers — a separate,
+    // always-visible circle->pill button next to each card, additional to
+    // the invisible whole-card hotspot above. Real <a> when
+    // config.links[<per-object key>] exists, real disabled <button>
+    // otherwise (never a fake "#" — hotspot-layer.js already guarantees
+    // that split). Strict per-object mapping, no Zone 04 crossover. ----
+    var materialLinksText = YHApp.ZONE_01_MATERIAL_LINKS;
+    var materialButtonSize = mobile ? YHApp.ZONE_01_MATERIAL_BUTTON_SIZE.mobile : YHApp.ZONE_01_MATERIAL_BUTTON_SIZE.desktop;
+    var materialButtonCoords = YHApp.ZONE_01_MATERIAL_BUTTON_COORDS;
+    var materialLinkKeys = YHApp.ZONE_01_MATERIAL_LINK_KEYS;
+    var linksCfg = config.links || YHApp.LINKS;
+
+    var materialItems = objects.map(function (obj) {
+      var url = linksCfg[materialLinkKeys[obj.id]] || null;
+      return {
+        id: obj.id,
+        ariaLabel: (url ? materialLinksText.desktopLabel : materialLinksText.emptyLabelDesktop) + ' — ' + obj.number + ' ' + obj.title,
+        hoverLabel: mobile
+          ? (url ? materialLinksText.mobileLabel : materialLinksText.emptyLabelMobile)
+          : (url ? materialLinksText.desktopLabel : materialLinksText.emptyLabelDesktop),
+        url: url,
+        // only reachable for the disabled (no-url) case — hotspot-layer.js
+        // skips this entirely for real <a> links. Same text as hoverLabel,
+        // so a click/tap echoes exactly what hover/focus already show.
+        emptyMessage: mobile ? materialLinksText.emptyLabelMobile : materialLinksText.emptyLabelDesktop
+      };
+    });
+
+    var materialLinks = YHApp.createHotspotLayer(sceneStage, {
+      layerClass: 'yh-material-link',
+      items: materialItems,
+      isMobile: isMobile,
+      getCoords: function (item, mobile) {
+        var coords = materialButtonCoords[item.id];
+        return mobile ? coords.mobileCoords : coords.desktopCoords;
+      }
+    });
+    materialLinks.layout();
+    objects.forEach(function (obj) {
+      var node = materialLinks.elements[obj.id];
+      if (node) {
+        node.style.width = materialButtonSize.w + '%';
+        node.style.height = materialButtonSize.h + '%';
+        if (!linksCfg[materialLinkKeys[obj.id]]) {
+          node.classList.add('yh-material-link__item--disabled');
+        }
+      }
+    });
+
     // ---- 2. passage to 02 — spatial navigation, not a content hotspot ----
     var passageLayer = YHApp.createHotspotLayer(sceneStage, {
       layerClass: 'yh-passage-hotspot',
@@ -83,6 +132,7 @@
 
     function destroy() {
       objectHotspots.destroy();
+      materialLinks.destroy();
       passageLayer.destroy();
     }
 
@@ -90,12 +140,13 @@
     // mechanism used across every other zone.
     function closeAllCaptions() {
       objectHotspots.hideCaption();
+      materialLinks.hideCaption();
       passageLayer.hideCaption();
     }
 
     return {
       destroy: destroy,
-      layout: function () { objectHotspots.layout(); passageLayer.layout(); },
+      layout: function () { objectHotspots.layout(); materialLinks.layout(); passageLayer.layout(); },
       closeAllCaptions: closeAllCaptions
     };
   }

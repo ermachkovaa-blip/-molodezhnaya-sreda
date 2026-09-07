@@ -490,6 +490,121 @@
   opacity: 1;
 }
 
+/* ================= ZONE 01 MATERIAL-LINK ACTION MARKERS (FAST PASS —
+   a separate, always-visible circle next to each object card, additional
+   to the invisible .yh-object-hotspot above it. width/height are set
+   inline from JS as a PERCENT of the scene image (see zone-01-hall.js /
+   ZONE_01_MATERIAL_BUTTON_SIZE) for the same reason as
+   .yh-object-hotspot__item's own size override — a plain px box here
+   would shrink under the scene's camera transform. ================= */
+
+.yh-material-link__item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: none;
+  border-radius: 999px;
+  background: #2f6fed;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(20, 40, 90, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  transition: box-shadow 150ms ease, background 150ms ease;
+}
+
+.yh-material-link__item--disabled {
+  background: rgba(28, 26, 23, 0.35);
+  cursor: default;
+}
+
+.yh-material-link__dot {
+  font-size: 1.1rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.yh-material-link__dot::before { content: '↗'; }
+
+.yh-material-link__item:hover,
+.yh-material-link__item:focus-visible {
+  box-shadow: 0 3px 12px rgba(20, 40, 90, 0.45);
+}
+
+.yh-material-link__item:focus-visible { outline: none; }
+
+.yh-material-link__item:focus-visible .yh-material-link__dot {
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.5);
+  border-radius: 50%;
+}
+
+/* Desktop: circle -> horizontal pill on hover/focus, growing OUT of the
+   circle (flush left edge, no layout shift — this is a separate sibling
+   element, not the circle itself resizing, so the real hit-area stays the
+   circle's own percent-sized box throughout). */
+.yh-material-link__label {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  background: #2f6fed;
+  color: #fff;
+  /* Kept deliberately small — the marker now sits ON the card itself
+     (under the city name), so an expanded pill at normal hover-label
+     size would reach past the card's own width into the neighbour's
+     title text. This size was checked against the real card spacing,
+     not guessed. */
+  font-size: 0.5rem;
+  font-weight: 700;
+  padding: 0.28rem 0.3rem;
+  padding-left: 0.28rem;
+  border-radius: 0 999px 999px 0;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: max-width 220ms ease, opacity 180ms ease, padding 220ms ease;
+}
+
+.yh-material-link__item--disabled .yh-material-link__label {
+  background: rgba(28, 26, 23, 0.88);
+}
+
+.yh-material-link__item:hover .yh-material-link__label,
+.yh-material-link__item:focus-visible .yh-material-link__label {
+  max-width: 200px;
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  /* Mobile: no hover mechanic — the label is a permanently-visible
+     compact pill (spec п.4), sized to fit the tight ~7%-apart object
+     spacing without a hover-driven width, and never covering neighbours
+     because the 5 markers are staggered onto two rows (see
+     ZONE_01_MATERIAL_BUTTON_COORDS). */
+  .yh-material-link__label {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    /* Capped narrow and wrapping — the marker sits ON the card now, right
+       under the city name, so a wide label would reach the NEXT card's
+       own title at this spacing. Still overlaps a little at this scale
+       (flagged, not hidden — see FAST QA report), but far less than an
+       uncapped width did. */
+    max-width: 42px;
+    width: 42px;
+    white-space: pre-line;
+    text-align: left;
+    opacity: 1;
+    font-size: 0.42rem;
+    line-height: 1.1;
+    padding: 0.2rem 0.3rem;
+    border-radius: 0 8px 8px 0;
+  }
+}
+
 /* ================= ZONE 00 MAP NAVIGATION (in-scene "КАРТА ХАКАТОНА"
    stand, 8 hotspots 00-07 — distinct from the separate full-screen Map
    view in .yh-map-view/.yh-map-hotspot above, which is untouched). Visual

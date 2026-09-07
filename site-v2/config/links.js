@@ -63,6 +63,20 @@
     // 'site-visit' / 'plans-work' больше не рендерятся как отдельные
     // annotations (см. zone-02-content.js), но ключи оставлены на случай,
     // если этот контент понадобится позже — не удалены, не потеряны.
+    // Zone 01 — FAST PASS "action-marker" button per object card (a
+    // separate, always-visible circle→pill link next to each of the 5
+    // object stands, additional to the existing invisible whole-card
+    // hotspot above). Deliberately flat, per-object keys — NOT the same
+    // as OBJECT_MATERIAL_URLS above (predates this pass, not read by any
+    // zone yet) and NOT shared with Zone 04's archiveFolderUrl (objects.js)
+    // — Zone 01 links to the object's own source-materials folder, Zone 04
+    // is its own archive; never assumed identical (see zone-01-content.js).
+    OBJECT_BUGULMA_URL: null,
+    OBJECT_ELABUGA_URL: null,
+    OBJECT_SHEMORDAN_URL: null,
+    OBJECT_LAISHEVO_URL: null,
+    OBJECT_STOLBISCHE_URL: null,
+
     RESEARCH_MATERIAL_URLS: {
       'site-visit': null,
       'interview': null,
