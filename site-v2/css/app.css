@@ -24,6 +24,7 @@
 
   --yh-z-scene: 1;
   --yh-z-map: 2;
+  --yh-z-bubbles: 5;
   --yh-z-local: 10;
   --yh-z-bottom-nav: 40;
   --yh-z-header: 60;
@@ -748,6 +749,129 @@
 
 .yh-app--debug .yh-zone00-hotspot__label {
   opacity: 1 !important;
+}
+
+/* ================= ZONE 00 CODE-GENERATED SOAP BUBBLES (FAST PASS —
+   see core/zone-00-bubbles.js). No raster asset anywhere here — every
+   visual layer below is a gradient. Sits BELOW --yh-z-local so a hotspot
+   always wins a visual/interaction overlap, never the reverse (spec
+   п.12). Lives inside .yh-scene-stage, so it pans/zooms with the BASE
+   like everything else in-scene (spec п.13). ================= */
+
+.yh-bubbles-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--yh-z-bubbles);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.yh-bubble {
+  position: absolute;
+  width: 0;
+  height: 0;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.yh-bubble__drift {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.yh-bubble__body {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: auto;
+  cursor: pointer;
+  /* the "thin membrane" itself — near-transparent, a faint bright rim
+     from the highlight side, faint dark rim from the shadow side, NOT a
+     flat rainbow fill (that's .yh-bubble__iridescence's job, layered on
+     top at low opacity). */
+  background: radial-gradient(circle at 42% 40%,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.04) 55%,
+    rgba(255, 255, 255, 0.15) 74%,
+    rgba(255, 255, 255, 0.42) 88%,
+    rgba(255, 255, 255, 0.13) 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.48),
+    inset 0 8px 14px -8px rgba(255, 255, 255, 0.65),
+    inset 0 -8px 14px -8px rgba(40, 30, 20, 0.32);
+}
+
+/* only bubble elements opt back into pointer-events (spec п.12) — the
+   layer and every purely-decorative child stay none. */
+.yh-bubble__iridescence,
+.yh-bubble__reflection,
+.yh-bubble__specular,
+.yh-bubble__droplet {
+  pointer-events: none;
+}
+
+.yh-bubble__iridescence {
+  position: absolute;
+  inset: -2%;
+  /* background + --rim-angle set per-instance in JS (random colour
+     order + rotation — see zone-00-bubbles.js) */
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.5) 70%, #000 85%, #000 100%);
+  mask: radial-gradient(circle at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.5) 70%, #000 85%, #000 100%);
+  opacity: var(--iri-opacity, 0.5);
+}
+
+.yh-bubble__reflection {
+  position: absolute;
+  width: 62%;
+  height: 40%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 72%);
+  transform: rotate(var(--refl-angle, -20deg));
+}
+
+.yh-bubble__specular {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 45%, rgba(255, 255, 255, 0) 75%);
+}
+
+.yh-bubble__specular--1 { width: 15%; height: 15%; }
+.yh-bubble__specular--2 { width: 8%; height: 8%; }
+
+.yh-bubble__droplet {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(190, 224, 255, 0.45) 60%, rgba(190, 224, 255, 0) 100%);
+  transform: translate(-50%, -50%);
+}
+
+.yh-bubble--popped { pointer-events: none; }
+
+/* depth (spec п.7): background reads slightly flatter/duller,
+   foreground a touch punchier — both subtle, tuned via a filter rather
+   than separate size/opacity constants sprinkled across JS. */
+.yh-bubble--background .yh-bubble__body { filter: saturate(0.85) brightness(0.97); }
+.yh-bubble--foreground .yh-bubble__body { filter: saturate(1.12) brightness(1.02); }
+
+@media (max-width: 767px) {
+  /* larger invisible tap area than the visible membrane (spec п.14),
+     without the enlarged area ever fighting a neighbouring control —
+     it's a per-bubble ::before, not a layout change, and still sits
+     below --yh-z-local. */
+  .yh-bubble__body::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yh-bubble { transition: none; }
 }
 
 /* ================= MATERIAL HOTSPOTS (Zone 02/03, shared layerClass —

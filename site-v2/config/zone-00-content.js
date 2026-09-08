@@ -70,4 +70,41 @@
     desktopSize: { w: 10, h: 3.8 },
     mobileSize: { w: 14, h: 2.6 }
   };
+
+  // FAST PASS — ZONE 00 / CODE-GENERATED SOAP BUBBLES (core/zone-00-bubbles.js).
+  // Ambient, code-drawn (no raster assets) foreground/midground layer —
+  // see that file for the actual DOM/animation. Every value here is a
+  // *range*, randomized per instance at spawn time, not a fixed constant.
+  YHApp.ZONE_00_BUBBLES = {
+    count: { desktop: { min: 7, max: 10 }, mobile: { min: 4, max: 6 } },
+    // px, BEFORE the scene stage's own camera-scale transform (same
+    // "lives inside the scene, scales with it" treatment as every other
+    // in-scene hotspot in this codebase).
+    sizePx: {
+      small: { min: 30, max: 55 },
+      medium: { min: 60, max: 100 },
+      large: { min: 110, max: 160 }
+    },
+    maxLargeAtOnce: 2,
+    lifetimeMs: { min: 12000, max: 25000 },
+    respawnDelayMs: { min: 1000, max: 4000 },
+    // 3 depth levels (see spec п.7) — background bubbles are smaller,
+    // drift slower/less, and are slightly lower-contrast; foreground is
+    // the opposite. Expressed as multipliers/deltas applied on top of the
+    // base random ranges above, not separate absolute ranges.
+    depth: {
+      background: { sizeMul: 0.72, driftMul: 0.7, opacityMul: 0.75, weight: 0.4 },
+      midground: { sizeMul: 1, driftMul: 1, opacityMul: 1, weight: 0.45 },
+      foreground: { sizeMul: 1.15, driftMul: 1.25, opacityMul: 1.15, weight: 0.15 }
+    },
+    // very soft, gently-varying wind: a slow rightward bias, never a
+    // constant/identical push (see zone-00-bubbles.js's per-bubble drift
+    // keyframe generation for the actual irregular accel/pause/veer).
+    windBiasPx: { min: 10, max: 34 },
+    // desktop-only air-disturbance-from-cursor (spec п.8) tuning.
+    cursorInfluenceRadiusPx: 110,
+    cursorPushPx: 22,
+    // reduced-motion: keep this many nearly-still bubbles (still poppable).
+    reducedMotionCount: 4
+  };
 })(window.YHApp = window.YHApp || {});

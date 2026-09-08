@@ -90,7 +90,14 @@
       ctaNode.style.height = ctaSize.h + '%';
     }
 
-    function destroy() { layer.destroy(); }
+    // FAST PASS — code-generated ambient soap bubbles (see core/
+    // zone-00-bubbles.js). Appended AFTER the hotspot layer so it sits
+    // later in DOM order, but its own z-index still keeps it below
+    // --yh-z-local regardless — belt and suspenders, hotspots must never
+    // be visually or interactively blocked by a bubble.
+    var bubbles = YHApp.createZone00Bubbles(sceneStage, YHApp.ZONE_00_BUBBLES, isMobile);
+
+    function destroy() { layer.destroy(); bubbles.destroy(); }
     function closeAllCaptions() { layer.hideCaption(); }
 
     return { destroy: destroy, layout: layer.layout, closeAllCaptions: closeAllCaptions };
