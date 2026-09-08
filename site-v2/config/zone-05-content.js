@@ -18,12 +18,27 @@
 // metadata on trust.
 //
 // SHELF ASSET NOTE: the delivered "шкаф" package is 8 rotation frames of
-// a round 9-section bookshelf carousel — richer than the task text's own
-// "одна простая hotspot-полка" description. This iteration uses ONE
-// static frame (front-facing, all 9 section labels legible) as a real
-// HTML hotspot per the written spec; the other 7 rotation frames are not
-// wired to any interaction yet — flagged to the customer, not silently
-// discarded (still present in the source delivery, just unused here).
+// a round 9-section bookshelf carousel. Customer follow-up ("давай
+// вернемся к зоне библиотеки... хочу чтобы базовой была картинка где
+// розовая книга смотрит на меня фронтально, при наведении курсора шкаф
+// немного поворачивается туда сюда... и можно было повернуть его по
+// часовой стрелке вокруг своей оси на 180 градусов") now wires up all 8
+// frames as a real rotation:
+//   - rot-0 (frontal, "СТАНДАРТ ДЕЯТЕЛЬНОСТИ" pink book centered) is the
+//     resting/base frame.
+//   - rot-1..rot-4 show the book rotating away (progressively less of its
+//     cover visible — verified by directly measuring the pink-cover pixel
+//     area in each source frame, not eyeballed) — used for the hover
+//     wobble (rot-0<->rot-1, a small nudge) and as the first half of the
+//     click-triggered 180° turn.
+//   - rot-5..rot-7: the book is fully hidden (rotated to the far side).
+//     The customer's own source PNGs don't carry an angle label, and she
+//     confirmed by message these are "для тебя, чтобы выстроить плавный
+//     поворот" (for you, to build a smooth rotation) — i.e. exact degree
+//     mapping is delegated. rot-5..7 order was chosen by image-similarity
+//     chaining from rot-4 (nearest-neighbour on pixel diff), landing on
+//     rot-7 as the "180°/back" resting frame — a reasonable, smooth
+//     sequence, not a verified physical measurement.
 
 (function (YHApp) {
   'use strict';
@@ -38,13 +53,35 @@
   // center point of the real clickable region (a generous box covering the
   // shelf's own footprint, not just its exact silhouette).
   YHApp.ZONE_05_SHELF = {
-    asset: { src: ASSETS_BASE + 'zone-05-shelf-front.png', w: 720, h: 941 },
-    desktop: { left: 34, top: -2, width: 24, height: 84 },
-    mobile: { left: 24, top: 28, width: 34, height: 53 },
+    asset: { src: ASSETS_BASE + 'zone-05-shelf-rot-0.png', w: 1672, h: 941 },
+    desktop: { left: 26, top: -2, width: 40, height: 84 },
+    mobile: { left: -14.5, top: 38, width: 119, height: 41 },
     hotspotDesktopCoords: { x: 46, y: 50 },
     hotspotDesktopSize: { w: 20, h: 55 },
-    hotspotMobileCoords: { x: 41, y: 66 },
-    hotspotMobileSize: { w: 34, h: 36 }
+    hotspotMobileCoords: { x: 45, y: 60.6 },
+    hotspotMobileSize: { w: 28, h: 36 }
+  };
+
+  // 8-frame rotation set (see header note above for provenance/ordering).
+  // index 0 = resting/frontal frame (must match ZONE_05_SHELF.asset
+  // above), index 7 = the 180°/"back" resting frame reached by a full
+  // click-rotate. All 8 share the same 1672x941 canvas/crop, so swapping
+  // between them never shifts the object's on-screen position.
+  YHApp.ZONE_05_SHELF_ROTATION = {
+    frames: [
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-0.png', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-1.png', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-2.png', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-3.png', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-4.png', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-5.png', w: 1671, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-6.png', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-7.png', w: 1672, h: 941 }
+    ],
+    hoverWobbleFrame: 1, // small "туда-сюда" nudge on hover, desktop only
+    hoverWobbleIntervalMs: 420,
+    turnFrameIntervalMs: 90, // per-frame timing for the full click-rotate
+    tooltipText: 'ПОКРУТИ ШКАФ'
   };
 
   // ---- 2. flying pages ----
@@ -110,6 +147,12 @@
   // files). Both fallback strings match the format already established
   // for Zone 04's null archiveFolderUrl.
   YHApp.ZONE_05_PRESENTATION = {
+    // shelfHoverLabel/shelfEmptyMessage: currently unused — the shelf's
+    // click now rotates it (ZONE_05_SHELF_ROTATION, wired in
+    // zone-05-gallery.js) instead of opening STANDARD_URL through the
+    // generic hotspot-layer caption. Kept, not deleted, in case a
+    // separate "open Стандарт" affordance comes back once a real URL
+    // exists (see that file's header note on this trade-off).
     shelfHoverLabel: 'ОТКРЫТЬ СТАНДАРТ →',
     shelfEmptyMessage: 'МАТЕРИАЛ БУДЕТ ДОБАВЛЕН',
     fabricHoverLabel: 'ПЕРЕЙТИ ↗',

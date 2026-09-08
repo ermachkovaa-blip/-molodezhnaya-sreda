@@ -1346,8 +1346,14 @@
   position: absolute;
   object-fit: contain;
   pointer-events: none;
-  z-index: 3;
 }
+
+/* customer request: shelf sits in front of the fabric banner where their
+   boxes cross (was relying on DOM order alone — both shared z-index:3 —
+   which happened to put the banner on top; now explicit so it doesn't
+   flip back if the DOM order ever changes). */
+.yh-gallery-fabric-image { z-index: 3; }
+.yh-gallery-shelf-image { z-index: 4; }
 
 /* delicate shelf affordance ("небольшим свечением") — a soft glow behind
    the shelf face, shown on desktop cursor-proximity (140-180px, see
@@ -1466,6 +1472,43 @@
 }
 
 .yh-gallery-hotspot__caption[hidden] { display: none; }
+
+/* shelf rotate button — dedicated invisible click target over the shelf's
+   real footprint (same size/position convention as the generic hotspot
+   layer's items, transform:translate(-50%,-50%) to center on its own
+   x/y). No visible dot: the shelf graphic itself is the affordance, same
+   spirit as .yh-gallery-hotspot__item. */
+.yh-gallery-shelf-rotate-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  padding: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 4;
+}
+
+/* cursor-following "ПОКРУТИ ШКАФ" tooltip — viewport-fixed (appended to
+   overlayRoot, tracks raw clientX/clientY via pointermove), positioned
+   just above the pointer. Desktop-only (never shown on mobile — no
+   listeners attach there, see zone-05-gallery.js). */
+.yh-gallery-shelf-tooltip {
+  position: fixed;
+  transform: translate(-50%, -130%);
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: var(--yh-z-overlay);
+}
+
+.yh-gallery-shelf-tooltip[hidden] { display: none; }
 
 /* flying pages — real <button>s so the existing gesture-controller's
    tap-vs-drag arbitration (a scene drag suppresses the synthetic click

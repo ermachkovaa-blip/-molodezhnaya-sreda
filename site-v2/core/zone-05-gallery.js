@@ -65,8 +65,13 @@
     var fabric = YHApp.ZONE_05_FABRIC;
     var pages = YHApp.ZONE_05_PAGES;
     var presentation = YHApp.ZONE_05_PRESENTATION;
+    var rotation = YHApp.ZONE_05_SHELF_ROTATION;
 
     // ==== static placed objects (shelf + fabric images, always visible) ====
+    // shelf image now swaps between rotation.frames[N] (see below) instead
+    // of a single fixed src — customer request: base = frontal frame
+    // (pink "СТАНДАРТ ДЕЯТЕЛЬНОСТИ" cover centered), hover = a small
+    // "туда-сюда" nudge, click = a full 180° turn to the back frame.
     var shelfImg = el('img', 'yh-gallery-shelf-image', { src: shelf.asset.src, alt: '', draggable: 'false' });
     var shelfBox = mobile ? shelf.mobile : shelf.desktop;
     shelfImg.style.left = shelfBox.left + '%';
@@ -74,6 +79,62 @@
     shelfImg.style.width = shelfBox.width + '%';
     shelfImg.style.height = shelfBox.height + '%';
     sceneStage.appendChild(shelfImg);
+
+    // ---- rotation state machine ----
+    var REST_FRONT = 0;
+    var REST_BACK = rotation.frames.length - 1; // 7
+    var restingFrame = REST_FRONT;
+    var wobbling = false;
+    var wobbleShowingAlt = false;
+    var wobbleTimer = null;
+    var turning = false; // a full click-rotate animation is in progress
+    var turnTimer = null;
+
+    function setShelfFrame(idx) {
+      shelfImg.src = rotation.frames[idx].src;
+    }
+
+    function wobbleTargetFrame() {
+      // one step "toward the side" from whichever resting pose is current
+      return restingFrame === REST_FRONT ? 1 : REST_BACK - 1;
+    }
+
+    function startWobble() {
+      if (mobile || turning || wobbling) return;
+      wobbling = true;
+      wobbleShowingAlt = false;
+      wobbleTimer = window.setInterval(function () {
+        wobbleShowingAlt = !wobbleShowingAlt;
+        setShelfFrame(wobbleShowingAlt ? wobbleTargetFrame() : restingFrame);
+      }, rotation.hoverWobbleIntervalMs);
+    }
+
+    function stopWobble() {
+      if (wobbleTimer) { window.clearInterval(wobbleTimer); wobbleTimer = null; }
+      wobbling = false;
+      wobbleShowingAlt = false;
+      if (!turning) setShelfFrame(restingFrame);
+    }
+
+    function rotateShelf() {
+      if (turning) return; // debounce — ignore clicks mid-animation
+      stopWobble();
+      turning = true;
+      var forward = restingFrame === REST_FRONT;
+      var step = forward ? 1 : -1;
+      var i = restingFrame;
+      turnTimer = window.setInterval(function () {
+        i += step;
+        setShelfFrame(i);
+        if ((forward && i >= REST_BACK) || (!forward && i <= REST_FRONT)) {
+          window.clearInterval(turnTimer);
+          turnTimer = null;
+          restingFrame = forward ? REST_BACK : REST_FRONT;
+          turning = false;
+          if (shelfHovered && !mobile) startWobble();
+        }
+      }, rotation.turnFrameIntervalMs);
+    }
 
     var fabricImg = el('img', 'yh-gallery-fabric-image', { src: fabric.asset.src, alt: '', draggable: 'false' });
     var fabricBox = mobile ? fabric.mobile : fabric.desktop;
@@ -83,16 +144,15 @@
     fabricImg.style.height = fabricBox.height + '%';
     sceneStage.appendChild(fabricImg);
 
-    // ==== shelf + fabric hotspots (generic hotspot-layer, same mechanism
-    // as every other zone) ====
+    // ==== fabric hotspot (generic hotspot-layer, same mechanism as every
+    // other zone) — the shelf used to share this generic click-opens-url
+    // hotspot too, but the customer's rotate request repurposes its click
+    // for the turn animation instead (see shelfRotateBtn below). STANDARD_URL
+    // is currently null anyway (no live link broken by this), but flagged
+    // to the customer: once a real "Стандарт" document link exists, it
+    // needs a different trigger than this click (which now always turns
+    // the shelf). ====
     var hotspotItems = [
-      {
-        id: 'shelf',
-        ariaLabel: 'Стандарт деятельности молодёжных центров',
-        hoverLabel: presentation.shelfHoverLabel,
-        url: links.STANDARD_URL,
-        emptyMessage: presentation.shelfEmptyMessage
-      },
       {
         id: 'fabric',
         ariaLabel: 'Архив реализованных объектов реновации',
@@ -107,24 +167,55 @@
       items: hotspotItems,
       isMobile: isMobile,
       getCoords: function (item, mob) {
-        if (item.id === 'shelf') return mob ? shelf.hotspotMobileCoords : shelf.hotspotDesktopCoords;
         return mob ? fabric.hotspotMobileCoords : fabric.hotspotDesktopCoords;
       }
     });
     hotspotLayer.layout();
 
-    // size each hotspot to its real object footprint (default is a small
-    // 44x44 dot — same override pattern Zone 00's CTA already established)
-    var shelfHotspotSize = mobile ? shelf.hotspotMobileSize : shelf.hotspotDesktopSize;
-    if (hotspotLayer.elements.shelf) {
-      hotspotLayer.elements.shelf.style.width = shelfHotspotSize.w + '%';
-      hotspotLayer.elements.shelf.style.height = shelfHotspotSize.h + '%';
-    }
     var fabricHotspotSize = mobile ? fabric.hotspotMobileSize : fabric.hotspotDesktopSize;
     if (hotspotLayer.elements.fabric) {
       hotspotLayer.elements.fabric.style.width = fabricHotspotSize.w + '%';
       hotspotLayer.elements.fabric.style.height = fabricHotspotSize.h + '%';
     }
+
+    // ==== shelf rotate hotspot — dedicated button (not the generic
+    // hotspot-layer, since its click semantics here are "turn the shelf",
+    // not "open a url") over the same real footprint as before. ====
+    var shelfHotspotSize = mobile ? shelf.hotspotMobileSize : shelf.hotspotDesktopSize;
+    var shelfHotspotCoordsForBtn = mobile ? shelf.hotspotMobileCoords : shelf.hotspotDesktopCoords;
+    var shelfRotateBtn = el('button', 'yh-gallery-shelf-rotate-btn', {
+      type: 'button',
+      'aria-label': 'Повернуть шкаф'
+    });
+    shelfRotateBtn.style.left = shelfHotspotCoordsForBtn.x + '%';
+    shelfRotateBtn.style.top = shelfHotspotCoordsForBtn.y + '%';
+    shelfRotateBtn.style.width = shelfHotspotSize.w + '%';
+    shelfRotateBtn.style.height = shelfHotspotSize.h + '%';
+    sceneStage.appendChild(shelfRotateBtn);
+
+    // cursor-following tooltip ("покрути шкаф") — viewport-fixed (lives in
+    // overlayRoot, same as the reader lightbox) so it just tracks raw
+    // clientX/clientY, no scene pan/zoom math needed. Desktop only.
+    var shelfTooltip = el('div', 'yh-gallery-shelf-tooltip', { 'aria-hidden': 'true' });
+    shelfTooltip.textContent = rotation.tooltipText;
+    shelfTooltip.hidden = true;
+    callbacks.overlayRoot.appendChild(shelfTooltip);
+
+    function showTooltipAt(clientX, clientY) {
+      shelfTooltip.style.left = clientX + 'px';
+      shelfTooltip.style.top = clientY + 'px';
+      shelfTooltip.hidden = false;
+    }
+    function hideTooltip() { shelfTooltip.hidden = true; }
+
+    if (!mobile) {
+      shelfRotateBtn.addEventListener('pointermove', function (e) {
+        showTooltipAt(e.clientX, e.clientY);
+      });
+      shelfRotateBtn.addEventListener('mouseleave', hideTooltip);
+      shelfRotateBtn.addEventListener('blur', hideTooltip);
+    }
+    shelfRotateBtn.addEventListener('click', rotateShelf);
 
     // ==== reader lightbox (same contract as Zone 04's lightbox) ====
     var reader = el('div', 'yh-gallery-reader');
@@ -357,39 +448,46 @@
     }
 
     // mobile: tap the book/shelf releases a group directly (no hover there)
-    hotspotLayer.elements.shelf.addEventListener('click', function () {
+    // AND turns the shelf (see shelfRotateBtn's own click listener above) —
+    // both fire together on a tap, there being no separate hover channel
+    // on touch to split them across.
+    shelfRotateBtn.addEventListener('click', function () {
       tryReleaseGroup(performance.now());
     });
 
-    // ---- desktop: hover the book/shelf itself releases pages, and keeps
-    // releasing fresh groups (cooldown-gated) for as long as the cursor
-    // stays over it — "при наведении курсора на книгу она подсвечивает...
-    // и вылетают [страницы]". Base state (cursor elsewhere): zero pages,
-    // no glow. ----
+    // ---- desktop: hover the book/shelf itself releases pages, wobbles the
+    // shelf a little ("туда-сюда") and shows the "ПОКРУТИ ШКАФ" tooltip,
+    // and keeps releasing fresh page groups (cooldown-gated) for as long as
+    // the cursor stays over it. Base state (cursor elsewhere): zero pages,
+    // no glow, resting frame. ----
     var hoverReleaseTimer = null;
     if (!mobile) {
-      hotspotLayer.elements.shelf.addEventListener('mouseenter', function () {
+      shelfRotateBtn.addEventListener('mouseenter', function () {
         shelfHovered = true;
         shelfGlow.classList.add('is-active');
         tryReleaseGroup(performance.now());
+        startWobble();
         if (hoverReleaseTimer) window.clearInterval(hoverReleaseTimer);
         hoverReleaseTimer = window.setInterval(function () {
           tryReleaseGroup(performance.now());
         }, HOVER_RELEASE_INTERVAL_MS);
       });
-      hotspotLayer.elements.shelf.addEventListener('mouseleave', function () {
+      shelfRotateBtn.addEventListener('mouseleave', function () {
         shelfHovered = false;
         shelfGlow.classList.remove('is-active');
+        stopWobble();
         if (hoverReleaseTimer) { window.clearInterval(hoverReleaseTimer); hoverReleaseTimer = null; }
       });
-      hotspotLayer.elements.shelf.addEventListener('focus', function () {
+      shelfRotateBtn.addEventListener('focus', function () {
         shelfHovered = true;
         shelfGlow.classList.add('is-active');
         tryReleaseGroup(performance.now());
+        startWobble();
       });
-      hotspotLayer.elements.shelf.addEventListener('blur', function () {
+      shelfRotateBtn.addEventListener('blur', function () {
         shelfHovered = false;
         shelfGlow.classList.remove('is-active');
+        stopWobble();
       });
     }
 
@@ -499,19 +597,26 @@
       pendingReleaseTimers.forEach(function (t) { window.clearTimeout(t); });
       if (shelfGlowPulseTimer) window.clearTimeout(shelfGlowPulseTimer);
       if (hoverReleaseTimer) window.clearInterval(hoverReleaseTimer);
+      if (wobbleTimer) window.clearInterval(wobbleTimer);
+      if (turnTimer) window.clearInterval(turnTimer);
       if (reduceMotionMQ.removeEventListener) reduceMotionMQ.removeEventListener('change', onReducedMotionChange);
-      // shelf/fabric hover+click listeners live on nodes hotspotLayer.destroy()
-      // removes outright, so no separate removeEventListener needed for them.
+      // fabric hover+click listeners live on nodes hotspotLayer.destroy()
+      // removes outright, so no separate removeEventListener needed for it.
+      // shelfRotateBtn/shelfTooltip are removed outright below instead
+      // (they're plain nodes, not hotspotLayer's).
       hotspotLayer.destroy();
       reader.remove();
       shelfImg.remove();
       fabricImg.remove();
       shelfGlow.remove();
+      shelfRotateBtn.remove();
+      shelfTooltip.remove();
       pageNodes.forEach(function (pn) { pn.node.remove(); });
     }
 
     function closeAllCaptions() {
       hotspotLayer.hideCaption();
+      hideTooltip();
       closeReader();
     }
 
