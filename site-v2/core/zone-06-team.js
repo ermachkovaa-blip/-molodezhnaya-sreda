@@ -105,7 +105,20 @@
         mobileCalloutCoords: p.mobileCalloutCoords
       };
     });
-    var roleAnnotations = YHApp.createSpatialAnnotations(sceneStage, roleHotspots, {}, mobile);
+    // customer spec ("ZONE 06 — MOBILE ONLY"): a scoped modifier class so
+    // the mobile card-width reduction below (css) only ever applies here,
+    // never to Zone 02/03's own mobile cards which share this same
+    // component — "desktop layout не менять вообще" extends to "don't
+    // touch other zones either" by the same logic.
+    // Mobile also opts into titles-only (originally a Zone 03-only rule):
+    // with 5 people's card sizes now correct (see the resolution-
+    // independence fix in core/spatial-annotations.js), the FULL role
+    // description simply doesn't leave enough vertical room to fit 3
+    // cards in one column above the bottom nav on the narrowest real
+    // phones — the same content-doesn't-fit problem Zone 03 hit first.
+    // The role NAME alone (already the headline of each card) still
+    // reads fine without its one-sentence blurb underneath.
+    var roleAnnotations = YHApp.createSpatialAnnotations(sceneStage, roleHotspots, {}, mobile, mobile ? 'yh-workshop-annotation-layer--zone06-mobile yh-workshop-annotation-layer--titles-only' : null);
 
     function destroy() {
       hotspotLayer.destroy();

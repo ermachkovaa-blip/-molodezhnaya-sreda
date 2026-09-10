@@ -61,68 +61,12 @@
     mobileCoords: { x: 84, y: 62 }
   };
 
-  // FAST PASS — ZONE 01 / MATERIAL LINKS. A separate, always-visible
-  // circle→pill action-marker next to each of the 5 object cards (real
-  // <a> when a folder URL exists, disabled <button> otherwise — never a
-  // fake "#" link) — additional to, not a replacement of, the existing
-  // invisible whole-card hover hotspot above (ZONE_01_OBJECT_PRESENTATION).
-  // One verb ("ОТКРЫТЬ"), matching the site's existing convention for
-  // this exact action, used identically for all 5 objects per the pass's
-  // own "strict mapping" instruction.
-  YHApp.ZONE_01_MATERIAL_LINKS = {
-    desktopLabel: 'ОТКРЫТЬ ИСХОДНЫЕ МАТЕРИАЛЫ ↗',
-    mobileLabel: 'МАТЕРИАЛЫ',
-    emptyLabelDesktop: 'МАТЕРИАЛЫ БУДУТ ДОБАВЛЕНЫ',
-    // two lines on mobile, per this pass's own compact spec — rendered via
-    // white-space:pre-line in CSS, same convention as every other
-    // multi-line hotspot caption in this codebase.
-    emptyLabelMobile: 'МАТЕРИАЛЫ\nБУДУТ ДОБАВЛЕНЫ'
-  };
-
-  // Same fixed-px-shrinks-with-camera-scale issue already found and fixed
-  // for the object hotspots themselves (see ZONE_01_HOTSPOT_SIZE above) —
-  // measured against THIS zone's actual stage rects (desktop 1680x945,
-  // mobile ~546x971) so the round marker lands at a real ~52px circle on
-  // desktop (inside the 48-56px brief).
-  //
-  // Mobile is a KNOWN, FLAGGED trade-off (see FAST QA report): once the
-  // marker moved onto the card itself, the 5 cards on this BASE sit only
-  // ~38px apart at rest — narrower than the 44px minimum touch target
-  // this same file used for the desktop marker (and for
-  // ZONE_01_HOTSPOT_SIZE above). Both can't be satisfied at once on this
-  // BASE, so "don't overlap the neighbouring card/marker" (an explicit
-  // FAST PASS QA item) won this specific conflict — mobile markers are
-  // ~32px, sized to clear each other (confirmed against the real render),
-  // under the 44px guideline. Flagged for the customer to weigh in on,
-  // not silently shipped either way.
-  YHApp.ZONE_01_MATERIAL_BUTTON_SIZE = {
-    desktop: { w: 3.1, h: 5.5 },
-    mobile: { w: 4.6, h: 2.6 }
-  };
-
-  // Follow-up ("маркеры на самих стендах, под названием города") moved
-  // the anchor from the shared wall band down onto each card itself —
-  // same x as the object's own card, y placed in the real blank gap
-  // between the city-name title and the thin rule under it (measured
-  // against the actual render: desktop ~53px tall, mobile a few px —
-  // mobile's card is tiny at rest, so the marker is sized down there,
-  // see ZONE_01_MATERIAL_BUTTON_SIZE).
-  YHApp.ZONE_01_MATERIAL_BUTTON_COORDS = {
-    bugulma: { desktopCoords: { x: 47, y: 64 }, mobileCoords: { x: 40, y: 60 } },
-    elabuga: { desktopCoords: { x: 54, y: 64 }, mobileCoords: { x: 47, y: 60 } },
-    shemordan: { desktopCoords: { x: 61, y: 64 }, mobileCoords: { x: 54, y: 60 } },
-    laishevo: { desktopCoords: { x: 68, y: 64 }, mobileCoords: { x: 61, y: 60 } },
-    stolbishche: { desktopCoords: { x: 75, y: 64 }, mobileCoords: { x: 68, y: 60 } }
-  };
-
-  // Strict per-object -> config.links key mapping (FAST PASS spec п.7) —
-  // never inferred from array index, never auto-linked to Zone 04's own
-  // archiveFolderUrl.
-  YHApp.ZONE_01_MATERIAL_LINK_KEYS = {
-    bugulma: 'OBJECT_BUGULMA_URL',
-    elabuga: 'OBJECT_ELABUGA_URL',
-    shemordan: 'OBJECT_SHEMORDAN_URL',
-    laishevo: 'OBJECT_LAISHEVO_URL',
-    stolbishche: 'OBJECT_STOLBISCHE_URL'
-  };
+  // FAST PASS "material link" circle→pill markers (formerly
+  // ZONE_01_MATERIAL_LINKS/_BUTTON_SIZE/_BUTTON_COORDS/_LINK_KEYS) were a
+  // second, extra button alongside the whole-card hotspot's own label
+  // above — removed per customer revision: "круглые белые кнопки со
+  // стрелкой убираем полностью... на Столбище убираем дубль" — the
+  // always-visible ZONE_01_OBJECT_PRESENTATION.hoverLabel pill (now shown
+  // unconditionally, not just on hover — see css .yh-object-hotspot__label)
+  // is the one surviving button for all 5 objects.
 })(window.YHApp = window.YHApp || {});

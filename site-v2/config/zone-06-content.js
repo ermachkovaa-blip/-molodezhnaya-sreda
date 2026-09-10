@@ -53,12 +53,34 @@
   // same object-centric recompose approach already used for Zone 03/02,
   // chosen to clear each person's face (cards sit above the head, not
   // over it) rather than defaulting to "straight up" for everyone.
+  // customer revision: "на десктоп версии можно еще немного разнести
+  // карточки от людей" — each card pushed ~20% further along its own
+  // existing direction from its person (not re-aimed, just farther).
+  // "на мобильной версии нужно тоже разнести и раскидать, например
+  // архитектора разместить под человеком а на его место поставить
+  // урбаниста" — mobile callouts for person-1/person-3 swapped (architect
+  // now sits below its own person; urbanist takes architect's old spot),
+  // the rest spread further apart so none overlap each other, a person,
+  // or the wall text.
+  // MOBILE re-layout (this pass): the previous mobileCalloutCoords were
+  // tuned while every card was silently rendering ~2x too small (see the
+  // resolution-independence bug fixed in core/spatial-annotations.js —
+  // card on-screen size used to be coupled to the shipped image's raw
+  // pixel resolution, not just the viewport). Once cards render at their
+  // real, correct size, those old positions overlapped badly ("зона 6...
+  // стало плохо"). Recomputed as two fixed columns (left: урбанист above
+  // архитектор; right: визуализатор above проектировщик above дизайнер,
+  // matching the customer's original left/right + top/bottom-band spec)
+  // using the actual measured card heights at 375px so no two cards
+  // overlap, converted through the real camera matrix at that width
+  // (scale 0.229, translate -60.1/-80 — see core/scene-engine.js) rather
+  // than eyeballed. Re-verified via Playwright at 360/375/390/430px.
   YHApp.ZONE_06_PEOPLE = [
-    { id: 'person-1', role: 'АРХИТЕКТОР', roleText: 'Собирает исследование и сценарии в пространственное решение.', desktopCoords: { x: 33, y: 62 }, mobileCoords: { x: 35, y: 60 }, desktopCalloutCoords: { x: 15, y: 57 }, mobileCalloutCoords: { x: 27, y: 45 } },
-    { id: 'person-2', role: 'ДИЗАЙНЕР', roleText: 'Формирует визуальный язык и атмосферу пространства.', desktopCoords: { x: 40, y: 58 }, mobileCoords: { x: 43, y: 57 }, desktopCalloutCoords: { x: 30, y: 66 }, mobileCalloutCoords: { x: 39, y: 53 } },
-    { id: 'person-3', role: 'УРБАНИСТ', roleText: 'Связывает объект с территорией и городскими сценариями.', desktopCoords: { x: 47, y: 56 }, mobileCoords: { x: 50, y: 55 }, desktopCalloutCoords: { x: 44, y: 44 }, mobileCalloutCoords: { x: 42, y: 46 } },
-    { id: 'person-4', role: 'ПРОЕКТИРОВЩИК', roleText: 'Превращает концепцию в логичное и реализуемое решение.', desktopCoords: { x: 54, y: 53 }, mobileCoords: { x: 57, y: 52 }, desktopCalloutCoords: { x: 60, y: 44 }, mobileCalloutCoords: { x: 57, y: 42 } },
-    { id: 'person-5', role: 'ВИЗУАЛИЗАТОР', roleText: 'Помогает увидеть проект до его реализации.', desktopCoords: { x: 60, y: 57 }, mobileCoords: { x: 64, y: 57 }, desktopCalloutCoords: { x: 64, y: 57 }, mobileCalloutCoords: { x: 72, y: 48 } }
+    { id: 'person-1', role: 'АРХИТЕКТОР', roleText: 'Собирает исследование и сценарии в пространственное решение.', desktopCoords: { x: 33, y: 62 }, mobileCoords: { x: 35, y: 60 }, desktopCalloutCoords: { x: 11.4, y: 56 }, mobileCalloutCoords: { x: 16, y: 47.27 } },
+    { id: 'person-2', role: 'ДИЗАЙНЕР', roleText: 'Формирует визуальный язык и атмосферу пространства.', desktopCoords: { x: 40, y: 58 }, mobileCoords: { x: 43, y: 57 }, desktopCalloutCoords: { x: 28, y: 67.6 }, mobileCalloutCoords: { x: 49, y: 59.98 } },
+    { id: 'person-3', role: 'УРБАНИСТ', roleText: 'Связывает объект с территорией и городскими сценариями.', desktopCoords: { x: 47, y: 56 }, mobileCoords: { x: 50, y: 55 }, desktopCalloutCoords: { x: 43.4, y: 41.6 }, mobileCalloutCoords: { x: 16, y: 37.12 } },
+    { id: 'person-4', role: 'ПРОЕКТИРОВЩИК', roleText: 'Превращает концепцию в логичное и реализуемое решение.', desktopCoords: { x: 54, y: 53 }, mobileCoords: { x: 57, y: 52 }, desktopCalloutCoords: { x: 61.2, y: 42.2 }, mobileCalloutCoords: { x: 49, y: 48.55 } },
+    { id: 'person-5', role: 'ВИЗУАЛИЗАТОР', roleText: 'Помогает увидеть проект до его реализации.', desktopCoords: { x: 60, y: 57 }, mobileCoords: { x: 64, y: 57 }, desktopCalloutCoords: { x: 64.8, y: 57 }, mobileCalloutCoords: { x: 49, y: 37.12 } }
   ];
 
   // переданная, но пока не привязанная 6-я роль — оставлена здесь, чтобы не

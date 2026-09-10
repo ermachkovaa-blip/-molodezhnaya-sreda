@@ -20,7 +20,19 @@
     var hotspots = YHApp.ZONE_03_HOTSPOTS;
     var urlMap = (config.links && config.links.PROJECT_MATERIAL_URLS) || {};
 
-    var annotations = YHApp.createSpatialAnnotations(sceneStage, hotspots, urlMap, mobile, 'yh-workshop-annotation-layer--titles-only');
+    // customer's mobile card-overlap reports on this zone kept not
+    // reproducing in testing at matching viewport widths — the likely
+    // cause: this titles-only mode (mobile needs compact title-only
+    // cards to have any hope of not overlapping in the tall narrow
+    // composition) was gated behind a max-width:767px CSS media query,
+    // which depends on window width, while `mobile` here is the
+    // CONTAINER-width-based truth (see mount.js isMobile()) that decides
+    // which scene image actually renders — the same divergence already
+    // found and fixed for the header nav (core/global-nav.js setMobile).
+    // Whenever they disagree, full descriptions render instead of
+    // titles-only, blowing well past the space the mobile coordinates
+    // below were laid out for. Driven from the real `mobile` value now.
+    var annotations = YHApp.createSpatialAnnotations(sceneStage, hotspots, urlMap, mobile, mobile ? 'yh-workshop-annotation-layer--titles-only' : null);
 
     function destroy() { annotations.destroy(); }
     function closeAllCaptions() {}

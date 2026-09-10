@@ -10,7 +10,9 @@
     mapReturn: 'КАРТА ↑',
     sceneNextPrefix: 'Далее:',
     mapTitle: 'МОЛОДЁЖНАЯ СРЕДА',
-    topNavMenuLabel: 'МЕНЮ',
+    // customer: "давай на мобильной версии верхнюю навигацию спрячем в 3
+    // точки" — icon-style toggle instead of a text "МЕНЮ" label.
+    topNavMenuLabel: '⋯',
     bottomNavHereLabel: 'ТЫ ЗДЕСЬ'
   };
 

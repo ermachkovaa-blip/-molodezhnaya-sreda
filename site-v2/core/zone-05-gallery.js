@@ -72,13 +72,38 @@
     // of a single fixed src — customer request: base = frontal frame
     // (pink "СТАНДАРТ ДЕЯТЕЛЬНОСТИ" cover centered), hover = a small
     // "туда-сюда" nudge, click = a full 180° turn to the back frame.
-    var shelfImg = el('img', 'yh-gallery-shelf-image', { src: shelf.asset.src, alt: '', draggable: 'false' });
+    // customer spec ("ZONE 05 — SHELF ROTATION"): frame changes must never
+    // be an instant src/display swap — two stacked <img> layers crossfade
+    // (350-500ms, old 1->0 / new 0->1) plus a very light settle transform,
+    // so consecutive frames read as continuous motion rather than a
+    // slideshow cut. Both layers share the exact same box (percent
+    // left/top/width/height), one is always ".. --front" (opaque, resting)
+    // and the other "--back" (transparent, holds whichever frame is about
+    // to come forward) — setShelfFrame just swaps which modifier each
+    // layer has; the crossfade itself is a plain CSS transition, no JS
+    // animation loop needed.
+    var shelfImgA = el('img', 'yh-gallery-shelf-image yh-gallery-shelf-image--front', { src: shelf.asset.src, alt: '', draggable: 'false' });
+    var shelfImgB = el('img', 'yh-gallery-shelf-image yh-gallery-shelf-image--back', { src: shelf.asset.src, alt: '', draggable: 'false' });
     var shelfBox = mobile ? shelf.mobile : shelf.desktop;
-    shelfImg.style.left = shelfBox.left + '%';
-    shelfImg.style.top = shelfBox.top + '%';
-    shelfImg.style.width = shelfBox.width + '%';
-    shelfImg.style.height = shelfBox.height + '%';
-    sceneStage.appendChild(shelfImg);
+    [shelfImgA, shelfImgB].forEach(function (img) {
+      img.style.left = shelfBox.left + '%';
+      img.style.top = shelfBox.top + '%';
+      img.style.width = shelfBox.width + '%';
+      img.style.height = shelfBox.height + '%';
+      img.dataset.frameIdx = '0';
+      sceneStage.appendChild(img);
+    });
+    // preload every rotation frame up front — otherwise the first time a
+    // given frame is reached, assigning its src to the (until-then-blank)
+    // back layer could show a brief blank/loading gap instead of a clean
+    // crossfade, on anything slower than a local file.
+    rotation.frames.forEach(function (f) { var pre = new Image(); pre.src = f.src; });
+
+    // shelfImg — the current front-facing layer, used by layoutBookLink()
+    // for its own on-screen box measurement (both layers share one box,
+    // so either would do).
+    var shelfImg = shelfImgA;
+    var frontLayer = shelfImgA, backLayer = shelfImgB;
 
     // ---- rotation state machine ----
     var REST_FRONT = 0;
@@ -91,7 +116,15 @@
     var turnTimer = null;
 
     function setShelfFrame(idx) {
-      shelfImg.src = rotation.frames[idx].src;
+      if (frontLayer.dataset.frameIdx === String(idx)) return; // already showing it
+      backLayer.src = rotation.frames[idx].src;
+      backLayer.dataset.frameIdx = String(idx);
+      frontLayer.classList.remove('yh-gallery-shelf-image--front');
+      frontLayer.classList.add('yh-gallery-shelf-image--back');
+      backLayer.classList.remove('yh-gallery-shelf-image--back');
+      backLayer.classList.add('yh-gallery-shelf-image--front');
+      var swap = frontLayer; frontLayer = backLayer; backLayer = swap;
+      shelfImg = frontLayer;
     }
 
     function wobbleTargetFrame() {
@@ -120,6 +153,7 @@
       if (turning) return; // debounce — ignore clicks mid-animation
       stopWobble();
       turning = true;
+      updateBookLink();
       var forward = restingFrame === REST_FRONT;
       var step = forward ? 1 : -1;
       var i = restingFrame;
@@ -132,9 +166,105 @@
           restingFrame = forward ? REST_BACK : REST_FRONT;
           turning = false;
           if (shelfHovered && !mobile) startWobble();
+          updateBookLink();
         }
       }, rotation.turnFrameIntervalMs);
     }
+
+    // ---- "СТАНДАРТ ДЕЯТЕЛЬНОСТИ" book link (customer: "на розовую книгу:
+    // https://mctatarstan.ru/standart") — the whole-shelf area now turns
+    // the shelf on click (see rotateShelf above), so the book itself needs
+    // its own smaller, higher-priority real link layered on top of it —
+    // otherwise clicking the book would just rotate it, never open the
+    // document. Only meaningful/clickable while the book is actually
+    // facing the viewer (restingFrame === REST_FRONT, not mid-turn);
+    // pointer-events:none the rest of the time so clicks fall through to
+    // the rotate button beneath it instead of hitting a dead link.
+    // Position/size computed from the book's real pixel bounding box in
+    // the rot-0 source PNG (measured directly off the asset, not
+    // guessed) mapped onto the shelf image's actual on-screen rendered
+    // rect — object-fit:contain math, same rigor as every other
+    // calibrated coordinate in this project — so it stays correctly
+    // aligned across breakpoints/resizes without separate desktop/mobile
+    // constants.
+    var BOOK_FRAC = { left: 750 / 1672, right: 910 / 1672, top: 322 / 941, bottom: 540 / 941 };
+
+    var bookLink = el('a', 'yh-gallery-book-link', {
+      target: '_blank', rel: 'noopener noreferrer',
+      'aria-label': 'Открыть Стандарт деятельности молодёжных центров'
+    });
+    if (links.STANDARD_URL) {
+      bookLink.href = links.STANDARD_URL;
+    } else {
+      bookLink.href = '#';
+      bookLink.setAttribute('aria-disabled', 'true');
+      bookLink.addEventListener('click', function (e) { e.preventDefault(); });
+    }
+    var bookLinkLabel = el('span', 'yh-gallery-book-link__label');
+    bookLinkLabel.textContent = presentation.shelfHoverLabel;
+    bookLink.appendChild(bookLinkLabel);
+    sceneStage.appendChild(bookLink);
+
+    function layoutBookLink() {
+      var stageRect = sceneStage.getBoundingClientRect();
+      var imgRect = shelfImg.getBoundingClientRect();
+      if (!stageRect.width || !imgRect.width) return;
+      // counter-scale the label back to a true, legible on-screen size —
+      // the classic "fixed CSS px shrinks with the stage's own camera-
+      // scale transform" bug already found/fixed elsewhere in this
+      // project (see e.g. Zone 01's ZONE_01_HOTSPOT_SIZE comment), except
+      // here it's TEXT, which can't be sized as percent-of-image the way
+      // a hotspot box can — so instead the label is scaled by the
+      // inverse of the stage's live transform scale (offsetWidth is the
+      // stage's UNSCALED layout width; the ratio to its actual rendered
+      // width IS that live scale), keeping it a constant real size
+      // (~intended font-size/padding) at any zoom level, mobile's small
+      // camera scale included.
+      var liveScale = sceneStage.offsetWidth ? (stageRect.width / sceneStage.offsetWidth) : 1;
+      bookLinkLabel.style.transform = 'scale(' + (liveScale ? 1 / liveScale : 1) + ')';
+      // layoutFabricLabel (defined below) has its own bookkeeping but no
+      // reliable trigger of its own that's guaranteed to fire AFTER the
+      // stage is actually laid out (unlike this function, whose early
+      // calls bail via the guard above and only succeed once one of its
+      // several retries lands post-layout) — piggyback on this proven-
+      // reliable moment instead of duplicating that retry chain.
+      if (typeof layoutFabricLabel === 'function') layoutFabricLabel();
+      var natAR = shelf.asset.w / shelf.asset.h;
+      var boxAR = imgRect.width / imgRect.height;
+      var content;
+      if (boxAR > natAR) {
+        var rh = imgRect.height, rw = rh * natAR;
+        content = { left: imgRect.left + (imgRect.width - rw) / 2, top: imgRect.top, width: rw, height: rh };
+      } else {
+        var rw2 = imgRect.width, rh2 = rw2 / natAR;
+        content = { left: imgRect.left, top: imgRect.top + (imgRect.height - rh2), width: rw2, height: rh2 };
+      }
+      var bookLeft = content.left + BOOK_FRAC.left * content.width;
+      var bookRight = content.left + BOOK_FRAC.right * content.width;
+      var bookTop = content.top + BOOK_FRAC.top * content.height;
+      var bookBottom = content.top + BOOK_FRAC.bottom * content.height;
+      bookLink.style.left = ((bookLeft - stageRect.left) / stageRect.width * 100) + '%';
+      bookLink.style.top = ((bookTop - stageRect.top) / stageRect.height * 100) + '%';
+      bookLink.style.width = ((bookRight - bookLeft) / stageRect.width * 100) + '%';
+      bookLink.style.height = ((bookBottom - bookTop) / stageRect.height * 100) + '%';
+    }
+
+    function updateBookLink() {
+      var active = !turning && restingFrame === REST_FRONT;
+      bookLink.classList.toggle('is-active', active);
+      layoutBookLink();
+    }
+    updateBookLink();
+    // layoutBookLink() bails out (leaving left/top unset -> the link sits
+    // wherever position:absolute defaults with no offset) whenever the
+    // shelf image hasn't finished laying out yet, which the very first
+    // call above can easily race — a real bug, not just an initial-frame
+    // nicety: it's WHY the plaque could end up parked in a corner instead
+    // of on the book. requestAnimationFrame retries once the browser has
+    // actually painted; the image's own load event covers the case where
+    // its natural size wasn't even known yet at mount time.
+    window.requestAnimationFrame(layoutBookLink);
+    shelfImgA.addEventListener('load', layoutBookLink);
 
     var fabricImg = el('img', 'yh-gallery-fabric-image', { src: fabric.asset.src, alt: '', draggable: 'false' });
     var fabricBox = mobile ? fabric.mobile : fabric.desktop;
@@ -173,10 +303,29 @@
     hotspotLayer.layout();
 
     var fabricHotspotSize = mobile ? fabric.hotspotMobileSize : fabric.hotspotDesktopSize;
+    var fabricLabel = null;
     if (hotspotLayer.elements.fabric) {
       hotspotLayer.elements.fabric.style.width = fabricHotspotSize.w + '%';
       hotspotLayer.elements.fabric.style.height = fabricHotspotSize.h + '%';
+      fabricLabel = hotspotLayer.elements.fabric.querySelector('.yh-gallery-hotspot__label');
     }
+
+    // customer: "кнопка прочитать стандарт больше чем кнопка перейти на
+    // полотне" — ПЕРЕЙТИ's label is the GENERIC hotspot-layer one, which
+    // (unlike the book link's, see layoutBookLink below) was never
+    // counter-scaled against the stage's camera zoom, so on mobile's
+    // heavy zoom-out it rendered visibly smaller than the book's CTA.
+    // Same fix, scoped to this one label (layerClass 'yh-gallery-hotspot'
+    // is only ever used here, not shared with another zone).
+    function layoutFabricLabel() {
+      if (!fabricLabel) return;
+      var stageRect = sceneStage.getBoundingClientRect();
+      var liveScale = sceneStage.offsetWidth ? (stageRect.width / sceneStage.offsetWidth) : 1;
+      fabricLabel.style.transform = 'translate(-50%, -50%) scale(' + (liveScale ? 1 / liveScale : 1) + ')';
+    }
+    layoutFabricLabel();
+    window.requestAnimationFrame(layoutFabricLabel);
+    shelfImgA.addEventListener('load', layoutFabricLabel);
 
     // ==== shelf rotate hotspot — dedicated button (not the generic
     // hotspot-layer, since its click semantics here are "turn the shelf",
@@ -606,7 +755,9 @@
       // (they're plain nodes, not hotspotLayer's).
       hotspotLayer.destroy();
       reader.remove();
-      shelfImg.remove();
+      shelfImgA.remove();
+      shelfImgB.remove();
+      bookLink.remove();
       fabricImg.remove();
       shelfGlow.remove();
       shelfRotateBtn.remove();
@@ -622,7 +773,7 @@
 
     return {
       destroy: destroy,
-      layout: hotspotLayer.layout,
+      layout: function () { hotspotLayer.layout(); layoutBookLink(); layoutFabricLabel(); },
       closeAllCaptions: closeAllCaptions
     };
   }

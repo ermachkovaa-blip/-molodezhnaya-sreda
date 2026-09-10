@@ -101,6 +101,7 @@
       // any control.
       onMapReturn: function () { showZone('00', true); }
     });
+    globalNav.setMobile(isMobile());
 
     // ---- debug overlay ----
     var debugOverlay = YHApp.createDebugOverlay(root);
@@ -115,6 +116,46 @@
 
     function resolveBranch(zone) {
       return isMobile() ? zone.mobile : zone.desktop;
+    }
+
+    // Customer request (Zone 07): the desktop bucket alone spans
+    // 768px-and-up, too wide a range for one fixed cameraPreset — a focus
+    // point tuned for a normal-width window pushed the far-left banner
+    // off-screen on a narrower desktop window, but shifting that focus
+    // enough to fix it visibly moved the whole composition on wide
+    // windows too ("сильно сдвинула"). Rather than compromise on one
+    // preset for both, a branch may opt into a SECOND preset via
+    // `safeLeftPct`/`narrowCameraPreset` — most zones don't set these and
+    // are completely unaffected. Purely a desktop-internal split; mobile
+    // vs desktop selection above is unchanged.
+    //
+    // IMPORTANT: this used to switch on containerWidth alone (e.g.
+    // "≤1300px"), which is wrong — whether the banner is actually clipped
+    // depends on the real cover-scale (max(vw/iw, vh/ih)), and a scene
+    // whose BASE has an unusual aspect ratio can end up scale-limited by
+    // VIEWPORT HEIGHT even in a very wide window (a wide-but-not-tall
+    // window vs. a wide-and-tall one differ here even at the identical
+    // width) — exactly what happened on the customer's own Mac. So this
+    // computes the actual visible-left edge (in image-percent) from real
+    // viewport + image dimensions and compares that to the branch's own
+    // `safeLeftPct` (the left-most content, e.g. a banner's left edge,
+    // that must stay on screen), instead of guessing from width.
+    function visibleLeftPct(focus, iw, ih, vw, vh) {
+      var coverScale = Math.max(vw / iw, vh / ih);
+      var totalScale = coverScale * (focus.scale || 1);
+      var halfWidthPct = (vw / (2 * totalScale)) / iw * 100;
+      return focus.x - halfWidthPct;
+    }
+
+    function resolveCameraPreset(branch) {
+      if (branch.safeLeftPct == null || !branch.narrowCameraPreset) return branch.cameraPreset;
+      var vw = sceneViewport.clientWidth;
+      var vh = sceneViewport.clientHeight;
+      var iw = branch.asset.w;
+      var ih = branch.asset.h;
+      if (!vw || !vh || !iw || !ih) return branch.cameraPreset;
+      var clipped = visibleLeftPct(branch.cameraPreset, iw, ih, vw, vh) > branch.safeLeftPct;
+      return clipped ? branch.narrowCameraPreset : branch.cameraPreset;
     }
 
     // ---- per-zone local interactivity (Zone 01 objects/program/passage,
@@ -159,7 +200,7 @@
         currentSceneSrc = asset.src;
       }
       sceneEngine.setSceneSize(asset.w, asset.h);
-      sceneEngine.setCameraTo(branch.cameraPreset, animated);
+      sceneEngine.setCameraTo(resolveCameraPreset(branch), animated);
 
       var behaviorFactory = YHApp.ZONE_BEHAVIORS && YHApp.ZONE_BEHAVIORS[zone.shared.behavior];
       if (behaviorFactory) {
@@ -279,8 +320,22 @@
         containerWidth = newWidth;
         var isNowMobile = isMobile();
         if (wasMobile !== isNowMobile) {
+          globalNav.setMobile(isNowMobile);
           mapNav.layout();
           if (!showingMap && currentZoneId) showZone(currentZoneId, false);
+        } else if (!showingMap && currentZoneId) {
+          // same mobile/desktop bucket — but the current zone's branch
+          // may still opt into a second camera preset (see
+          // resolveCameraPreset above), and whether that applies can
+          // depend on viewport HEIGHT too (not just width — see that
+          // function's comment), so this recomputes on every resize
+          // rather than trying to detect a width-only threshold crossing.
+          // Reference-compare against the currently applied focus so this
+          // is a no-op (no camera jump) on zones/sizes where nothing
+          // actually changed.
+          var branch = resolveBranch(scenesConfig.zones[currentZoneId]);
+          var resolved = resolveCameraPreset(branch);
+          if (resolved !== sceneEngine.state.currentFocus) sceneEngine.setCameraTo(resolved, false);
         }
       });
       rootResizeObserver.observe(root);

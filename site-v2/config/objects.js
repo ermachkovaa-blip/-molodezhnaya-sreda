@@ -17,8 +17,12 @@
 // пиксельная калибровка через ?debug=1 — она обычно уточняется после
 // первого визуального прохода.
 //
-// sourceMaterialsUrl / archiveFolderUrl — оба null, пока заказчик не
-// передал ссылки. Ничего не выдумано (см. решение от 05.09, п.5).
+// sourceMaterialsUrl / archiveFolderUrl — заказчик передал по одной
+// Google Drive ссылке на город и явно сказал, что она общая "на объекты
+// (зона 01 и 04)" — так что оба поля здесь получили ОДИНАКОВОЕ значение
+// per-city (переопределяет более раннее решение от 05.09 "не предполагать
+// одинаковость" — то было предположение по умолчанию, это прямое
+// подтверждение).
 
 (function (YHApp) {
   'use strict';
@@ -30,8 +34,8 @@
       title: 'Бугульма',
       desktopCoords: { x: 47, y: 70 },
       mobileCoords: { x: 40, y: 69 },
-      sourceMaterialsUrl: null,
-      archiveFolderUrl: null
+      sourceMaterialsUrl: 'https://drive.google.com/drive/folders/1-D3LoAqeLEJUKXy1d55Pngv7w33BWyYM?usp=share_link',
+      archiveFolderUrl: 'https://drive.google.com/drive/folders/1-D3LoAqeLEJUKXy1d55Pngv7w33BWyYM?usp=share_link'
     },
     {
       id: 'elabuga',
@@ -39,8 +43,8 @@
       title: 'Елабуга',
       desktopCoords: { x: 54, y: 70 },
       mobileCoords: { x: 47, y: 69 },
-      sourceMaterialsUrl: null,
-      archiveFolderUrl: null
+      sourceMaterialsUrl: 'https://drive.google.com/drive/folders/19pXmMm9erFi8ebbvxLCCi5e02betYnij?usp=share_link',
+      archiveFolderUrl: 'https://drive.google.com/drive/folders/19pXmMm9erFi8ebbvxLCCi5e02betYnij?usp=share_link'
     },
     {
       id: 'shemordan',
@@ -48,8 +52,8 @@
       title: 'Шемордан',
       desktopCoords: { x: 61, y: 70 },
       mobileCoords: { x: 54, y: 69 },
-      sourceMaterialsUrl: null,
-      archiveFolderUrl: null
+      sourceMaterialsUrl: 'https://drive.google.com/drive/folders/1zom-j6g0QGn7fHlMFdWYPwVneTqv0CC3?usp=share_link',
+      archiveFolderUrl: 'https://drive.google.com/drive/folders/1zom-j6g0QGn7fHlMFdWYPwVneTqv0CC3?usp=share_link'
     },
     {
       id: 'laishevo',
@@ -57,8 +61,8 @@
       title: 'Лаишево',
       desktopCoords: { x: 68, y: 70 },
       mobileCoords: { x: 61, y: 69 },
-      sourceMaterialsUrl: null,
-      archiveFolderUrl: null
+      sourceMaterialsUrl: 'https://drive.google.com/drive/folders/1MZcr9SejoT3bsmuoehkb1cyOyTU4dNaB?usp=share_link',
+      archiveFolderUrl: 'https://drive.google.com/drive/folders/1MZcr9SejoT3bsmuoehkb1cyOyTU4dNaB?usp=share_link'
     },
     {
       id: 'stolbishche',
@@ -66,8 +70,8 @@
       title: 'Столбище',
       desktopCoords: { x: 75, y: 70 },
       mobileCoords: { x: 68, y: 69 },
-      sourceMaterialsUrl: null,
-      archiveFolderUrl: null
+      sourceMaterialsUrl: 'https://drive.google.com/drive/folders/1046aKyz9-tZ50MZHQ1uOpCHgRN6ml4iA?usp=share_link',
+      archiveFolderUrl: 'https://drive.google.com/drive/folders/1046aKyz9-tZ50MZHQ1uOpCHgRN6ml4iA?usp=share_link'
     }
   ];
 })(window.YHApp = window.YHApp || {});

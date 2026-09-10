@@ -19,13 +19,12 @@
   YHApp.LINKS = {
     APPLICATION_URL: '../apply.html',
 
-    // Стандарт деятельности молодёжных центров (зона 05, шкаф).
-    STANDARD_URL: null,
+    // Стандарт деятельности молодёжных центров (зона 05, розовая книга на шкафу).
+    STANDARD_URL: 'https://mctatarstan.ru/standart',
 
     // Сайт молодёжных центров РТ, раздел программы реновации (зона 05,
-    // тканевый баннер). НЕ путать с V1-полем externalLibraryUrl — это
-    // разные destinations до явного подтверждения обратного.
-    RENOVATION_ARCHIVE_URL: null,
+    // тканевый баннер/полотно).
+    RENOVATION_ARCHIVE_URL: 'https://mctatarstan.ru/renovation_program',
 
     // Полная программа хакатона (PDF/документ) — top-nav "ПРОГРАММА" пункт,
     // вторичный CTA "ПОЛНАЯ ПРОГРАММА ↓". Открывается в новом табе
@@ -41,6 +40,15 @@
     // the заказчик provides one.
     CONTACT_EMAIL: null,
     CONTACT_FORM_ENDPOINT: null,
+
+    // site-v2/apply.html — the full multi-step hackathon APPLICATION form
+    // (distinct from CONTACT_FORM_ENDPOINT above, which is Zone 07's small
+    // "написать нам" question form). Google Apps Script Web App URL,
+    // ending in /exec — customer is setting this up on her own Google
+    // account (never share account access, only the resulting URL).
+    // null until she sends it — no fake "отправлено" without a real
+    // endpoint, same principle as every other submission path here.
+    APPLICATION_FORM_ENDPOINT: 'https://script.google.com/macros/s/AKfycbyOg80ZMZFkv4aKdAAOG3gcp0tkSDo5r2SuxtvN8dlMwm7MIv-9UuopgDqNEkWxGTy8Lg/exec',
 
     // Зона 01 — прямые ссылки на папки материалов по объекту (Яндекс.Диск
     // и т.п.). Зона 04 — ссылки на папку архива по объекту. Поля намеренно
@@ -71,11 +79,11 @@
     // zone yet) and NOT shared with Zone 04's archiveFolderUrl (objects.js)
     // — Zone 01 links to the object's own source-materials folder, Zone 04
     // is its own archive; never assumed identical (see zone-01-content.js).
-    OBJECT_BUGULMA_URL: null,
-    OBJECT_ELABUGA_URL: null,
-    OBJECT_SHEMORDAN_URL: null,
-    OBJECT_LAISHEVO_URL: null,
-    OBJECT_STOLBISCHE_URL: null,
+    OBJECT_BUGULMA_URL: 'https://drive.google.com/drive/folders/1-D3LoAqeLEJUKXy1d55Pngv7w33BWyYM?usp=share_link',
+    OBJECT_ELABUGA_URL: 'https://drive.google.com/drive/folders/19pXmMm9erFi8ebbvxLCCi5e02betYnij?usp=share_link',
+    OBJECT_SHEMORDAN_URL: 'https://drive.google.com/drive/folders/1zom-j6g0QGn7fHlMFdWYPwVneTqv0CC3?usp=share_link',
+    OBJECT_LAISHEVO_URL: 'https://drive.google.com/drive/folders/1MZcr9SejoT3bsmuoehkb1cyOyTU4dNaB?usp=share_link',
+    OBJECT_STOLBISCHE_URL: 'https://drive.google.com/drive/folders/1046aKyz9-tZ50MZHQ1uOpCHgRN6ml4iA?usp=share_link',
 
     RESEARCH_MATERIAL_URLS: {
       'site-visit': null,
@@ -93,7 +101,11 @@
       'plan': null,
       'tracing-paper': null,
       'model': null,
-      'laptop': null,
+      // Zone 03 'laptop' card ("AI-ИНСТРУМЕНТЫ") — the AI/neural-network
+      // tools document built for this block, approved by the customer
+      // ("AI-инструменты согласованы") including the later-added city/
+      // resident/territory-analysis category.
+      'laptop': 'https://claude.ai/code/artifact/7471580b-1d2a-48e5-8f04-d2448a5d0b01',
       'schemes': null,
       'materials': null
     }

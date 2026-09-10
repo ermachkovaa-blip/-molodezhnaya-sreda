@@ -30,6 +30,27 @@
     padding: 4px 8px;
     cursor: pointer;
   }
+  /* заказчик несколько раз тестировала старую распакованную копию из
+     Downloads вместо только что присланной (путь в адресной строке
+     показывал "site-preview-v2 2", "site-preview-v2 5" и т.п. — старые
+     копии macOS создаёт сама при повторной распаковке одноимённого zip)
+     — эта плашка видна на любом экране и всегда содержит СВЕЖУЮ отметку
+     версии/времени сборки конкретно ТОГО пакета, который был собран и
+     отправлен последним, так что несовпадение видно сразу, без сверки
+     URL. Только для TEST-SITE.html/demo — не часть модуля. */
+  #demo-build-marker {
+    position: fixed;
+    left: 8px;
+    bottom: 8px;
+    z-index: 100000;
+    font-family: monospace;
+    font-size: 11px;
+    background: rgba(20, 20, 20, 0.82);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
@@ -44,6 +65,8 @@
   <button type="button" data-w="60vw">60%</button>
   <button type="button" data-w="360px">360px</button>
 </div>
+
+<div id="demo-build-marker">BUILD_MARKER_PLACEHOLDER</div>
 
 <script src="../config/links.js"></script>
 <script src="../config/scenes.js"></script>

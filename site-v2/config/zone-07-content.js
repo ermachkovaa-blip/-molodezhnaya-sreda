@@ -38,7 +38,20 @@
   // down to roughly that marked footprint (~39% of the previous width,
   // ~59% of the previous height, computed from the annotated screenshot's
   // own pixel proportions vs. the banner's previous on-screen size).
-  YHApp.ZONE_07_BANNER_DESKTOP = { left: 16, top: 25, width: 14, height: 28 };
+  // FIFTH customer revision: "increase the application form on desktop by
+  // about 1.5x" — box scaled 1.5x around its previous center (12.5/18/21/42
+  // vs the old 16/25/14/28), still comfortably inside the safe zone
+  // (right edge 33.5% vs the board's ~57% left edge; bottom 60% vs 90%).
+  // Internal typography/spacing scaled 1.5x too, desktop-only (see
+  // app.css's `@media (min-width:768px)` block for .yh-apply-banner__*)
+  // — mobile keeps its own separate sizing/centering per that same
+  // revision's mobile ask.
+  // SIXTH customer revision: "просила увеличить шрифт... но это супер
+  // огромный, это плохо" — fonts brought down to a comfortable reading
+  // size (app.css .yh-apply-banner__* base + its desktop media query),
+  // box shrunk to match so it hugs the now much smaller content instead
+  // of leaving dead space, same top-left anchor as before.
+  YHApp.ZONE_07_BANNER_DESKTOP = { left: 15.5, top: 12, width: 24, height: 46 };
 
   // Mobile placement: SECOND customer revision — same centering, same
   // proportions/styling as desktop (only this box's own position/size is
@@ -48,7 +61,7 @@
   // measured bottom-nav top (~87.6-89% across 360-430px viewports).
   // FOURTH customer revision: same red-rectangle size-down as desktop —
   // bottom edge kept the same, height reduced (~38% of previous).
-  YHApp.ZONE_07_BANNER_MOBILE = { left: 11, top: 71, width: 70, height: 15 };
+  YHApp.ZONE_07_BANNER_MOBILE = { left: 11, top: 62, width: 70, height: 24 };
 
   YHApp.ZONE_07_BANNER_CONTENT = {
     primaryEyebrow: '07 АМФИТЕАТР',

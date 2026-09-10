@@ -26,14 +26,28 @@
 //     wording carried over unchanged from the earlier pass — nothing
 //     reworded.
 //
-// desktopCalloutCoords/mobileCalloutCoords — recalibrated to sit tightly
-// next to each item's own object (see core/spatial-annotations.js for how
-// they're used: a short connector runs from here to desktopCoords/
-// mobileCoords), replacing the earlier "spread across the whole scene"
-// positions — the same object-centric recompose already applied to Zone
-// 03. Mobile ALSO shows the full description here (unlike Zone 03's
-// mobile, which is title-only) — explicit, distinct instruction for Zone
-// 02 ("Do NOT hide the description simply because it is mobile").
+// desktopCalloutCoords — recalibrated to sit tightly next to each item's
+// own object (see core/spatial-annotations.js for how they're used: a
+// short connector runs from here to desktopCoords/mobileCoords),
+// replacing the earlier "spread across the whole scene" positions — the
+// same object-centric recompose already applied to Zone 03.
+//
+// mobileCalloutCoords — REDONE (customer decision, this pass): mobile
+// used to ALSO show the full description here (unlike Zone 03's
+// mobile, which is title-only) per an earlier explicit instruction ("Do
+// NOT hide the description simply because it is mobile"). That stopped
+// being possible once cards render at their real, correct size (see the
+// resolution-independence bug fixed in core/spatial-annotations.js) —
+// five full-description cards don't fit a phone screen without overlap,
+// a real fit problem, not a coordinate mistake (same one Zone 03 hit
+// first). Asked the customer; she chose titles-only, matching Zone 03,
+// over a single tall scrolling column or leaving the overlap. Now
+// title-only on mobile (core/zone-02-workshop.js passes the
+// titles-only modifier class), single vertical column like Zone 03's,
+// coordinates computed from the real camera matrix at 375px (scale
+// 0.25, translate -82.5/-60.8 — see core/scene-engine.js), re-verified
+// via Playwright (no overlap, no overflow, clears header/nav) at
+// 360/375/390/430px.
 //
 // Visual Integration (после Этапа 3): координаты откалиброваны заново под
 // независимый production BASE, НЕ перенесены со старого общего
@@ -67,35 +81,61 @@
       label: 'ИНТЕРВЬЮ',
       text: 'Разговоры с молодыми людьми, экспертами и локальными сообществами.',
       desktopCoords: { x: 50, y: 33 }, mobileCoords: { x: 60, y: 40 },
-      desktopCalloutCoords: { x: 46, y: 22 }, mobileCalloutCoords: { x: 48, y: 32 }
+      // customer follow-up: "интервью закрывает текст на стене" — still
+      // grazing the "ПРОСТРАНСТВО?" line above; nudged down+right off it
+      // (measured at 1500x760/scale 0.449).
+      desktopCalloutCoords: { x: 43, y: 29 }, mobileCalloutCoords: { x: 20.83, y: 17.24 }
     },
     {
       id: 'territory-research', title: 'Исследование территории', order: 2,
       label: 'КАРТА ТЕРРИТОРИИ',
       text: 'Анализируем контекст: город, окружение, доступность, ключевые точки.',
       desktopCoords: { x: 45, y: 40 }, mobileCoords: { x: 49, y: 44 },
-      desktopCalloutCoords: { x: 40, y: 50 }, mobileCalloutCoords: { x: 36, y: 50 }
+      // customer follow-up: "карта территории на парне" — card was
+      // grazing the seated man's head at the table; moved up+left off it.
+      desktopCalloutCoords: { x: 38, y: 47 }, mobileCalloutCoords: { x: 20.83, y: 26.67 }
     },
     {
       id: 'observation', title: 'Наблюдение', order: 3,
       label: 'НАБЛЮДЕНИЯ И ЗАПРОСЫ',
       text: 'Фиксируем, что видим на месте и какие есть потребности у молодежи.',
       desktopCoords: { x: 54, y: 40 }, mobileCoords: { x: 66, y: 45 },
-      desktopCalloutCoords: { x: 58, y: 50 }, mobileCalloutCoords: { x: 70, y: 52 }
+      // customer follow-up: "все карточки находятся в левом блоке, правый
+      // пустой — перераспредели" — pushed further right into the gap
+      // between the "ЛЮДИ/ИДЕИ/ГОРОДА/БУДУЩЕЕ" text and card 04's own
+      // corner position, clear of both.
+      // customer: "зона 2 мобильная — карточки хаотично, что-то вылезает
+      // за экран" — this card's mobile x (70) ran its right edge 18.5px
+      // past the real 375px-viewport edge; pulled left with margin
+      // (measured at scale 0.317).
+      desktopCalloutCoords: { x: 65, y: 34 }, mobileCalloutCoords: { x: 20.83, y: 37.29 }
     },
     {
       id: 'photo-fixation', title: 'Фотофиксация', order: 4,
       label: 'ФОТОФИКСАЦИЯ',
       text: 'Смотрим на территорию глазами исследователя: фото, детали, атмосфера.',
       desktopCoords: { x: 63, y: 34 }, mobileCoords: { x: 80, y: 42 },
-      desktopCalloutCoords: { x: 66, y: 22 }, mobileCalloutCoords: { x: 78, y: 28 }
+      // customer follow-up: "04 поднять еще выше и правее, ближе к
+      // верхнему правому углу, но не заходить на вертикальный текст
+      // «ЛЮДИ / ИДЕИ / ГОРОДА / БУДУЩЕЕ»" — pushed toward the corner,
+      // kept short of that text block's own left edge.
+      // Mobile follow-up: this one was the worst offender — 73px past
+      // the real viewport's right edge at 375px — pulled well back on
+      // screen (measured at scale 0.317).
+      desktopCalloutCoords: { x: 74, y: 13 }, mobileCalloutCoords: { x: 20.83, y: 46.73 }
     },
     {
       id: 'research-materials', title: 'Стопка материалов', order: 5,
       label: 'ИССЛЕДОВАТЕЛЬСКИЕ МАТЕРИАЛЫ',
       text: 'Методики, шаблоны, чек-листы и полезные инструменты для проведения исследований.',
       desktopCoords: { x: 66.5, y: 66 }, mobileCoords: { x: 72.5, y: 59 },
-      desktopCalloutCoords: { x: 58, y: 60 }, mobileCalloutCoords: { x: 58, y: 66 }
+      // customer: "исследовательские материалы... нужно поднимать выше,
+      // перекрывается нижней навигацией" — moved up well clear of the
+      // bottom nav bar. Follow-up: "оставить примерно в текущем секторе,
+      // но сдвинуть немного вниз и вправо, чтобы она меньше перекрывала
+      // стеллаж и не выглядела зажатой" — small down+right nudge within
+      // that same sector, off the bookshelf.
+      desktopCalloutCoords: { x: 75, y: 65 }, mobileCalloutCoords: { x: 20.83, y: 58.52 }
     }
   ];
 })(window.YHApp = window.YHApp || {});

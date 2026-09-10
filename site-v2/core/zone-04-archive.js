@@ -222,6 +222,34 @@
     });
     layer.layout();
 
+    // mobile-only, PERMANENT "here's where to tap" glow on each drawer's
+    // own number badge (customer: "изначально подсветим номера ящиков...
+    // Хочется чтобы свечение было всегда, натуральное полупрозрачное" —
+    // a first timed-intro version was tried and rejected: it used the
+    // desktop-only peekBoxCoords/peekBoxSize, which are calibrated
+    // against the DESKTOP base image and don't line up with the same
+    // badges on the mobile base's own different composition — hence
+    // "не совпадают с цифрами". mobileBadgeCoords below is measured
+    // directly off the real mobile render instead (color-sampled badge
+    // centers converted through the camera transform), and unlike the
+    // desktop hover peekGlow (one shared, reused element) this needs 5
+    // independent, permanently-visible glows at once, so each gets its
+    // own dedicated element.
+    var badgeGlows = [];
+    if (isMobile()) {
+      drawers.forEach(function (d) {
+        var coords = d.mobileBadgeCoords;
+        if (!coords) return;
+        var glow = el('div', 'yh-archive-badge-glow is-active');
+        glow.style.left = (coords.x - coords.w / 2) + '%';
+        glow.style.top = (coords.y - coords.h / 2) + '%';
+        glow.style.width = coords.w + '%';
+        glow.style.height = coords.h + '%';
+        sceneStage.appendChild(glow);
+        badgeGlows.push(glow);
+      });
+    }
+
     // desktop-only: hover/focus fades in that drawer's own glow box.
     // Snapshot isMobile() once at creation — same convention already used
     // elsewhere (e.g. Zone 00's CTA sizing) — a real breakpoint cross
@@ -251,6 +279,7 @@
     }
 
     function destroy() {
+      badgeGlows.forEach(function (g) { g.remove(); });
       closeDrawer();
       hidePeek();
       if (callbacks.setPanDisabled) callbacks.setPanDisabled(false);

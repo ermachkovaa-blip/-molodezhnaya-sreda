@@ -138,6 +138,23 @@
       bottomNav.hidden = !visible;
     }
 
+    // Defensive belt-and-suspenders for the mobile nav collapse: the CSS
+    // @media(max-width:767px) rule alone kept reportedly failing to
+    // collapse the top nav for the customer even though it verified
+    // correct here every time it was tested — the most plausible
+    // explanation is a divergence between window.innerWidth (what the
+    // media query sees) and the ROOT CONTAINER's own contentRect width
+    // (what mount.js's isMobile() actually measures, via ResizeObserver
+    // — see that file's header comment on why it's container-based, not
+    // window-based). Driving the collapse from that SAME isMobile() truth
+    // — the one that already decides which scene image (mobile/desktop)
+    // renders — guarantees the nav agrees with the scene no matter what
+    // the viewport-vs-container relationship is in a given host page.
+    function setMobile(mobile) {
+      contentNav.classList.toggle('yh-header__content-nav--mobile', mobile);
+      header.classList.toggle('yh-header--mobile', mobile);
+    }
+
     function destroy() {
       document.removeEventListener('pointerdown', onDocumentPointerDown);
       header.remove();
@@ -151,6 +168,7 @@
       mapReturnBtn: mapReturnBtn,
       setActiveZone: setActiveZone,
       setBottomNavVisible: setBottomNavVisible,
+      setMobile: setMobile,
       destroy: destroy
     };
   }

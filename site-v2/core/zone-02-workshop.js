@@ -28,7 +28,15 @@
     var hotspots = YHApp.ZONE_02_HOTSPOTS;
     var urlMap = (config.links && config.links.RESEARCH_MATERIAL_URLS) || {};
 
-    var annotations = YHApp.createSpatialAnnotations(sceneStage, hotspots, urlMap, mobile);
+    // Mobile now also opts into titles-only (originally a Zone 03-only
+    // rule; customer's earlier instruction for Zone 02 was the opposite —
+    // "do not hide the description on mobile" — but with 5 cards' sizes
+    // now correct (see the resolution-independence fix in
+    // core/spatial-annotations.js), full descriptions on 5 simultaneous
+    // cards simply don't fit a phone screen without overlap. Customer
+    // chose "titles only, like Zone 03" over a single tall scrolling
+    // column or leaving the overlap as-is.
+    var annotations = YHApp.createSpatialAnnotations(sceneStage, hotspots, urlMap, mobile, mobile ? 'yh-workshop-annotation-layer--titles-only' : null);
 
     function destroy() { annotations.destroy(); }
     function closeAllCaptions() {}

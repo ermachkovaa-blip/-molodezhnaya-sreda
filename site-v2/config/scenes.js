@@ -175,14 +175,19 @@
       // калибровка camera под новую композицию (см. отчёт) — не перенос
       // чисел со старого общего scene-02-03.
       desktop: { asset: sceneAsset('zone-02-desktop'), cameraPreset: { x: 45, y: 42, scale: 1.15 }, hotspots: [] },
-      mobile: { asset: sceneAsset('zone-02-mobile'), cameraPreset: { x: 50, y: 48, scale: 1.5 }, hotspots: [] }
+      mobile: { asset: sceneAsset('zone-02-mobile'), cameraPreset: { x: 50, y: 48, scale: 1.2 }, hotspots: [] }
     },
     '03': {
       shared: { id: '03', title: 'ПРОЕКТНАЯ МАСТЕРСКАЯ', color: '#3f6fd1', behavior: 'zone-03-annotations', navDescription: 'От идей к реальным пространствам' },
       map: { x: 43.8, y: 35.9 },
       mapMobile: { x: 51.74, y: 45.65 },
-      desktop: { asset: sceneAsset('zone-03-desktop'), cameraPreset: { x: 55, y: 63, scale: 1.15 }, hotspots: [] },
-      mobile: { asset: sceneAsset('zone-03-mobile'), cameraPreset: { x: 50, y: 65, scale: 1.5 }, hotspots: [] }
+      // customer: "нужно подвинуть фон вниз, иначе при открытии не видно
+      // название зоны" — y lowered (reveals more of the top of the image,
+      // where the "03 ПРОЕКТНАЯ МАСТЕРСКАЯ" title lives) and zoomed out a
+      // touch so the 6 annotation cards have more room to spread out
+      // without overlapping each other or the people at the table.
+      desktop: { asset: sceneAsset('zone-03-desktop'), cameraPreset: { x: 55, y: 52, scale: 1.05 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-03-mobile'), cameraPreset: { x: 50, y: 65, scale: 1.2 }, hotspots: [] }
     },
     '04': {
       // Zone 04 Visual Integration: собственный production BASE (шкаф
@@ -232,7 +237,26 @@
       // a value like 0.97 here would silently do nothing different from
       // 1.0, so this is written as exactly 1.0. Mobile's target (~4-7%
       // less than 1.1) stays above that floor, so 1.03 is fully honored.
-      desktop: { asset: sceneAsset('zone-07-desktop'), cameraPreset: { x: 51, y: 50, scale: 1.0 }, hotspots: [] },
+      // customer: "зона 7 сильно сдвинула" — shifting the camera enough
+      // to keep the (far-left) application banner on-screen at narrow
+      // desktop windows visibly moved the whole composition at normal/
+      // wide windows too, which she didn't want. Split instead of
+      // compromising: the original x:51 framing stays whenever it
+      // actually keeps the banner (left edge 15.5%) on screen; only
+      // switches to the recentered x:35 preset when it wouldn't.
+      // IMPORTANT: a first attempt gated this purely on container WIDTH
+      // (≤1300px), which is wrong — clipping is driven by the real
+      // cover-scale (max(vw/iw, vh/ih)), and this scene's BASE is an
+      // unusually wide 2.45:1 image, so on a viewport that's wide but
+      // also tall (e.g. 1512x980, a common MacBook size) the HEIGHT ratio
+      // dominates the cover scale and clips the banner even though the
+      // window is well past 1300px wide — this is exactly what the
+      // customer's next screenshot showed ("зона 7 снова улетела").
+      // safeLeftPct (the banner's own left edge, minus a small margin)
+      // lets mount.js's resolveCameraPreset() compute the ACTUAL visible
+      // left edge from real viewport+image dimensions and switch presets
+      // based on that, not a width guess.
+      desktop: { asset: sceneAsset('zone-07-desktop'), cameraPreset: { x: 49.5, y: 50, scale: 1.0 }, hotspots: [], safeLeftPct: 17, narrowCameraPreset: { x: 35, y: 50, scale: 1.0 } },
       mobile: { asset: sceneAsset('zone-07-mobile'), cameraPreset: { x: 46, y: 48, scale: 1.03 }, hotspots: [] }
     }
   };

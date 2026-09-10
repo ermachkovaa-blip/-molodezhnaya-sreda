@@ -117,12 +117,14 @@
   border: none;
   background: rgba(28, 26, 23, 0.06);
   color: var(--yh-ink);
-  font-size: 0.72rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 10px 14px;
+  letter-spacing: 0.06em;
+  padding: 8px 16px;
   border-radius: 999px;
   min-height: 44px;
+  min-width: 44px;
+  line-height: 1;
 }
 
 .yh-header__content-nav-list {
@@ -151,6 +153,11 @@
 }
 
 @media (max-width: 767px) {
+  /* customer spec: "КАРТА на mobile отсутствует" — the bottom nav already
+     covers zone navigation on mobile, so this top-bar "return to map"
+     button is redundant there; display:none rather than touching its JS
+     (still correct/available on desktop). */
+  .yh-header__map-return { display: none; }
   .yh-header__content-nav { flex: 0 0 auto; position: relative; justify-content: flex-start; }
   .yh-header__content-nav-toggle { display: inline-block; }
   .yh-header__content-nav-list {
@@ -173,6 +180,37 @@
   .yh-app .yh-header__content-nav-link:hover,
   .yh-app .yh-header__content-nav-link:focus-visible { background: rgba(28, 26, 23, 0.06); border-bottom: none; }
 }
+
+/* Same rules, driven by JS (core/global-nav.js setMobile(), called from
+   mount.js's own isMobile() — the exact source of truth the scene itself
+   uses to pick mobile vs desktop assets) instead of the viewport media
+   query above. Kept as a second, unconditional copy rather than replacing
+   the @media block: belt-and-suspenders against any host page where the
+   container's real width (what isMobile() measures) and the window's
+   width (what @media sees) can diverge — see core/global-nav.js's
+   setMobile() comment for why that's the suspected root cause of this
+   nav failing to collapse for the customer even though every environment
+   this was tested in showed it collapsing correctly. */
+.yh-header--mobile .yh-header__map-return { display: none; }
+.yh-header__content-nav--mobile { flex: 0 0 auto; position: relative; justify-content: flex-start; }
+.yh-header__content-nav--mobile .yh-header__content-nav-toggle { display: inline-block; }
+.yh-header__content-nav--mobile .yh-header__content-nav-list {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: var(--yh-bg);
+  border: 1px solid rgba(28, 26, 23, 0.12);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 180px;
+}
+.yh-header__content-nav--mobile.is-open .yh-header__content-nav-list { display: flex; }
+.yh-app .yh-header__content-nav--mobile .yh-header__content-nav-link { padding: 10px 12px; min-height: 44px; display: flex; align-items: center; width: 100%; box-sizing: border-box; border-bottom: none; border-radius: 8px; }
 
 /* .yh-app .yh-cta (not just .yh-cta): needs specificity ≥ ".yh-app a"
    above, or that rule's color:inherit silently wins over color:#fff here
@@ -389,6 +427,18 @@
   box-shadow: 0 0 0 3px rgba(47, 125, 238, 0.7);
 }
 
+/* customer revision: "чёрная pill-кнопка в стилистике той, которая сейчас
+   осталась у 05 Столбище... одинаковый размер и положение на всех 5
+   карточках... круглые белые кнопки со стрелкой убираем полностью" — the
+   separate FAST-PASS circular marker (.yh-material-link__*) is removed
+   entirely (see core/zone-01-hall.js); this black pill, already identical
+   in size/position across all 5 objects since it's the same hotspot-
+   layer markup and CSS for each, is now the only button.
+   Follow-up correction: "надпись не должна быть видна постоянно — только
+   при наведении на конкретную карточку" — the previous pass made it
+   permanently visible (opacity:1 unconditionally), which meant all 5
+   showed and overlapped at once; back to hover/focus-gated, one at a
+   time, per the object it's attached to. */
 .yh-object-hotspot__label {
   position: absolute;
   left: 50%;
@@ -491,121 +541,6 @@
   opacity: 1;
 }
 
-/* ================= ZONE 01 MATERIAL-LINK ACTION MARKERS (FAST PASS —
-   a separate, always-visible circle next to each object card, additional
-   to the invisible .yh-object-hotspot above it. width/height are set
-   inline from JS as a PERCENT of the scene image (see zone-01-hall.js /
-   ZONE_01_MATERIAL_BUTTON_SIZE) for the same reason as
-   .yh-object-hotspot__item's own size override — a plain px box here
-   would shrink under the scene's camera transform. ================= */
-
-.yh-material-link__item {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  border: none;
-  border-radius: 999px;
-  background: #2f6fed;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(20, 40, 90, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-  transition: box-shadow 150ms ease, background 150ms ease;
-}
-
-.yh-material-link__item--disabled {
-  background: rgba(28, 26, 23, 0.35);
-  cursor: default;
-}
-
-.yh-material-link__dot {
-  font-size: 1.1rem;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.yh-material-link__dot::before { content: '↗'; }
-
-.yh-material-link__item:hover,
-.yh-material-link__item:focus-visible {
-  box-shadow: 0 3px 12px rgba(20, 40, 90, 0.45);
-}
-
-.yh-material-link__item:focus-visible { outline: none; }
-
-.yh-material-link__item:focus-visible .yh-material-link__dot {
-  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.5);
-  border-radius: 50%;
-}
-
-/* Desktop: circle -> horizontal pill on hover/focus, growing OUT of the
-   circle (flush left edge, no layout shift — this is a separate sibling
-   element, not the circle itself resizing, so the real hit-area stays the
-   circle's own percent-sized box throughout). */
-.yh-material-link__label {
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  background: #2f6fed;
-  color: #fff;
-  /* Kept deliberately small — the marker now sits ON the card itself
-     (under the city name), so an expanded pill at normal hover-label
-     size would reach past the card's own width into the neighbour's
-     title text. This size was checked against the real card spacing,
-     not guessed. */
-  font-size: 0.5rem;
-  font-weight: 700;
-  padding: 0.28rem 0.3rem;
-  padding-left: 0.28rem;
-  border-radius: 0 999px 999px 0;
-  max-width: 0;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-  transition: max-width 220ms ease, opacity 180ms ease, padding 220ms ease;
-}
-
-.yh-material-link__item--disabled .yh-material-link__label {
-  background: rgba(28, 26, 23, 0.88);
-}
-
-.yh-material-link__item:hover .yh-material-link__label,
-.yh-material-link__item:focus-visible .yh-material-link__label {
-  max-width: 200px;
-  opacity: 1;
-}
-
-@media (max-width: 767px) {
-  /* Mobile: no hover mechanic — the label is a permanently-visible
-     compact pill (spec п.4), sized to fit the tight ~7%-apart object
-     spacing without a hover-driven width, and never covering neighbours
-     because the 5 markers are staggered onto two rows (see
-     ZONE_01_MATERIAL_BUTTON_COORDS). */
-  .yh-material-link__label {
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    /* Capped narrow and wrapping — the marker sits ON the card now, right
-       under the city name, so a wide label would reach the NEXT card's
-       own title at this spacing. Still overlaps a little at this scale
-       (flagged, not hidden — see FAST QA report), but far less than an
-       uncapped width did. */
-    max-width: 42px;
-    width: 42px;
-    white-space: pre-line;
-    text-align: left;
-    opacity: 1;
-    font-size: 0.42rem;
-    line-height: 1.1;
-    padding: 0.2rem 0.3rem;
-    border-radius: 0 8px 8px 0;
-  }
-}
-
 /* ================= ZONE 00 MAP NAVIGATION (in-scene "КАРТА ХАКАТОНА"
    stand, 8 hotspots 00-07 — distinct from the separate full-screen Map
    view in .yh-map-view/.yh-map-hotspot above, which is untouched). Visual
@@ -623,6 +558,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* customer: "при открытии карточки остальные кружочки все равно на
+     переднем плане" — siblings with no z-index stack purely by DOM order,
+     so a marker later in the list could sit in front of an earlier one's
+     open label. Give every marker the same baseline and let :hover/
+     :focus-visible/--current (below) raise just the active one above it. */
+  z-index: 1;
+}
+
+.yh-zone00-hotspot__item:hover,
+.yh-zone00-hotspot__item:focus-visible,
+.yh-zone00-hotspot--current {
+  z-index: 2;
 }
 
 .yh-zone00-hotspot__dot {
@@ -662,15 +609,17 @@
   white-space: nowrap;
   background: rgba(28, 26, 23, 0.88);
   color: #fff;
-  /* 1.8x per customer request ("увеличь масштаб этих кнопок" — the
-     title+description tag over the map circles, not the circles
-     themselves): font-size, padding, radius and the description's
-     max-width all scaled by the same 1.8 factor from their prior values
-     (0.68rem/5px 9px/6px/160px). */
-  font-size: 1.224rem;
+  /* Reverted the earlier 1.8x bump ("увеличь масштаб этих кнопок") — on
+     the real map the "00" current-zone label is always visible
+     (opacity:1, see the --current rule above) sitting right next to the
+     other seven markers on a small isometric diagram; at 1.8x its card
+     collided with whichever neighbour label was showing on hover.
+     Customer follow-up: "слишком большой шрифт на карте и накладываются
+     карточки, было не так" — back to the original, smaller size. */
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 9px 16px;
-  border-radius: 11px;
+  padding: 5px 9px;
+  border-radius: 6px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 150ms ease;
@@ -690,7 +639,7 @@
   opacity: 0.85;
   margin-top: 4px;
   white-space: normal;
-  max-width: 288px;
+  max-width: 160px;
 }
 
 .yh-zone00-hotspot__item:hover .yh-zone00-hotspot__label,
@@ -1135,17 +1084,21 @@
 .yh-workshop-annotation__card {
   position: absolute;
   transform: translateY(-50%);
-  background: #fff;
+  /* customer follow-up: "огромные карточки... скрывает людей и фон,
+     предлагаю их уменьшить... сделать подложку карточки полупрозрачной,
+     чтобы было видно фон" — the earlier 0.9-opacity/6px-blur pass (from
+     "сделаем полупрозрачными") still read as near-opaque; this is a
+     real see-through card now, lighter blur so the scene behind it stays
+     legible rather than a frosted wash. */
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
   color: #16140f;
   border-radius: 11px;
-  /* further ~+15% per customer request ("нужно увеличить карточки") on
-     top of the earlier 1.7x pass (was 12px 20px 12px 51px / 323px). Then
-     narrowed + fonts bumped again ("увеличим карточки, шрифт... можно
-     сделать вытянутыми вертикально") — a narrower max-width plus bigger
-     type makes the card wrap into more vertical lines instead of staying
-     wide, which is the "вытянутыми вертикально" shape requested. */
-  padding: 16px 24px 16px 60px;
-  max-width: 300px;
+  /* sized back down — the last two size-up passes (1.7x, then +15%) made
+     these "огромные" per the same follow-up; back to a compact card. */
+  padding: 10px 16px 10px 40px;
+  max-width: 230px;
   box-shadow: 0 2px 8px rgba(20, 30, 60, 0.18);
 }
 
@@ -1158,16 +1111,16 @@
 
 .yh-workshop-annotation__badge {
   position: absolute;
-  left: -27px;
+  left: -21px;
   top: 50%;
   transform: translateY(-50%);
-  width: 55px;
-  height: 55px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: #2f6fed;
   border: 2px solid #fff;
   color: #fff;
-  font-size: 1.28rem;
+  font-size: 1rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1175,19 +1128,30 @@
   box-shadow: 0 1px 4px rgba(20, 40, 90, 0.3);
 }
 
+/* customer follow-up ("огромный шрифт... предлагаю уменьшить") — title/
+   desc sized back down along with the card itself above. */
 .yh-workshop-annotation__title {
-  font-size: 1.45rem;
+  font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   line-height: 1.2;
+  /* customer: "исследовательские не вмещается на карточку" — real bug,
+     not a positioning illusion this time: measured scrollWidth (203px)
+     vs clientWidth (174px) on that exact card. A single long word
+     ("ИССЛЕДОВАТЕЛЬСКИЕ", 18 chars) doesn't wrap by default — browsers
+     don't break an unhyphenated word unless told to — so it overflowed
+     the card's own right edge instead. Any title long enough to hit this
+     on a future card gets the same fix. */
+  overflow-wrap: break-word;
 }
 
 .yh-workshop-annotation__desc {
   margin-top: 6px;
-  font-size: 1.18rem;
+  font-size: 0.88rem;
   line-height: 1.32;
   color: rgba(22, 20, 15, 0.72);
+  overflow-wrap: break-word;
 }
 
 /* mobile: cards stay ALWAYS VISIBLE here too — but TITLE ONLY, no
@@ -1241,6 +1205,61 @@
   .yh-workshop-annotation-layer--titles-only .yh-workshop-annotation__card {
     max-width: 50vw;
   }
+
+  /* ZONE 06 — MOBILE ONLY (customer spec): "уменьшить ширину карточек
+     примерно на 10-15%" — scoped to this zone's own modifier class (see
+     core/zone-06-team.js) so Zone 02/03's mobile cards, which share this
+     same component, are untouched. 58vw base * ~0.86.
+     Narrowed further (50vw -> 34vw) in the mobile re-layout pass: the
+     customer's spec keeps two side-by-side columns (left: урбанист/
+     архитектор; right: визуализатор/проектировщик/дизайнер) — two 50vw
+     columns leave literally 0vw for any gap between them (50+50=100vw),
+     so they always touched/overlapped regardless of x position. Also,
+     the gap between a fixed-percent-of-image anchor and a vw-sized card
+     doesn't shrink/grow at the same rate as the viewport width changes,
+     so a gap that's fine at 375px can quietly close by 430px (found via
+     Playwright across 360-430px, not just one width) — 34vw plus the
+     extra x separation below (see ZONE_06_PEOPLE) keeps a real margin at
+     every tested width, not just one. */
+  .yh-workshop-annotation-layer--zone06-mobile .yh-workshop-annotation__card {
+    max-width: 34vw;
+  }
+}
+
+/* Unconditional twin of the @media block above, keyed to the JS-driven
+   .yh-workshop-annotation-layer--mobile class (core/spatial-
+   annotations.js) instead of window width — see that file's comment for
+   why. Whichever of the two actually matches wins; when they agree
+   (the common case) this is simply redundant. */
+.yh-workshop-annotation-layer--mobile .yh-workshop-annotation__card {
+  padding: 14px 20px 14px 50px;
+  max-width: 58vw;
+  border-radius: 10px;
+}
+.yh-workshop-annotation-layer--mobile .yh-workshop-annotation__card--no-badge {
+  padding-left: 20px;
+}
+.yh-workshop-annotation-layer--mobile .yh-workshop-annotation__badge {
+  width: 42px;
+  height: 42px;
+  left: -21px;
+  font-size: 1.05rem;
+}
+.yh-workshop-annotation-layer--mobile .yh-workshop-annotation__title { font-size: 1.18rem; }
+.yh-workshop-annotation-layer--mobile .yh-workshop-annotation__desc { font-size: 1.02rem; margin-top: 6px; }
+.yh-workshop-annotation-layer--mobile .yh-workshop-annotation__plus {
+  width: 44px;
+  height: 44px;
+  font-size: 1.05rem;
+}
+.yh-workshop-annotation-layer--mobile.yh-workshop-annotation-layer--titles-only .yh-workshop-annotation__desc {
+  display: none;
+}
+.yh-workshop-annotation-layer--mobile.yh-workshop-annotation-layer--titles-only .yh-workshop-annotation__card {
+  max-width: 50vw;
+}
+.yh-workshop-annotation-layer--mobile.yh-workshop-annotation-layer--zone06-mobile .yh-workshop-annotation__card {
+  max-width: 34vw;
 }
 
 .yh-app--debug .yh-workshop-annotation__plus {
@@ -1318,6 +1337,32 @@
 }
 
 .yh-archive-peek-glow.is-active { opacity: 1; }
+
+/* mobile PERMANENT badge glow (core/zone-04-archive.js) — customer:
+   "хочется чтобы свечение было всегда, натуральное полупрозрачное".
+   Own dedicated class (not a reused/shared element like the desktop peek
+   above, since all 5 need to glow at once): same soft-light warm tint
+   language as the desktop hover glow, just always on rather than
+   opacity-transitioned, and with a gentle breathing pulse so it still
+   reads as "alive" rather than a flat static sticker. */
+.yh-archive-badge-glow {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 214, 130, 0.55) 0%, rgba(255, 200, 110, 0.32) 50%, rgba(255, 200, 110, 0) 80%);
+  mix-blend-mode: soft-light;
+  animation: yh-archive-badge-glow-pulse 3400ms ease-in-out infinite;
+}
+
+@keyframes yh-archive-badge-glow-pulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yh-archive-badge-glow { animation: none; opacity: 0.85; }
+}
 
 /* cursor-following "ОТКРОЙ" hint — lives in the viewport-fixed
    .yh-overlay-root (not sceneStage), positioned via left/top in px set
@@ -1477,7 +1522,31 @@
    which happened to put the banner on top; now explicit so it doesn't
    flip back if the DOM order ever changes). */
 .yh-gallery-fabric-image { z-index: 3; }
-.yh-gallery-shelf-image { z-index: 4; }
+
+/* ZONE 05 shelf rotation spec: "поворот... не должен быть мгновенной
+   заменой кадров" — two stacked <img> layers (core/zone-05-gallery.js
+   shelfImgA/B) crossfade instead of one <img> swapping its own src.
+   --front is the resting/visible frame, --back holds whichever frame is
+   about to come forward; setShelfFrame() just swaps which layer has
+   which modifier, and this transition does the rest.
+   Follow-up correction: "убери тряску... шкаф должен всё время
+   оставаться точно на одном месте и в одном размере" — the earlier pass
+   added a light settle scale/translateX on top of the fade for a sense
+   of motion; on THIS asset (a static front-on render, not a real turntable
+   capture) that read as jitter/shake rather than continuity, and directly
+   contradicts "same place, same size" — removed, pure opacity crossfade
+   only. */
+.yh-gallery-shelf-image {
+  transition: opacity 400ms ease;
+}
+.yh-gallery-shelf-image--front {
+  opacity: 1;
+  z-index: 5;
+}
+.yh-gallery-shelf-image--back {
+  opacity: 0;
+  z-index: 4;
+}
 
 /* delicate shelf affordance ("небольшим свечением") — a soft glow behind
    the shelf face, shown on desktop cursor-proximity (140-180px, see
@@ -1514,6 +1583,15 @@
 .yh-gallery-fabric-image {
   object-position: center top;
   transform-origin: 50% 0;
+  /* customer: "нижний край имеет очень большой угол наклона, создается
+     ощущение что полотно кривое" — the real bug was perspective-origin
+     defaulting to the element's own CENTER while the rotation axis
+     (transform-origin) sits at its TOP: that mismatch makes a perfectly
+     flat plane project as a non-linear (bent-looking) trapezoid instead
+     of a straight lean, worst at the edge furthest from the axis (the
+     bottom). Aligning perspective-origin to the same top point keeps the
+     lean linear/straight along the whole height. */
+  perspective-origin: 50% 0;
   /* "колыхался словно легкая ткань под ветром" — code-only, no new asset:
      a slow keyframe loop varies the same rotateY (+ a touch of skew/scaleX)
      the static rule below used to fix in place, so the banner keeps its
@@ -1531,6 +1609,57 @@
 
 @media (prefers-reduced-motion: reduce) {
   .yh-gallery-fabric-image { animation: none; transform: perspective(900px) rotateY(18deg); }
+}
+
+/* "СТАНДАРТ ДЕЯТЕЛЬНОСТИ" book CTA (core/zone-05-gallery.js bookLink) —
+   this component had inline left/top/width/height set from JS but NO
+   CSS at all, so position:absolute (required for percent left/top to do
+   anything), z-index, and the label's own look/visibility were all
+   missing — the real reason the plaque never appeared. z-index sits
+   above .yh-gallery-shelf-image (4) so it's never covered by the shelf
+   raster itself; pointer-events stay off at rest and only turn on via
+   .is-active (set in JS exactly when the book is front-facing), so a
+   click while the book is mid-rotation still falls through to the
+   rotate button beneath instead of hitting a dead/wrong target. */
+.yh-gallery-book-link {
+  position: absolute;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.yh-gallery-book-link.is-active { pointer-events: auto; }
+
+.yh-gallery-book-link__label {
+  background: rgba(28, 26, 23, 0.88);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  padding: 8px 14px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+/* desktop: hover/focus reveal (no hover concept on touch) */
+@media (min-width: 768px) {
+  .yh-gallery-book-link.is-active:hover .yh-gallery-book-link__label,
+  .yh-gallery-book-link.is-active:focus-visible .yh-gallery-book-link__label {
+    opacity: 1;
+  }
+}
+
+/* mobile: permanently visible while active — a first-time visitor has no
+   hover to discover this is tappable otherwise. */
+@media (max-width: 767px) {
+  .yh-gallery-book-link.is-active .yh-gallery-book-link__label {
+    opacity: 1;
+  }
 }
 
 /* shelf + fabric hotspots — transparent click targets, no visible dot
@@ -1577,6 +1706,15 @@
 .yh-gallery-hotspot__item:hover .yh-gallery-hotspot__label,
 .yh-gallery-hotspot__item:focus-visible .yh-gallery-hotspot__label {
   opacity: 1;
+}
+
+/* mobile: no real hover — permanently visible like the book's own CTA
+   (core/zone-05-gallery.js layoutFabricLabel also counter-scales it to
+   match that button's true on-screen size, see that function's comment).
+   layerClass 'yh-gallery-hotspot' is only ever used for this one fabric
+   hotspot, so this is safely scoped. */
+@media (max-width: 767px) {
+  .yh-gallery-hotspot__label { opacity: 1; }
 }
 
 .yh-gallery-hotspot__caption {
@@ -1911,6 +2049,12 @@
   position: absolute;
   display: flex;
   flex-direction: column;
+  /* customer revision: "reduce empty space, look at how designers
+     usually do it" — content sizes to itself (see the two sections
+     below, both flex:0 0 auto now) and this centers that compact group
+     vertically in the fixed box, rather than force-stretching arbitrary
+     proportions into it and leaving a dead gap in the middle. */
+  justify-content: center;
   /* semi-transparent — customer revision: the scene behind should still
      read through the panel, not a fully opaque surface. */
   background: rgba(244, 239, 232, 0.86);
@@ -1933,37 +2077,44 @@
 }
 
 .yh-apply-banner__section { display: flex; flex-direction: column; }
-/* primary (CTA) now the dominant block; secondary (form) deliberately
-   small — customer revision, was roughly the reverse before. */
-.yh-apply-banner__section--primary { flex: 0 0 50%; min-height: 0; }
+/* both sections now content-sized (flex:0 0 auto) instead of forcing a
+   fixed 50/50-ish split — the outer .yh-apply-banner's justify-content:
+   center takes care of placing that compact group in the box. */
+.yh-apply-banner__section--primary { flex: 0 0 auto; min-height: 0; }
 .yh-apply-banner__section--secondary {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 0;
 }
 
+/* customer follow-up: "просила увеличить шрифт... но это супер огромный,
+   это плохо" — the last few rounds compounded (1.7x-ish base bump, then
+   another ~1.5x desktop-only multiplier on top) into sizes far past
+   comfortable reading size. Reset to a size actually meant for a small
+   on-screen card, tuned for real reading distance on both phone and
+   desktop rather than "as large as will fit". */
 .yh-apply-banner__eyebrow {
-  font-size: 0.44rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgba(28, 26, 23, 0.55);
-  margin: 0 0 2px;
+  margin: 0 0 4px;
 }
 
 .yh-apply-banner__heading {
-  font-size: 1.05rem;
+  font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  line-height: 1.05;
-  margin: 0 0 3px;
+  line-height: 1.1;
+  margin: 0 0 6px;
 }
 
 .yh-apply-banner__lead {
-  font-size: 0.56rem;
+  font-size: 0.85rem;
   line-height: 1.3;
   color: rgba(28, 26, 23, 0.75);
-  margin: 0 0 6px;
+  margin: 0 0 11px;
 }
 
 /* .yh-app .yh-apply-banner__cta (not just .yh-apply-banner__cta): the
@@ -1972,18 +2123,26 @@
    keeps the button's own colors regardless of that reset. Solid ink
    button (same language as the header's .yh-cta pill) for a strong,
    enlarged primary action against the now-light panel. */
+/* customer revision: "the apply button should be bigger and more native"
+   — switched from the flat sharp-corner "printed poster" rectangle to the
+   same pill language already established for .yh-cta (header button)
+   elsewhere in this app: rounded-full, generous min-height/padding — a
+   real native-feeling tap target rather than a thin flat strip. */
 .yh-app .yh-apply-banner__cta {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   align-self: flex-start;
-  font-size: 0.62rem;
+  min-height: 44px;
+  font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--yh-bg);
   background: var(--yh-ink);
-  padding: 7px 12px;
-  border-radius: 0;
+  padding: 10px 20px;
+  border-radius: 999px;
+  box-sizing: border-box;
 }
 
 .yh-app .yh-apply-banner__cta:hover { background: #000; }
@@ -2009,13 +2168,13 @@
 }
 .yh-apply-banner__subheading-row .yh-apply-banner__eyebrow {
   margin: 0;
-  font-size: 0.46rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: rgba(28, 26, 23, 0.85);
 }
 
 .yh-apply-banner__subheading {
-  font-size: 0.46rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   text-transform: uppercase;
@@ -2053,7 +2212,7 @@
 }
 
 .yh-apply-banner__field-label {
-  font-size: 0.4rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2068,7 +2227,7 @@
   border-bottom: 1px solid rgba(28, 26, 23, 0.25);
   border-radius: 0;
   color: var(--yh-ink);
-  font-size: 0.46rem;
+  font-size: 0.85rem;
   font-family: inherit;
   padding: 1px 2px;
   outline: none;
@@ -2093,11 +2252,11 @@ textarea.yh-apply-banner__field-input { min-height: 1em; }
   border: 1px solid var(--yh-ink);
   border-radius: 0;
   color: var(--yh-ink);
-  font-size: 0.42rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  padding: 3px 7px;
+  padding: 6px 12px;
   cursor: pointer;
 }
 
@@ -2105,7 +2264,7 @@ textarea.yh-apply-banner__field-input { min-height: 1em; }
 .yh-apply-banner__submit:disabled { opacity: 0.5; cursor: default; }
 
 .yh-apply-banner__status {
-  font-size: 0.6rem;
+  font-size: 0.82rem;
   line-height: 1.3;
   min-height: 1em;
   margin-top: 2px;
@@ -2114,6 +2273,52 @@ textarea.yh-apply-banner__field-input { min-height: 1em; }
 .yh-apply-banner__status--error { color: #c0392b; }
 .yh-apply-banner__status--success { color: #2e7d32; }
 .yh-apply-banner__status--info { color: rgba(28, 26, 23, 0.65); }
+
+/* customer follow-up: "супер огромный, это плохо... подумай какой самый
+   удобный размер шрифта" — replaced the old ×1.5-on-top-of-an-already-
+   bumped-base multiplier with a modest, comfortable desktop bump (roughly
+   ×1.2-1.3 over the base above) instead of stacking multipliers. */
+@media (min-width: 768px) {
+  .yh-apply-banner__eyebrow { font-size: 0.9rem; }
+  .yh-apply-banner__heading { font-size: 2rem; }
+  .yh-apply-banner__lead { font-size: 1.1rem; }
+  .yh-app .yh-apply-banner__cta {
+    min-height: 56px;
+    font-size: 1.15rem;
+    padding: 14px 28px;
+  }
+  .yh-apply-banner__subheading-row .yh-apply-banner__eyebrow,
+  .yh-apply-banner__subheading { font-size: 0.95rem; }
+  .yh-apply-banner__field-label { font-size: 0.78rem; }
+  .yh-apply-banner__field-input { font-size: 1rem; }
+  .yh-apply-banner__submit {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+  .yh-apply-banner__status { font-size: 1rem; }
+}
+
+/* ZONE 07 — APPLICATION CARD / MOBILE ONLY (customer spec): only the
+   upper "meaning" block (07 АМФИТЕАТР / ПОДАТЬ ЗАЯВКУ heading+lead / the
+   CTA / ЕСТЬ ВОПРОС subheading-row) centers — scoped to
+   .yh-apply-banner__section--primary specifically, not the shared
+   .yh-apply-banner__section both sections use, so the form below
+   (labels/inputs/ОТПРАВИТЬ) is untouched and stays left-aligned, per this
+   revision's own explicit "форму лучше оставить выровненными по левому
+   краю" instruction — an earlier pass had centered the field labels and
+   the message+submit row too, which this reverts. subheading-row keeps
+   its own justify-content:center below regardless of the outer section's
+   alignment (it's a full-width flex item that centers ITS OWN children),
+   so "ЕСТЬ ВОПРОС? НАПИШИ НАМ" still centers even though it technically
+   lives in the (no-longer-centered) secondary/form section. */
+@media (max-width: 767px) {
+  .yh-apply-banner__section--primary { align-items: center; }
+  .yh-apply-banner__eyebrow,
+  .yh-apply-banner__heading,
+  .yh-apply-banner__lead { text-align: center; }
+  .yh-app .yh-apply-banner__cta { align-self: center; }
+  .yh-apply-banner__subheading-row { justify-content: center; }
+}
 
 /* ================= SCENE VIEW ================= */
 

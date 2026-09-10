@@ -54,7 +54,10 @@
   // shelf's own footprint, not just its exact silhouette).
   YHApp.ZONE_05_SHELF = {
     asset: { src: ASSETS_BASE + 'zone-05-shelf-rot-0.png', w: 1672, h: 941 },
-    desktop: { left: 26, top: -2, width: 40, height: 84 },
+    // customer: "шкаф на десктоп версии нужно совсем немного увеличить и
+    // поднять чуть выше" — scaled up ~7% around its own footprint, top
+    // nudged up to match.
+    desktop: { left: 24.5, top: -6, width: 43, height: 89 },
     mobile: { left: -14.5, top: 38, width: 119, height: 41 },
     hotspotDesktopCoords: { x: 46, y: 50 },
     hotspotDesktopSize: { w: 20, h: 55 },
@@ -79,8 +82,16 @@
       { src: ASSETS_BASE + 'zone-05-shelf-rot-7.png', w: 1672, h: 941 }
     ],
     hoverWobbleFrame: 1, // small "туда-сюда" nudge on hover, desktop only
-    hoverWobbleIntervalMs: 420,
-    turnFrameIntervalMs: 90, // per-frame timing for the full click-rotate
+    // customer: "шкаф очень нервно крутится и при наведении мыши и при
+    // повороте... нужно создать ощущение что это большой и тяжелый шкаф,
+    // плавно вращается, нужно состыковать по скорости восприятия анимации
+    // с полотном" — both intervals were tuned for a snappy UI flourish
+    // (a full 8-frame turn in ~720ms, a hover wobble flipping ~2.4x/sec),
+    // which reads as twitchy rather than a heavy piece of furniture. First
+    // slowdown pass (1000/260) still read as "супер резко и быстро" —
+    // slowed substantially further this round.
+    hoverWobbleIntervalMs: 1800,
+    turnFrameIntervalMs: 450, // per-frame timing for the full click-rotate
     tooltipText: 'ПОКРУТИ ШКАФ'
   };
 
@@ -147,13 +158,10 @@
   // files). Both fallback strings match the format already established
   // for Zone 04's null archiveFolderUrl.
   YHApp.ZONE_05_PRESENTATION = {
-    // shelfHoverLabel/shelfEmptyMessage: currently unused — the shelf's
-    // click now rotates it (ZONE_05_SHELF_ROTATION, wired in
-    // zone-05-gallery.js) instead of opening STANDARD_URL through the
-    // generic hotspot-layer caption. Kept, not deleted, in case a
-    // separate "open Стандарт" affordance comes back once a real URL
-    // exists (see that file's header note on this trade-off).
-    shelfHoverLabel: 'ОТКРЫТЬ СТАНДАРТ →',
+    // shelfHoverLabel — the book's own CTA plaque (core/zone-05-gallery.js
+    // bookLink/bookLinkLabel), not the whole-shelf click (that rotates it,
+    // see ZONE_05_SHELF_ROTATION). Customer spec: «ПРОЧИТАТЬ СТАНДАРТ →».
+    shelfHoverLabel: 'ПРОЧИТАТЬ СТАНДАРТ →',
     shelfEmptyMessage: 'МАТЕРИАЛ БУДЕТ ДОБАВЛЕН',
     fabricHoverLabel: 'ПЕРЕЙТИ ↗',
     fabricEmptyMessage: 'АРХИВ БУДЕТ ДОБАВЛЕН',
