@@ -61,6 +61,16 @@
       }
     });
 
+    // customer (2026-09-10): "на одной из кнопок напиши прям текстом
+    // ОТКРЫТЬ МАТЕРИАЛЫ, чтобы было понятно что на них можно нажать" — the
+    // label is hover/focus-revealed for all 5 (see app.css
+    // .yh-object-hotspot__label), which on a touchscreen never shows at
+    // all, giving no hint any of the 5 boards are tappable. Only the
+    // first one is made permanently visible, as that hint — not all 5,
+    // exactly as asked.
+    var firstHotspotNode = objects[0] && objectHotspots.elements[objects[0].id];
+    if (firstHotspotNode) firstHotspotNode.classList.add('yh-object-hotspot__item--always-visible');
+
     // ---- 2. passage to 02 — spatial navigation, not a content hotspot ----
     var passageLayer = YHApp.createHotspotLayer(sceneStage, {
       layerClass: 'yh-passage-hotspot',

@@ -32,8 +32,12 @@
       id: 'bugulma',
       number: '01',
       title: 'Бугульма',
-      desktopCoords: { x: 47, y: 70 },
-      mobileCoords: { x: 40, y: 69 },
+      // Coords re-measured directly against the BASE image (2026-09-10,
+      // customer: "поправить положение точек... на центральной ось стенда"
+      // for desktop; mobile Y was badly off — landed on the stools below
+      // the boards instead of on them, "кнопки улетели вниз").
+      desktopCoords: { x: 48.5, y: 70 },
+      mobileCoords: { x: 38, y: 61 },
       sourceMaterialsUrl: 'https://drive.google.com/drive/folders/1-D3LoAqeLEJUKXy1d55Pngv7w33BWyYM?usp=share_link',
       archiveFolderUrl: 'https://drive.google.com/drive/folders/1-D3LoAqeLEJUKXy1d55Pngv7w33BWyYM?usp=share_link'
     },
@@ -41,8 +45,8 @@
       id: 'elabuga',
       number: '02',
       title: 'Елабуга',
-      desktopCoords: { x: 54, y: 70 },
-      mobileCoords: { x: 47, y: 69 },
+      desktopCoords: { x: 55, y: 70 },
+      mobileCoords: { x: 45.5, y: 61 },
       sourceMaterialsUrl: 'https://drive.google.com/drive/folders/19pXmMm9erFi8ebbvxLCCi5e02betYnij?usp=share_link',
       archiveFolderUrl: 'https://drive.google.com/drive/folders/19pXmMm9erFi8ebbvxLCCi5e02betYnij?usp=share_link'
     },
@@ -50,8 +54,8 @@
       id: 'shemordan',
       number: '03',
       title: 'Шемордан',
-      desktopCoords: { x: 61, y: 70 },
-      mobileCoords: { x: 54, y: 69 },
+      desktopCoords: { x: 62, y: 70 },
+      mobileCoords: { x: 53, y: 61 },
       sourceMaterialsUrl: 'https://drive.google.com/drive/folders/1zom-j6g0QGn7fHlMFdWYPwVneTqv0CC3?usp=share_link',
       archiveFolderUrl: 'https://drive.google.com/drive/folders/1zom-j6g0QGn7fHlMFdWYPwVneTqv0CC3?usp=share_link'
     },
@@ -59,8 +63,8 @@
       id: 'laishevo',
       number: '04',
       title: 'Лаишево',
-      desktopCoords: { x: 68, y: 70 },
-      mobileCoords: { x: 61, y: 69 },
+      desktopCoords: { x: 69.7, y: 70 },
+      mobileCoords: { x: 60, y: 61 },
       sourceMaterialsUrl: 'https://drive.google.com/drive/folders/1MZcr9SejoT3bsmuoehkb1cyOyTU4dNaB?usp=share_link',
       archiveFolderUrl: 'https://drive.google.com/drive/folders/1MZcr9SejoT3bsmuoehkb1cyOyTU4dNaB?usp=share_link'
     },
@@ -68,8 +72,8 @@
       id: 'stolbishche',
       number: '05',
       title: 'Столбище',
-      desktopCoords: { x: 75, y: 70 },
-      mobileCoords: { x: 68, y: 69 },
+      desktopCoords: { x: 77, y: 70 },
+      mobileCoords: { x: 68, y: 61 },
       sourceMaterialsUrl: 'https://drive.google.com/drive/folders/1046aKyz9-tZ50MZHQ1uOpCHgRN6ml4iA?usp=share_link',
       archiveFolderUrl: 'https://drive.google.com/drive/folders/1046aKyz9-tZ50MZHQ1uOpCHgRN6ml4iA?usp=share_link'
     }

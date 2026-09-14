@@ -33,24 +33,26 @@
 (function (YHApp) {
   'use strict';
 
-  // RECALIBRATED (customer report: "на карте смещены кружочки с карты,
-  // поправь чтобы они находились на самой карте") — the values below were
-  // measured directly off each platform's own BASE pixels (percentage
-  // grid overlay + crop verification against the actual room cells of the
-  // isometric diagram, not eyeballed), confirmed with a rendered
-  // marker-on-image check before adopting. Each id sits on its own
-  // distinct room, ordered bottom (00) to the topmost peak room (07) —
-  // same non-literal "readable but decorative" mapping as before, just
-  // actually landing on the artwork this time.
+  // customer replaced the zone-00 DESKTOP background (2026-09-14, "давай
+  // заменим фон на зоне 00, перепроверь только размещение кнопок на
+  // карте") with a new isometric "КАРТА ХАКАТОНА" render — different room
+  // shapes/positions than the old BASE, so desktopCoords below are a
+  // fresh measurement against the NEW image only (mobile BASE/coords are
+  // untouched — she sent one image, landscape, i.e. desktop only). Same
+  // method as before: cropped the diagram, overlaid a pixel grid, read
+  // off each of the 8 distinct room cells' centers, ordered nearest (00,
+  // bottom of the diagram) to farthest/topmost peak room (07) — a
+  // readable but non-literal mapping, the diagram is decorative isometric
+  // art, not a real cross-referenced floor plan.
   YHApp.ZONE_00_NAV_HOTSPOTS = [
-    { id: '00', desktopCoords: { x: 57.27, y: 70.65 }, mobileCoords: { x: 62.6, y: 62.8 } },
-    { id: '01', desktopCoords: { x: 54.14, y: 67.18 }, mobileCoords: { x: 59.5, y: 63.5 } },
-    { id: '02', desktopCoords: { x: 65.21, y: 63.47 }, mobileCoords: { x: 60.5, y: 62.3 } },
-    { id: '03', desktopCoords: { x: 53.75, y: 62.31 }, mobileCoords: { x: 68.3, y: 60.0 } },
-    { id: '04', desktopCoords: { x: 62.21, y: 61.16 }, mobileCoords: { x: 64.3, y: 61.6 } },
-    { id: '05', desktopCoords: { x: 55.05, y: 57.69 }, mobileCoords: { x: 63.1, y: 61.0 } },
-    { id: '06', desktopCoords: { x: 58.57, y: 53.19 }, mobileCoords: { x: 65.75, y: 58.7 } },
-    { id: '07', desktopCoords: { x: 60.78, y: 47.04 }, mobileCoords: { x: 67.52, y: 56.47 } }
+    { id: '00', desktopCoords: { x: 58.07, y: 74.07 }, mobileCoords: { x: 62.6, y: 62.8 } },
+    { id: '01', desktopCoords: { x: 60.16, y: 68.98 }, mobileCoords: { x: 59.5, y: 63.5 } },
+    { id: '02', desktopCoords: { x: 54.56, y: 67.82 }, mobileCoords: { x: 60.5, y: 62.3 } },
+    { id: '03', desktopCoords: { x: 64.84, y: 62.27 }, mobileCoords: { x: 68.3, y: 60.0 } },
+    { id: '04', desktopCoords: { x: 55.47, y: 59.95 }, mobileCoords: { x: 64.3, y: 61.6 } },
+    { id: '05', desktopCoords: { x: 62.37, y: 59.95 }, mobileCoords: { x: 63.1, y: 61.0 } },
+    { id: '06', desktopCoords: { x: 59.11, y: 55.09 }, mobileCoords: { x: 65.75, y: 58.7 } },
+    { id: '07', desktopCoords: { x: 60.68, y: 48.15 }, mobileCoords: { x: 67.52, y: 56.47 } }
   ];
 
   // A real, transparent hotspot placed exactly over the "ПОДАТЬ ЗАЯВКУ →"
@@ -63,11 +65,18 @@
   // the generic 44x44 hotspot default): the two platforms' pill graphics
   // are proportioned differently on their own images, so one fixed
   // percentage would fit neither correctly.
+  // desktopCoords/desktopSize re-measured against the NEW zone-00 desktop
+  // BASE (2026-09-14 background replacement) — pixel-scanned the baked
+  // green pill's own bounding box directly, not eyeballed; came out
+  // almost identical to the old BASE's pill position/size by coincidence
+  // (both compositions put the CTA in roughly the same spot on the left
+  // panel), but measured fresh regardless rather than assumed. mobile
+  // untouched (background unchanged there).
   YHApp.ZONE_00_CTA = {
     id: 'cta',
-    desktopCoords: { x: 23.3, y: 65 },
+    desktopCoords: { x: 24.48, y: 65.51 },
     mobileCoords: { x: 32, y: 62.7 },
-    desktopSize: { w: 10, h: 3.8 },
+    desktopSize: { w: 10.94, h: 3.7 },
     mobileSize: { w: 14, h: 2.6 }
   };
 

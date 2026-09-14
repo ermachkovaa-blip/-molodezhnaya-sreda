@@ -33,11 +33,16 @@
     // rests on the floor/rug, doesn't hang) the chair PNG is placed in,
     // over the empty gap at the front-center of the table.
     desktop: { left: 45, top: 48, width: 16, height: 40 },
-    mobile: { left: 53, top: 30, width: 25, height: 36 },
+    // mobile Y-axis percentages (top/height/hotspot y/hotspot size h)
+    // rescaled by 3839/4968 — see config/scenes.js zone-06-mobile comment
+    // (bottom-padded both to keep the nav off the logo strip AND to fix
+    // the same width-crop-on-real-phones issue as Zone 02/03's mobile);
+    // X-axis values are untouched since only height was padded.
+    mobile: { left: 53, top: 23.2, width: 25, height: 27.8 },
     hotspotDesktopCoords: { x: 52, y: 72 },
     hotspotDesktopSize: { w: 14, h: 34 },
-    hotspotMobileCoords: { x: 65, y: 52 },
-    hotspotMobileSize: { w: 22, h: 26 }
+    hotspotMobileCoords: { x: 65, y: 40.2 },
+    hotspotMobileSize: { w: 22, h: 20.1 }
   };
 
   // desktopCoords/mobileCoords are first-pass percentage-grid estimates

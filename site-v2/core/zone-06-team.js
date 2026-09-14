@@ -1,29 +1,18 @@
 // Zone 06 (КОМАНДА) behavior — registered under shared.behavior:
 // 'team-roles-chair'.
 //
-// Two independent layers inside .yh-scene-stage:
-//   1. the chair — a real foreground PNG (transparent, keyed from the
-//      delivered checkerboard-background cutout — see config/
-//      zone-06-content.js) placed over the BASE's empty seat, with a real
-//      <a> hotspot -> APPLICATION_URL. UNCHANGED by the role-cards pass
-//      below — "твоё место в команде" stays the one real call-to-action
-//      here, visually stronger (a real pull-out hover + labeled link)
-//      than the purely-informational role cards.
-//   2. role cards — always-visible annotations reusing the shared Zone
-//      02/03 system (core/spatial-annotations.js): "ONE SITE = ONE
-//      ANNOTATION LANGUAGE" extended to people instead of objects. No
-//      hover/click needed to read a role, and no "+" (a role has no
-//      additional material/URL — per the site-wide rule, "+" only ever
-//      means "there is something more to open"). This REPLACES the
-//      earlier click-to-reveal person hotspots (generic
-//      createHotspotLayer, hover hint + fallback caption) entirely.
+// One real interactive layer inside .yh-scene-stage: the chair — a real
+// foreground PNG (transparent, keyed from the delivered checkerboard-
+// background cutout — see config/zone-06-content.js) placed over the
+// BASE's empty seat, with a real <a> hotspot -> APPLICATION_URL. "твоё
+// место в команде" is the one real call-to-action here (a pull-out hover
+// + labeled link).
 //
-// PERSON -> ROLE mapping: the one already approved and delivered by the
-// customer ("давай сразу же присвоим каждому человеку роль" — see
-// config/zone-06-content.js ZONE_06_PEOPLE) — not re-derived or guessed
-// here. Five people in the BASE, six roles supplied; 'Исследователь'
-// stays unassigned (YHApp.ZONE_06_UNASSIGNED_ROLE) since there is no
-// sixth person to attach it to.
+// The role cards (УРБАНИСТ/ДИЗАЙНЕР/etc.) that used to render here via
+// core/spatial-annotations.js are gone as of the customer's 2026-09-10
+// decision ("не делать карточки текстом, а просто картинками") — they're
+// drawn directly into the BASE image now (config/scenes.js
+// zone-06-desktop/mobile), same as Zone 02/03.
 
 (function (YHApp) {
   'use strict';
@@ -42,7 +31,6 @@
     var mobile = isMobile();
     var links = config.links || YHApp.LINKS;
     var chair = YHApp.ZONE_06_CHAIR;
-    var people = YHApp.ZONE_06_PEOPLE;
     var presentation = YHApp.ZONE_06_PRESENTATION;
 
     // ==== chair (static foreground image, always visible) — unchanged ====
@@ -89,40 +77,16 @@
       chairHotspotNode.addEventListener('blur', function () { chairImg.classList.remove('is-pulled'); });
     }
 
-    // ==== role cards — always visible, no "+" (no material/URL exists
-    // for a role), reusing the shared spatial-annotations component.
-    // Each person entry's role/roleText map to label/text; no `order` is
-    // passed since people aren't a numbered sequence, so the card renders
-    // without the numbered badge. ====
-    var roleHotspots = people.map(function (p) {
-      return {
-        id: p.id,
-        label: p.role,
-        text: p.roleText,
-        desktopCoords: p.desktopCoords,
-        mobileCoords: p.mobileCoords,
-        desktopCalloutCoords: p.desktopCalloutCoords,
-        mobileCalloutCoords: p.mobileCalloutCoords
-      };
-    });
-    // customer spec ("ZONE 06 — MOBILE ONLY"): a scoped modifier class so
-    // the mobile card-width reduction below (css) only ever applies here,
-    // never to Zone 02/03's own mobile cards which share this same
-    // component — "desktop layout не менять вообще" extends to "don't
-    // touch other zones either" by the same logic.
-    // Mobile also opts into titles-only (originally a Zone 03-only rule):
-    // with 5 people's card sizes now correct (see the resolution-
-    // independence fix in core/spatial-annotations.js), the FULL role
-    // description simply doesn't leave enough vertical room to fit 3
-    // cards in one column above the bottom nav on the narrowest real
-    // phones — the same content-doesn't-fit problem Zone 03 hit first.
-    // The role NAME alone (already the headline of each card) still
-    // reads fine without its one-sentence blurb underneath.
-    var roleAnnotations = YHApp.createSpatialAnnotations(sceneStage, roleHotspots, {}, mobile, mobile ? 'yh-workshop-annotation-layer--zone06-mobile yh-workshop-annotation-layer--titles-only' : null);
+    // Role cards (УРБАНИСТ/ДИЗАЙНЕР/etc.) used to render here via the
+    // shared spatial-annotations component. Customer decision
+    // (2026-09-10): "не делать карточки текстом, а просто картинками" —
+    // every role card is now drawn directly into the BASE image itself
+    // (config/scenes.js zone-06-desktop/mobile), so there is nothing left
+    // for this behavior to render there (config/zone-06-content.js's
+    // ZONE_06_PEOPLE is unused now; kept for its role/roleText copy).
 
     function destroy() {
       hotspotLayer.destroy();
-      roleAnnotations.destroy();
       chairImg.remove();
     }
 

@@ -49,17 +49,59 @@
     // стены — карты/схемы/материалы интервью/отчёты вместо фотогалереи).
     // Старые файлы удалены из репозитория (это V2-специфичные assets, не
     // общие с V1, в отличие от scene-02-03.webp — удалять их безопасно).
-    'zone-02-desktop': { src: ASSETS_BASE + 'zone-02-desktop-base-research-wall-v2-4k.png', w: 3840, h: 2160 },
-    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-research-wall-v2-2160x3840.png', w: 2160, h: 3840 },
-    'zone-03-desktop': { src: ASSETS_BASE + 'zone-03-project-workshop-realistic-expanded-4k.png', w: 3840, h: 2160 },
-    'zone-03-mobile': { src: ASSETS_BASE + 'zone-03-mobile-base-clean-realistic-4k.png', w: 2160, h: 3840 },
+    // Zone 02/03 BASE v3 (customer, 2026-09-10): "не делать карточки
+    // текстом, а просто картинками" — the customer now draws every
+    // label/card directly into the BASE herself; core/zone-02-workshop.js
+    // and core/zone-03-workshop.js no longer render any HTML annotation
+    // cards over these (see those files). Zone 03 keeps exactly one real
+    // hotspot (the AI-tools document link — config/zone-03-content.js
+    // ZONE_03_AI_LINK); Zone 02 has none (no material URLs ever existed
+    // for it — see LINKS.RESEARCH_MATERIAL_URLS, all null).
+    'zone-02-desktop': { src: ASSETS_BASE + 'zone-02-desktop-base-cards-baked-v3-4k.png', w: 3840, h: 2160 },
+    // customer: "02-03-06 уменьшить масштаб чтобы весь текст был виден" —
+    // this image's own aspect (2160x3840, 1.778 h/w — a 16:9 photo just
+    // rotated to portrait) is SHORTER-relative-to-width than a real phone
+    // screen (~2.16+ h/w), so SceneEngine's cover-fit was always
+    // width-bound on an actual phone, cropping some width even at the
+    // already-minimum camera scale — a real geometry mismatch, not a
+    // camera setting mistake. Padded top+bottom with a blurred stretch of
+    // the image's own edge (invisible seam, no hard-edged bar) to reach
+    // 2.3 h/w — now wide-open enough that a real phone's cover-fit is
+    // height-bound instead, showing the FULL width (all baked-in text)
+    // with no crop, at the cost of a bit of decorative
+    // ceiling/floor being replaced by soft blur. h updated (3840 -> 4968).
+    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-cards-baked-v3-2160x3840.png', w: 2160, h: 4968 },
+    // customer sent a SECOND replacement background for zone 03 (2026-09-14,
+    // "замени пожалуйста базу для зоны 3 ... поправить размещение кнопки
+    // плюс") — new artwork, same baked-in card layout convention as before.
+    // Same architectural crop risk as the FIRST zone-03 background (see the
+    // old comment this replaces): raw art was 3840x2160 desktop / 2161x3840
+    // mobile — both 1.778 w/h, height-bound at the camera's scale floor on
+    // any real desktop window or phone narrower than that ratio, cropping
+    // the baked-in card text at the sides. Applied the SAME preventive fix
+    // right away this time (blurred top+bottom stretch of the image's own
+    // edge, invisible seam) rather than waiting for her to hit it again:
+    // desktop padded to 2480 (matches the old file's target), mobile to
+    // 4968 (matches the old file's target) — see
+    // config/zone-03-content.js for the AI-link coordinates, re-measured
+    // against these new images directly (not rescaled from the old ones).
+    'zone-03-desktop': { src: ASSETS_BASE + 'zone-03-desktop-cards-v2-4k.png', w: 3840, h: 2480 },
+    'zone-03-mobile': { src: ASSETS_BASE + 'zone-03-mobile-cards-v2-2161x4968.png', w: 2161, h: 4968 },
 
     // Zone 00 Visual Integration: Zone 00 получает СОБСТВЕННЫЙ независимый
     // BASE (больше не делит scene-00-01 с Zone 01 — см. отчёт). Zone 01
     // продолжает использовать 'scene-00-01' без изменений (запись ниже не
     // трогалась). Desktop BASE содержит запечённые intro/CTA/карту —
     // сознательное решение (см. отчёт п.3), не перерисовывается.
-    'zone-00-desktop': { src: ASSETS_BASE + 'zone-00-base-clean-map-4k-sharp-v3.png', w: 3840, h: 2160 },
+    // customer replaced this DESKTOP background again (2026-09-14, "давай
+    // заменим фон на зоне 00, перепроверь только размещение кнопок на
+    // карте") — new isometric map render, same 3840x2160, no crop-padding
+    // needed (checked against the same real-viewport sweep used for
+    // zone 02/03/06 — height-bound at the camera's floor scale same as
+    // before, no width overflow at any tested width). ZONE_00_NAV_HOTSPOTS
+    // and ZONE_00_CTA in config/zone-00-content.js re-measured fresh
+    // against this new image.
+    'zone-00-desktop': { src: ASSETS_BASE + 'zone-00-base-hackathon-5x5-v4-4k.png', w: 3840, h: 2160 },
     // Zone 00 mobile FINAL RECALIBRATION: заменяет provisional
     // zone-00-mobile-base-clean-4k.png (удалён из репозитория — тот BASE
     // не содержал ни intro-стенда, ни стенда "КАРТА ХАКАТОНА"). Новый
@@ -102,8 +144,30 @@
     // 05.09 upload): same approved composition, confirmed by direct visual
     // comparison against the previous file before swapping — camera/
     // hotspots/annotations untouched, only src+w/h updated.
-    'zone-06-desktop': { src: ASSETS_BASE + 'zone-06-desktop-base.png', w: 3840, h: 2162 },
-    'zone-06-mobile': { src: ASSETS_BASE + 'zone-06-mobile-base.png', w: 2161, h: 3840 },
+    // BASE v2 (customer, 2026-09-10): role cards + sponsor/partner logo
+    // strip now baked directly into the image (same "не делать карточки
+    // текстом" direction as Zone 02/03) — core/zone-06-team.js no longer
+    // renders the role annotation cards. The chair/"твоё место" hotspot
+    // is untouched (unrelated — that's a real CTA, not a text label).
+    'zone-06-desktop': { src: ASSETS_BASE + 'zone-06-desktop-base-cards-baked-v2.png', w: 3840, h: 2161 },
+    // customer: "нужно чтоб нижняя навигация не перекрывала логотипы" —
+    // the floating bottom nav is fixed-position, always covering roughly
+    // the bottom 10% of the viewport, and (proven empirically — a
+    // full-bleed "cover" image's bottom edge always lands exactly at the
+    // viewport's bottom edge, at any camera scale/position, since
+    // SceneEngine's clampTranslate forbids a gap there) NO camera setting
+    // can lift real bottom-edge content above that. Padded solid
+    // matching near-black onto the bottom of the real photo (the logo
+    // strip's own background is already this same near-black, so the
+    // seam is invisible) — that's fake "phantom" space the nav sits over
+    // instead, pushing the real logos above the danger zone. Padded
+    // enough (3839 -> 4968, h/w 2.3) to ALSO fix the same width-crop-on-
+    // real-phones issue as Zone 02/03's mobile below (a taller-than-16:9
+    // aspect makes a real phone's cover-fit width-bound instead of
+    // height-bound, so it shows full width with no crop). ZONE_06_CHAIR's
+    // mobile percentages rescaled by the same factor (3839/4968) since
+    // they're percent of this same image height.
+    'zone-06-mobile': { src: ASSETS_BASE + 'zone-06-mobile-base-cards-baked-v2.png', w: 2160, h: 4968 },
 
     // Zone 07 (АМФИТЕАТР) FAST MODE production pass: own dedicated BASE.
     // Desktop delivered at an unusual ~2.45:1 aspect (1964x801, not the
@@ -171,11 +235,13 @@
       shared: { id: '02', title: 'ИССЛЕДОВАТЕЛЬСКАЯ', color: '#e8b923', behavior: 'zone-02-annotations', navDescription: 'С чего начинается пространство' },
       map: { x: 33.4, y: 69.2 },
       mapMobile: { x: 34.8, y: 64.33 },
-      // Visual Integration (Этап 3+): независимый production BASE, своя
-      // калибровка camera под новую композицию (см. отчёт) — не перенос
-      // чисел со старого общего scene-02-03.
-      desktop: { asset: sceneAsset('zone-02-desktop'), cameraPreset: { x: 45, y: 42, scale: 1.15 }, hotspots: [] },
-      mobile: { asset: sceneAsset('zone-02-mobile'), cameraPreset: { x: 50, y: 48, scale: 1.2 }, hotspots: [] }
+      // BASE v3 recalibration: new image has all labels baked in already
+      // spread across most of the frame — scale kept at the floor (1.0,
+      // SceneEngine's own minimum) so as little as possible is cropped on
+      // any realistic window shape; centered since content doesn't lean
+      // hard to one edge like Zone 06/03's did.
+      desktop: { asset: sceneAsset('zone-02-desktop'), cameraPreset: { x: 50, y: 50, scale: 1.0 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-02-mobile'), cameraPreset: { x: 50, y: 50, scale: 1.0 }, hotspots: [] }
     },
     '03': {
       shared: { id: '03', title: 'ПРОЕКТНАЯ МАСТЕРСКАЯ', color: '#3f6fd1', behavior: 'zone-03-annotations', navDescription: 'От идей к реальным пространствам' },
@@ -186,8 +252,13 @@
       // where the "03 ПРОЕКТНАЯ МАСТЕРСКАЯ" title lives) and zoomed out a
       // touch so the 6 annotation cards have more room to spread out
       // without overlapping each other or the people at the table.
-      desktop: { asset: sceneAsset('zone-03-desktop'), cameraPreset: { x: 55, y: 52, scale: 1.05 }, hotspots: [] },
-      mobile: { asset: sceneAsset('zone-03-mobile'), cameraPreset: { x: 50, y: 65, scale: 1.2 }, hotspots: [] }
+      // BASE "final" recalibration (customer, 2026-09-10): cards/labels
+      // now baked directly into the image (see core/zone-03-workshop.js)
+      // and already spread across nearly the full frame — scale at the
+      // floor (1.0, SceneEngine's own minimum) so as little as possible
+      // is cropped; centered.
+      desktop: { asset: sceneAsset('zone-03-desktop'), cameraPreset: { x: 50, y: 50, scale: 1.0 }, hotspots: [] },
+      mobile: { asset: sceneAsset('zone-03-mobile'), cameraPreset: { x: 50, y: 50, scale: 1.0 }, hotspots: [] }
     },
     '04': {
       // Zone 04 Visual Integration: собственный production BASE (шкаф
@@ -216,8 +287,37 @@
       shared: { id: '06', title: 'КОМАНДА', color: '#7a4fc9', behavior: 'team-roles-chair', navDescription: 'Кто создаёт этот хакатон' },
       map: { x: 75.4, y: 68.9 },
       mapMobile: { x: 81.53, y: 64.79 },
-      desktop: { asset: sceneAsset('zone-06-desktop'), cameraPreset: { x: 48, y: 55, scale: 1.05 }, hotspots: [] },
-      mobile: { asset: sceneAsset('zone-06-mobile'), cameraPreset: { x: 50, y: 55, scale: 1.1 }, hotspots: [] }
+      // BASE v2 recalibration (customer, 2026-09-10): role cards + the new
+      // sponsor/partner logo strip are baked into the image now — the
+      // logo strip sits hard against the desktop image's RIGHT edge and
+      // the mobile image's BOTTOM edge, so scale is kept at the floor
+      // (1.0) and desktop x nudged right (48 -> 59, halfway between the
+      // leftmost card at ~18% and the logos at ~100%) so both the
+      // leftmost card and the logos stay on screen together on realistic
+      // window shapes — same reasoning as Zone 07's banner-vs-info-panel
+      // fix (see core/mount.js resolveCameraPreset's comment).
+      desktop: { asset: sceneAsset('zone-06-desktop'), cameraPreset: { x: 59, y: 50, scale: 1.0 }, hotspots: [] },
+      // customer report (2026-09-14, "на телефоне зона 06 немного
+      // задрана"): at real phone ratios the bottom black padding (added
+      // above to keep the nav off the logos, see zone-06-mobile comment)
+      // was only PARTLY cropped away by cover-fit's pan range at scale
+      // 1.0 — the sponsor logos ended up sitting well above the nav with
+      // a large dead-black gap between them, reading as if the whole
+      // scene had been "hiked up". Proved via Playwright measurement
+      // (comparing the real content/padding boundary's screen position
+      // against .yh-bottom-nav's own top) that at scale 1.0 the gap floor
+      // is a hard ~68-83px no matter the y focus, because covering the
+      // full width forces a fixed real-content display height that's
+      // shorter than any real phone viewport. A small scale increase
+      // raises that floor (verified 1.0/1.1/1.15/1.2/1.35 against
+      // iPhone 15/15 Pro Max, Pixel, Galaxy S ratios) but ALSO crops the
+      // sides — 1.2 already clips "УРБАНИСТ"'s card text, so 1.15 is the
+      // most zoom this can take without cropping any of the 5 role
+      // cards. Paired with y 50->45 (a pure vertical pan, zero side-crop
+      // effect, unlike scale) to spend that small zoom fully on closing
+      // the gap: brings it down to ~4-21px across every tested ratio
+      // (imperceptible) instead of ~90-113px.
+      mobile: { asset: sceneAsset('zone-06-mobile'), cameraPreset: { x: 50, y: 45, scale: 1.15 }, hotspots: [] }
     },
     '07': {
       // FAST MODE production pass: own dedicated BASE (was sharing

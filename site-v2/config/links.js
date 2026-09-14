@@ -104,8 +104,13 @@
       // Zone 03 'laptop' card ("AI-ИНСТРУМЕНТЫ") — the AI/neural-network
       // tools document built for this block, approved by the customer
       // ("AI-инструменты согласованы") including the later-added city/
-      // resident/territory-analysis category.
-      'laptop': 'https://claude.ai/code/artifact/7471580b-1d2a-48e5-8f04-d2448a5d0b01',
+      // resident/territory-analysis category. Customer asked (2026-09-10)
+      // for this to open as a standalone document instead of a claude.ai
+      // page — content was turned into a PDF (slide-deck format, her
+      // request) and she uploaded it herself to her own Google Drive;
+      // this is that real link (2026-09-14), replacing the old
+      // claude.ai/code/artifact/... link.
+      'laptop': 'https://drive.google.com/file/d/16g9KkSeP0ZgUuz5w3gqEM4mw_woY38A7/view?usp=sharing',
       'schemes': null,
       'materials': null
     }
