@@ -51,6 +51,9 @@
         url: links.APPLICATION_URL
       }],
       isMobile: isMobile,
+      // customer (2026-09-14): same "shrinks with the scene's own camera
+      // zoom" bug as Zone 00/01's labels — see core/hotspot-layer.js.
+      counterScaleLabel: true,
       getCoords: function () {
         return mobile ? chair.hotspotMobileCoords : chair.hotspotDesktopCoords;
       }

@@ -2301,7 +2301,11 @@
   border-bottom-color: var(--yh-ink);
 }
 
-textarea.yh-apply-banner__field-input { min-height: 1em; }
+/* customer (2026-09-14): "поле несоразмерно" — a bare 1em min-height
+   undercut the textarea's own rows="2" attribute (see core/zone-07-
+   cta.js), reading as one thin single-line strip rather than a real
+   multi-line field. */
+textarea.yh-apply-banner__field-input { min-height: 2.4em; }
 
 .yh-apply-banner__submit {
   flex: 0 0 auto;
@@ -2337,24 +2341,37 @@ textarea.yh-apply-banner__field-input { min-height: 1em; }
    удобный размер шрифта" — replaced the old ×1.5-on-top-of-an-already-
    bumped-base multiplier with a modest, comfortable desktop bump (roughly
    ×1.2-1.3 over the base above) instead of stacking multipliers. */
+/* customer (2026-09-14): "текст хочется в 1,5 раза больше, само поле
+   несоразмерно" — now that the banner counter-scales to a constant real
+   size (see core/zone-07-cta.js layoutBanner) instead of shrinking with
+   the camera, there's room for genuinely bigger text without it eating
+   the whole scene at some zoom levels the way it used to. Every desktop
+   size below ×1.5 vs. the previous pass; the message textarea also gets
+   an explicit min-height (was relying on the HTML rows=2 attribute alone
+   plus a 1em CSS min-height that undercut it, reading as a single thin
+   line) so it looks like a real multi-line field, not a stray underline.
+   The banner box itself is sized up to match in config/zone-07-content.js
+   (ZONE_07_BANNER_DESKTOP/MOBILE) — same real-px targets, both changes
+   verified together. */
 @media (min-width: 768px) {
-  .yh-apply-banner__eyebrow { font-size: 0.9rem; }
-  .yh-apply-banner__heading { font-size: 2rem; }
-  .yh-apply-banner__lead { font-size: 1.1rem; }
+  .yh-apply-banner__eyebrow { font-size: 1.35rem; }
+  .yh-apply-banner__heading { font-size: 3rem; }
+  .yh-apply-banner__lead { font-size: 1.65rem; }
   .yh-app .yh-apply-banner__cta {
-    min-height: 56px;
-    font-size: 1.15rem;
-    padding: 14px 28px;
+    min-height: 76px;
+    font-size: 1.7rem;
+    padding: 18px 36px;
   }
   .yh-apply-banner__subheading-row .yh-apply-banner__eyebrow,
-  .yh-apply-banner__subheading { font-size: 0.95rem; }
-  .yh-apply-banner__field-label { font-size: 0.78rem; }
-  .yh-apply-banner__field-input { font-size: 1rem; }
+  .yh-apply-banner__subheading { font-size: 1.4rem; }
+  .yh-apply-banner__field-label { font-size: 1.15rem; }
+  .yh-apply-banner__field-input { font-size: 1.5rem; }
+  .yh-apply-banner__field-input.yh-apply-banner__field-input { min-height: 2.6em; }
   .yh-apply-banner__submit {
-    font-size: 0.9rem;
-    padding: 8px 16px;
+    font-size: 1.35rem;
+    padding: 12px 24px;
   }
-  .yh-apply-banner__status { font-size: 1rem; }
+  .yh-apply-banner__status { font-size: 1.5rem; }
 }
 
 /* ZONE 07 — APPLICATION CARD / MOBILE ONLY (customer spec): only the
