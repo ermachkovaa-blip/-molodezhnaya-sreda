@@ -51,7 +51,16 @@
   // size (app.css .yh-apply-banner__* base + its desktop media query),
   // box shrunk to match so it hugs the now much smaller content instead
   // of leaving dead space, same top-left anchor as before.
-  YHApp.ZONE_07_BANNER_DESKTOP = { left: 15.5, top: 12, width: 24, height: 46 };
+  // SEVENTH revision (2026-09-14, found while fixing the banner's
+  // camera-zoom counter-scale — see core/zone-07-cta.js): now that the
+  // banner stays a constant real size instead of shrinking further on
+  // narrower windows, its left edge clips off-screen (~27px) on real
+  // ~1280px-wide laptop windows — pre-existing, just barely inside the
+  // viewport before at that width's smaller natural size. Nudged right
+  // by the minimum needed to clear it with a small margin (verified at
+  // 1280/1512/1920px: no left-clip, right edge still clear of the
+  // presentation board).
+  YHApp.ZONE_07_BANNER_DESKTOP = { left: 17, top: 12, width: 24, height: 46 };
 
   // Mobile placement: SECOND customer revision — same centering, same
   // proportions/styling as desktop (only this box's own position/size is

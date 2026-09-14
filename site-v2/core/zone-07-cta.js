@@ -72,6 +72,7 @@
     banner.style.top = bannerBox.top + '%';
     banner.style.width = bannerBox.width + '%';
     banner.style.height = bannerBox.height + '%';
+    banner.style.transformOrigin = 'top left';
 
     var primary = el('div', 'yh-apply-banner__section yh-apply-banner__section--primary');
     var eyebrow1 = el('div', 'yh-apply-banner__eyebrow');
@@ -144,6 +145,39 @@
     banner.appendChild(rule);
     banner.appendChild(secondary);
     sceneStage.appendChild(banner);
+
+    // customer (2026-09-14): the banner (heading/lead/form) was shrinking
+    // along with the BASE image's own camera zoom, becoming genuinely
+    // hard to read/use on real desktop windows — same class of bug as
+    // Zone 00/01's labels (see core/hotspot-layer.js), but here the whole
+    // panel (not just a text label) needs to stay a constant real size,
+    // not just its font. Rather than re-guess a "correct" absolute size
+    // from scratch — this box's own percent footprint already went
+    // through six rounds of customer size revisions (see config/
+    // zone-07-content.js) — counter-scale RELATIVE TO the liveScale this
+    // was actually tuned/approved against (the 1512x982 desktop / 390x844
+    // mobile viewports used throughout this project's testing), so at
+    // that reference width nothing changes (scale factor 1), and at any
+    // OTHER real window/phone width the banner simply stops shrinking
+    // further instead of drifting to some newly-invented size.
+    var REFERENCE_LIVE_SCALE = mobile ? 0.212236 : 0.587672;
+    function layoutBanner() {
+      var stageRect = sceneStage.getBoundingClientRect();
+      if (!stageRect.width || !sceneStage.offsetWidth) return;
+      var liveScale = stageRect.width / sceneStage.offsetWidth;
+      var k = liveScale ? REFERENCE_LIVE_SCALE / liveScale : 1;
+      banner.style.transform = 'scale(' + k + ')';
+    }
+    layoutBanner();
+    // the synchronous call above almost always bails (sceneStage's size
+    // depends on the scene <img>, which has usually not finished loading
+    // over the network yet at this exact point in mount()) — same race
+    // already found/fixed for Zone 05's shelf/fabric labels (see
+    // layoutBookLink there): retry on the next frame AND once the scene
+    // image actually finishes loading, not just one or the other.
+    window.requestAnimationFrame(layoutBanner);
+    var sceneImgEl = sceneStage.querySelector('img');
+    if (sceneImgEl) sceneImgEl.addEventListener('load', layoutBanner);
 
     function setStatus(text, kind) {
       status.textContent = text;
@@ -223,6 +257,7 @@
       banner.removeEventListener('pointerdown', stopBubble);
       banner.removeEventListener('focusin', onFocusIn);
       banner.removeEventListener('focusout', onFocusOut);
+      if (sceneImgEl) sceneImgEl.removeEventListener('load', layoutBanner);
       hotspotLayer.destroy();
       banner.remove();
     }
@@ -233,7 +268,7 @@
 
     return {
       destroy: destroy,
-      layout: hotspotLayer.layout,
+      layout: function () { hotspotLayer.layout(); layoutBanner(); },
       closeAllCaptions: closeAllCaptions
     };
   }

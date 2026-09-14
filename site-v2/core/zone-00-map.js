@@ -61,6 +61,12 @@
       layerClass: 'yh-zone00-hotspot',
       items: items,
       isMobile: isMobile,
+      // customer (2026-09-14): the title+description label was shrinking
+      // along with the map illustration's own camera zoom, unreadable at
+      // real viewport sizes — keep it a constant legible size regardless
+      // of zoom (the dot/marker itself still scales with the map,
+      // unaffected — see core/hotspot-layer.js).
+      counterScaleLabel: true,
       getCoords: function (item, isMobileNow) {
         if (item.id === cta.id) return isMobileNow ? cta.mobileCoords : cta.desktopCoords;
         var h = navHotspots.filter(function (x) { return x.id === item.id; })[0];

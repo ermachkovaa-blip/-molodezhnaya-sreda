@@ -96,6 +96,7 @@
     }
 
     var elements = {};
+    var labels = {};
     config.items.forEach(function (item) {
       // Real <a> when there's somewhere to navigate (native target=_blank
       // + rel=noopener/noreferrer — the browser handles the new tab and
@@ -111,8 +112,9 @@
 
       var dot = el('span', layerClass + '__dot');
       node.appendChild(dot);
+      var label = null;
       if (item.hoverLabel) {
-        var label = el('span', layerClass + '__label');
+        label = el('span', layerClass + '__label');
         // optional second line (e.g. Zone 00's map callout: title +
         // description) — plain single-line text when absent, exactly as
         // before, so every other caller is unaffected.
@@ -128,6 +130,7 @@
         }
         node.appendChild(label);
       }
+      if (label) labels[item.id] = label;
 
       node.addEventListener('click', function (e) {
         hideCaption();
@@ -152,6 +155,23 @@
         elements[item.id].style.left = coords.x + '%';
         elements[item.id].style.top = coords.y + '%';
       });
+      // customer (2026-09-14): map/object labels living inside the scaled
+      // .yh-scene-stage were shrinking along with the BASE image's own
+      // cover-fit zoom, becoming unreadably small at real viewport sizes
+      // — same "fixed CSS px shrinks with the stage's camera-scale
+      // transform" class of bug already found/fixed for Zone 05's shelf/
+      // fabric labels (see core/zone-05-gallery.js layoutBookLink). Opt-in
+      // via config.counterScaleLabel so callers that want the dot/label
+      // to genuinely scale WITH the scene (e.g. Zone 03's baked-in AI-
+      // link "+", which has no separate label anyway) are unaffected.
+      if (config.counterScaleLabel) {
+        var stageRect = sceneStage.getBoundingClientRect();
+        var liveScale = sceneStage.offsetWidth ? (stageRect.width / sceneStage.offsetWidth) : 1;
+        var inverse = liveScale ? 1 / liveScale : 1;
+        Object.keys(labels).forEach(function (id) {
+          labels[id].style.transform = 'translateX(-50%) scale(' + inverse + ')';
+        });
+      }
     }
 
     function destroy() {

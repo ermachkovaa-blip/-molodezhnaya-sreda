@@ -44,6 +44,12 @@
       layerClass: 'yh-object-hotspot',
       items: objectItems,
       isMobile: isMobile,
+      // customer (2026-09-14): "ОТКРЫТЬ МАТЕРИАЛЫ" was shrinking along
+      // with the BASE image's own camera zoom, unreadable at real
+      // viewport sizes — keep the label a constant legible size
+      // regardless of zoom (the dot itself still scales with the scene,
+      // unaffected — see core/hotspot-layer.js).
+      counterScaleLabel: true,
       getCoords: function (item, mobile) {
         var obj = objects.filter(function (o) { return o.id === item.id; })[0];
         return mobile ? obj.mobileCoords : obj.desktopCoords;
