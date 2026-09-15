@@ -70,7 +70,17 @@
   // measured bottom-nav top (~87.6-89% across 360-430px viewports).
   // FOURTH customer revision: same red-rectangle size-down as desktop —
   // bottom edge kept the same, height reduced (~38% of previous).
-  YHApp.ZONE_07_BANNER_MOBILE = { left: 11, top: 62, width: 70, height: 24 };
+  // EIGHTH revision (2026-09-15): "текст крупнее и карточка не пустая" —
+  // the ~1.7x mobile text bump above (app.css .yh-apply-banner__*) grew
+  // the content, but even so, measured against a real render at 390x844
+  // the content's natural height (131.7px) was still only ~63% of this
+  // box's old height (24% of stage height = 208.6px) — a genuine ~77px
+  // dead gap, not a guess. Shrunk to 17% (≈148px, still ~16px of comfy
+  // slack over the measured content) so the vertically-centered content
+  // actually fills the card instead of floating in it. Bottom edge
+  // shifts up slightly as a result — re-verified clear of the bottom nav
+  // at 390x844.
+  YHApp.ZONE_07_BANNER_MOBILE = { left: 11, top: 62, width: 70, height: 17 };
 
   YHApp.ZONE_07_BANNER_CONTENT = {
     primaryEyebrow: '07 АМФИТЕАТР',

@@ -8,7 +8,7 @@
 //
 // desktopCoords/mobileCoords position the CLICKABLE hotspot over each
 // closed drawer's own front plate on the BASE (assets/scenes/
-// zone-04-desktop-base-closed-4k.png / zone-04-mobile-base-closed-*.png) —
+// zone-04-desktop-base-closed-4k.webp / zone-04-mobile-base-closed-*.webp) —
 // starting values only, per the accepted preflight numbers; subject to
 // ?debug=1 visual verification, not re-derived from scratch.
 //
@@ -40,7 +40,7 @@
 // separate peek/mask PNGs kept fighting: wrong scale, one row too high,
 // duplicated labels). No image asset here at all any more: the hover
 // fragment is a CSS background-crop of that SAME row's own patch of
-// zone-04-desktop-base-closed-4k.png, nudged forward — since it's
+// zone-04-desktop-base-closed-4k.webp, nudged forward — since it's
 // pixel-identical to what's already there, there is no separate asset to
 // mis-scale or misalign, and nothing to duplicate. Coordinates are the
 // row's own drawer-face box (left/top/w/h, percent of the 3840x2160 BASE),
@@ -62,7 +62,7 @@
       // 02/ЕЛАБУГА, not 01 — the "01 БУГУЛЬМА" plate is visible on the
       // closed drawer above it. Flagged twice; customer reviewed and
       // explicitly chose to use it for 'bugulma' anyway.
-      openAsset: { src: ASSETS_BASE + 'zone-04-open-bugulma-4k.png', w: 3840, h: 2160 },
+      openAsset: { src: ASSETS_BASE + 'zone-04-open-bugulma-4k.webp', w: 3840, h: 2160 },
       peekBoxCoords: { left: 39.505, top: 36.019 },
       peekBoxSize: { w: 12.5, h: 6.25 }
     },
@@ -70,7 +70,7 @@
       id: 'elabuga',
       desktopCoords: { x: 45.5, y: 47 },
       mobileCoords: { x: 48.5, y: 44.5 },
-      openAsset: { src: ASSETS_BASE + 'zone-04-open-elabuga-4k.png', w: 3840, h: 2160 },
+      openAsset: { src: ASSETS_BASE + 'zone-04-open-elabuga-4k.webp', w: 3840, h: 2160 },
       peekBoxCoords: { left: 39.505, top: 43.009 },
       peekBoxSize: { w: 12.5, h: 6.343 }
     },
@@ -78,7 +78,7 @@
       id: 'shemordan',
       desktopCoords: { x: 45.5, y: 54 },
       mobileCoords: { x: 48.5, y: 48.5 },
-      openAsset: { src: ASSETS_BASE + 'zone-04-open-shemordan-4k.png', w: 3840, h: 2160 },
+      openAsset: { src: ASSETS_BASE + 'zone-04-open-shemordan-4k.webp', w: 3840, h: 2160 },
       peekBoxCoords: { left: 39.505, top: 49.491 },
       peekBoxSize: { w: 12.5, h: 6.528 }
     },
@@ -86,7 +86,7 @@
       id: 'laishevo',
       desktopCoords: { x: 45.5, y: 61.5 },
       mobileCoords: { x: 48.5, y: 52.5 },
-      openAsset: { src: ASSETS_BASE + 'zone-04-open-laishevo-4k.png', w: 3840, h: 2160 },
+      openAsset: { src: ASSETS_BASE + 'zone-04-open-laishevo-4k.webp', w: 3840, h: 2160 },
       peekBoxCoords: { left: 39.505, top: 56.481 },
       peekBoxSize: { w: 12.5, h: 6.620 }
     },
@@ -94,7 +94,7 @@
       id: 'stolbishche',
       desktopCoords: { x: 45.5, y: 69.5 },
       mobileCoords: { x: 48.5, y: 56.5 },
-      openAsset: { src: ASSETS_BASE + 'zone-04-open-stolbishche-4k.png', w: 3840, h: 2160 },
+      openAsset: { src: ASSETS_BASE + 'zone-04-open-stolbishche-4k.webp', w: 3840, h: 2160 },
       peekBoxCoords: { left: 39.505, top: 63.935 },
       peekBoxSize: { w: 12.5, h: 6.713 }
     }
@@ -102,7 +102,7 @@
 
   // the BASE this drawer-face fragment crops from — same file already used
   // as the desktop closed scene image (config/scenes.js 'zone-04-desktop').
-  YHApp.ZONE_04_PEEK_BASE = { src: ASSETS_BASE + 'zone-04-desktop-base-closed-4k.png', w: 3840, h: 2160 };
+  YHApp.ZONE_04_PEEK_BASE = { src: ASSETS_BASE + 'zone-04-desktop-base-closed-4k.webp', w: 3840, h: 2160 };
 
   // presentation strings — same "no fallback text invented inside the
   // generic layer" principle as Zone 01 (config/zone-01-content.js

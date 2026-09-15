@@ -26,7 +26,7 @@
 // readable but non-literal mapping, since the diagram is decorative
 // isometric art, not a literal floor plan cross-referenced against real
 // room content. Desktop against zone-00-base-clean-map-4k-sharp-v3.png,
-// mobile against zone-00-mobile-base-expanded-centered-v2-2160x3840.png —
+// mobile against zone-00-mobile-base-expanded-centered-v2-2160x3840.webp —
 // two independent compositions, two independent calibrations, neither
 // derived from the other.
 

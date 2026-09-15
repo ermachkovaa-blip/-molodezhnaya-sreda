@@ -27,6 +27,23 @@
   // отложено до этапа явной Tilda-интеграции, чтобы не усложнять shell раньше времени.
   var ASSETS_BASE = '../../assets/scenes/';
 
+  // PERFORMANCE PASS (customer, 2026-09-15: "долго грузится... фон
+  // подгружается прошлый"): every zone's own BASE below was an
+  // uncompressed PNG, 7-12MB each (155MB total just for the 16 entries
+  // in SCENE_IMAGES) — on a real mobile connection that's several
+  // seconds per zone switch, during which the single shared <img> in
+  // mount.js keeps showing the PREVIOUS zone's bitmap (correct per spec,
+  // but reads as "stuck"). Re-encoded every one of them (plus the
+  // heaviest overlays — Zone 04's open-town RGBA foregrounds, Zone 05's
+  // shelf rotations/fabric banner, Zone 06's chair) to WebP at quality
+  // 85 — verified via a side-by-side pixel-level crop comparison
+  // (customer approved, "с новыми вебе файлами все ок") before this
+  // config was repointed at them: 210.5MB -> 19.2MB combined, ~91%
+  // smaller, visually unchanged. mount.js separately gained a preload-
+  // then-swap + dim-while-loading treatment for the actual zone switch
+  // (see setSceneImage there) so a slow load now reads as "loading",
+  // not "wrong background".
+
   // канонические пиксельные размеры BASE-иллюстраций (те же исходники,
   // что в V1 js/config.js — числа не придуманы, взяты из реального проекта)
   var SCENE_IMAGES = {
@@ -57,7 +74,7 @@
     // hotspot (the AI-tools document link — config/zone-03-content.js
     // ZONE_03_AI_LINK); Zone 02 has none (no material URLs ever existed
     // for it — see LINKS.RESEARCH_MATERIAL_URLS, all null).
-    'zone-02-desktop': { src: ASSETS_BASE + 'zone-02-desktop-base-cards-baked-v3-4k.png', w: 3840, h: 2160 },
+    'zone-02-desktop': { src: ASSETS_BASE + 'zone-02-desktop-base-cards-baked-v3-4k.webp', w: 3840, h: 2160 },
     // customer: "02-03-06 уменьшить масштаб чтобы весь текст был виден" —
     // this image's own aspect (2160x3840, 1.778 h/w — a 16:9 photo just
     // rotated to portrait) is SHORTER-relative-to-width than a real phone
@@ -70,7 +87,7 @@
     // height-bound instead, showing the FULL width (all baked-in text)
     // with no crop, at the cost of a bit of decorative
     // ceiling/floor being replaced by soft blur. h updated (3840 -> 4968).
-    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-cards-baked-v3-2160x3840.png', w: 2160, h: 4968 },
+    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-cards-baked-v3-2160x3840.webp', w: 2160, h: 4968 },
     // customer sent a SECOND replacement background for zone 03 (2026-09-14,
     // "замени пожалуйста базу для зоны 3 ... поправить размещение кнопки
     // плюс") — new artwork, same baked-in card layout convention as before.
@@ -85,8 +102,8 @@
     // 4968 (matches the old file's target) — see
     // config/zone-03-content.js for the AI-link coordinates, re-measured
     // against these new images directly (not rescaled from the old ones).
-    'zone-03-desktop': { src: ASSETS_BASE + 'zone-03-desktop-cards-v2-4k.png', w: 3840, h: 2480 },
-    'zone-03-mobile': { src: ASSETS_BASE + 'zone-03-mobile-cards-v2-2161x4968.png', w: 2161, h: 4968 },
+    'zone-03-desktop': { src: ASSETS_BASE + 'zone-03-desktop-cards-v2-4k.webp', w: 3840, h: 2480 },
+    'zone-03-mobile': { src: ASSETS_BASE + 'zone-03-mobile-cards-v2-2161x4968.webp', w: 2161, h: 4968 },
 
     // Zone 00 Visual Integration: Zone 00 получает СОБСТВЕННЫЙ независимый
     // BASE (больше не делит scene-00-01 с Zone 01 — см. отчёт). Zone 01
@@ -101,12 +118,12 @@
     // before, no width overflow at any tested width). ZONE_00_NAV_HOTSPOTS
     // and ZONE_00_CTA in config/zone-00-content.js re-measured fresh
     // against this new image.
-    'zone-00-desktop': { src: ASSETS_BASE + 'zone-00-base-hackathon-5x5-v4-4k.png', w: 3840, h: 2160 },
+    'zone-00-desktop': { src: ASSETS_BASE + 'zone-00-base-hackathon-5x5-v4-4k.webp', w: 3840, h: 2160 },
     // Zone 00 mobile FINAL RECALIBRATION: заменяет provisional
     // zone-00-mobile-base-clean-4k.png (удалён из репозитория — тот BASE
     // не содержал ни intro-стенда, ни стенда "КАРТА ХАКАТОНА"). Новый
     // BASE показывает оба физических стенда сразу, с запасом для pan.
-    'zone-00-mobile': { src: ASSETS_BASE + 'zone-00-mobile-base-expanded-centered-v2-2160x3840.png', w: 2160, h: 3840 },
+    'zone-00-mobile': { src: ASSETS_BASE + 'zone-00-mobile-base-expanded-centered-v2-2160x3840.webp', w: 2160, h: 3840 },
 
     // Zone 04 (АРХИВ / КАРТОТЕКА): СОБСТВЕННЫЙ независимый BASE — больше не
     // делит scene-04-05 с Zone 05 (та запись ниже не трогалась, Zone 05 вне
@@ -114,24 +131,24 @@
     // per-town foreground'ы — отдельные full-canvas RGBA-оверлеи того же
     // размера, регистрируются в config/zone-04-content.js, не здесь (эта
     // секция только про сами SCENE_IMAGES/BASE зоны).
-    'zone-04-desktop': { src: ASSETS_BASE + 'zone-04-desktop-base-closed-4k.png', w: 3840, h: 2160 },
-    'zone-04-mobile': { src: ASSETS_BASE + 'zone-04-mobile-base-closed-2160x3840.png', w: 2160, h: 3840 },
+    'zone-04-desktop': { src: ASSETS_BASE + 'zone-04-desktop-base-closed-4k.webp', w: 3840, h: 2160 },
+    'zone-04-mobile': { src: ASSETS_BASE + 'zone-04-mobile-base-closed-2160x3840.webp', w: 2160, h: 3840 },
 
     // Zone 05 (ГАЛЕРЕЯ / БИБЛИОТЕКА): СОБСТВЕННЫЙ независимый BASE —
     // больше не делит scene-04-05 с Zone 04 (та запись выше не трогалась,
     // Zone 04 уже реализована отдельно). Комната пустая — сам стеллаж,
     // полотно и летающие страницы — отдельные PNG-оверлеи поверх этого
     // BASE, регистрируются в config/zone-05-content.js.
-    'zone-05-desktop': { src: ASSETS_BASE + 'zone-05-desktop-base-4k.png', w: 3840, h: 2161 },
-    'zone-05-mobile': { src: ASSETS_BASE + 'zone-05-mobile-base-2160x3840.png', w: 2160, h: 3840 },
+    'zone-05-desktop': { src: ASSETS_BASE + 'zone-05-desktop-base-4k.webp', w: 3840, h: 2161 },
+    'zone-05-mobile': { src: ASSETS_BASE + 'zone-05-mobile-base-2160x3840.webp', w: 2160, h: 3840 },
 
     // Zone 01 (ХОЛЛ) FAST MODE production pass: СОБСТВЕННЫЙ независимый
     // BASE — больше не делит scene-00-01 с Zone 00. Redesign vs. the old
     // shared placeholder: bakes in all 5 program stages (was a known 4-vs-5
     // mismatch), a "принципы хакатона" block, and the 5 objects as physical
     // standing cards on a table, plus the passage-to-02 door.
-    'zone-01-desktop': { src: ASSETS_BASE + 'zone-01-desktop-3840x2160.png', w: 3840, h: 2160 },
-    'zone-01-mobile': { src: ASSETS_BASE + 'zone-01-mobile-2160x3840.png', w: 2160, h: 3840 },
+    'zone-01-desktop': { src: ASSETS_BASE + 'zone-01-desktop-3840x2160.webp', w: 3840, h: 2160 },
+    'zone-01-mobile': { src: ASSETS_BASE + 'zone-01-mobile-2160x3840.webp', w: 2160, h: 3840 },
 
     // Zone 06 (КОМАНДА) FAST MODE production pass: own dedicated BASE,
     // no longer sharing scene-06-07 with Zone 07 (that entry below is left
@@ -149,7 +166,7 @@
     // текстом" direction as Zone 02/03) — core/zone-06-team.js no longer
     // renders the role annotation cards. The chair/"твоё место" hotspot
     // is untouched (unrelated — that's a real CTA, not a text label).
-    'zone-06-desktop': { src: ASSETS_BASE + 'zone-06-desktop-base-cards-baked-v2.png', w: 3840, h: 2161 },
+    'zone-06-desktop': { src: ASSETS_BASE + 'zone-06-desktop-base-cards-baked-v2.webp', w: 3840, h: 2161 },
     // customer: "нужно чтоб нижняя навигация не перекрывала логотипы" —
     // the floating bottom nav is fixed-position, always covering roughly
     // the bottom 10% of the viewport, and (proven empirically — a
@@ -167,7 +184,7 @@
     // height-bound, so it shows full width with no crop). ZONE_06_CHAIR's
     // mobile percentages rescaled by the same factor (3839/4968) since
     // they're percent of this same image height.
-    'zone-06-mobile': { src: ASSETS_BASE + 'zone-06-mobile-base-cards-baked-v2.png', w: 2160, h: 4968 },
+    'zone-06-mobile': { src: ASSETS_BASE + 'zone-06-mobile-base-cards-baked-v2.webp', w: 2160, h: 4968 },
 
     // Zone 07 (АМФИТЕАТР) FAST MODE production pass: own dedicated BASE.
     // Desktop delivered at an unusual ~2.45:1 aspect (1964x801, not the
@@ -177,8 +194,8 @@
     // 05.09 upload): same approved composition, confirmed by direct visual
     // comparison against the previous file before swapping — camera/
     // hotspots/CTA/banner untouched, only src+w/h updated.
-    'zone-07-desktop': { src: ASSETS_BASE + 'zone-07-desktop-base.png', w: 4096, h: 1671 },
-    'zone-07-mobile': { src: ASSETS_BASE + 'zone-07-mobile-base.png', w: 2305, h: 4096 }
+    'zone-07-desktop': { src: ASSETS_BASE + 'zone-07-desktop-base.webp', w: 4096, h: 1671 },
+    'zone-07-mobile': { src: ASSETS_BASE + 'zone-07-mobile-base.webp', w: 2305, h: 4096 }
   };
 
   var MAP_IMAGE_DESKTOP = { src: ASSETS_BASE + 'scene-map.webp', w: 1689, h: 931 };

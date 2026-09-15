@@ -114,6 +114,44 @@
     var lastVisitedZoneId = null;
     try { lastVisitedZoneId = window.localStorage.getItem(STORAGE_KEY); } catch (err) { /* storage unavailable — non-critical */ }
 
+    // customer (2026-09-15): "фон подгружается прошлый" — on a slow
+    // connection the single shared <img> keeps showing the PREVIOUS
+    // zone's bitmap for as long as the new one (still several hundred KB
+    // even after the WebP pass) takes to download — correct per spec (a
+    // replaced element keeps its last decoded frame while a new src is
+    // in flight), but reads as "stuck on the wrong background" rather
+    // than "loading". Preload the new bitmap off-DOM first and only
+    // assign it to the real <img> once it's fully decoded — the total
+    // wait is unchanged (still gated on the same network fetch), but a
+    // dim class on the still-visible old image (see .yh-scene-image
+    // --loading in app.css) gives an explicit "this is loading" cue
+    // instead of silence. scenePreloadImg tracks the in-flight preload
+    // so a SECOND zone switch fired before the first one finishes
+    // (customer double-tapping nav) can't have the stale preload's
+    // onload clobber the newer one — only the most recent preload is
+    // ever allowed to touch the real <img>.
+    var scenePreloadImg = null;
+    function setSceneImage(src) {
+      if (currentSceneSrc === src) return;
+      currentSceneSrc = src;
+
+      if (!reducedMotion()) sceneImg.classList.add('yh-scene-image--loading');
+
+      var preload = new Image();
+      scenePreloadImg = preload;
+      preload.onload = function () {
+        if (scenePreloadImg !== preload) return; // superseded by a newer switch
+        sceneImg.src = src;
+        sceneImg.classList.remove('yh-scene-image--loading');
+      };
+      preload.onerror = function () {
+        if (scenePreloadImg !== preload) return;
+        sceneImg.src = src; // let the normal broken-image path take over
+        sceneImg.classList.remove('yh-scene-image--loading');
+      };
+      preload.src = src;
+    }
+
     function resolveBranch(zone) {
       return isMobile() ? zone.mobile : zone.desktop;
     }
@@ -195,10 +233,7 @@
       var branch = resolveBranch(zone);
       var asset = branch.asset;
 
-      if (currentSceneSrc !== asset.src) {
-        sceneImg.src = asset.src;
-        currentSceneSrc = asset.src;
-      }
+      setSceneImage(asset.src);
       sceneEngine.setSceneSize(asset.w, asset.h);
       sceneEngine.setCameraTo(resolveCameraPreset(branch), animated);
 

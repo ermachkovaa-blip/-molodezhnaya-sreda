@@ -28,7 +28,7 @@
   var ASSETS_BASE = '../../assets/scenes/';
 
   YHApp.ZONE_06_CHAIR = {
-    asset: { src: ASSETS_BASE + 'zone-06-chair-foreground.png', w: 1312, h: 1199 },
+    asset: { src: ASSETS_BASE + 'zone-06-chair-foreground.webp', w: 1312, h: 1199 },
     // percent box (object-fit:contain, object-position:center bottom —
     // rests on the floor/rug, doesn't hang) the chair PNG is placed in,
     // over the empty gap at the front-center of the table.

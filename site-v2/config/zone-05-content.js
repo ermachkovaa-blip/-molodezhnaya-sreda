@@ -53,7 +53,7 @@
   // center point of the real clickable region (a generous box covering the
   // shelf's own footprint, not just its exact silhouette).
   YHApp.ZONE_05_SHELF = {
-    asset: { src: ASSETS_BASE + 'zone-05-shelf-rot-0.png', w: 1672, h: 941 },
+    asset: { src: ASSETS_BASE + 'zone-05-shelf-rot-0.webp', w: 1672, h: 941 },
     // customer: "шкаф на десктоп версии нужно совсем немного увеличить и
     // поднять чуть выше" — scaled up ~7% around its own footprint, top
     // nudged up to match.
@@ -72,14 +72,14 @@
   // between them never shifts the object's on-screen position.
   YHApp.ZONE_05_SHELF_ROTATION = {
     frames: [
-      { src: ASSETS_BASE + 'zone-05-shelf-rot-0.png', w: 1672, h: 941 },
-      { src: ASSETS_BASE + 'zone-05-shelf-rot-1.png', w: 1672, h: 941 },
-      { src: ASSETS_BASE + 'zone-05-shelf-rot-2.png', w: 1672, h: 941 },
-      { src: ASSETS_BASE + 'zone-05-shelf-rot-3.png', w: 1672, h: 941 },
-      { src: ASSETS_BASE + 'zone-05-shelf-rot-4.png', w: 1672, h: 941 },
-      { src: ASSETS_BASE + 'zone-05-shelf-rot-5.png', w: 1671, h: 941 },
-      { src: ASSETS_BASE + 'zone-05-shelf-rot-6.png', w: 1672, h: 941 },
-      { src: ASSETS_BASE + 'zone-05-shelf-rot-7.png', w: 1672, h: 941 }
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-0.webp', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-1.webp', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-2.webp', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-3.webp', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-4.webp', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-5.webp', w: 1671, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-6.webp', w: 1672, h: 941 },
+      { src: ASSETS_BASE + 'zone-05-shelf-rot-7.webp', w: 1672, h: 941 }
     ],
     hoverWobbleFrame: 1, // small "туда-сюда" nudge on hover, desktop only
     // customer: "шкаф очень нервно крутится и при наведении мыши и при
@@ -144,7 +144,7 @@
     // trying to hide it with CSS clipping (which would need re-deriving
     // per breakpoint since object-fit:contain leftover space differs by
     // box aspect) — new native size 724x2024.
-    asset: { src: ASSETS_BASE + 'zone-05-fabric-banner-cropped.png', w: 724, h: 2024 },
+    asset: { src: ASSETS_BASE + 'zone-05-fabric-banner-cropped.webp', w: 724, h: 2024 },
     desktop: { left: 58, top: 3, width: 17, height: 70 },
     mobile: { left: 60, top: 20, width: 20, height: 44 },
     hotspotDesktopCoords: { x: 66.5, y: 34 },
