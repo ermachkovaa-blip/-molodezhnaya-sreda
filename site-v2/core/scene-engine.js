@@ -33,6 +33,9 @@
       zoomFactor: 1,
       minScale: 1,
       maxScale: 1,
+      pinchBaseScale: 0,
+      pinchImgX: 0,
+      pinchImgY: 0,
       parallaxX: 0,
       parallaxY: 0,
       parallaxTargetX: 0,
@@ -105,6 +108,7 @@
       var presetScale = computeCameraScale(focus);
       state.presetScale = presetScale;
       state.zoomFactor = 1;
+      state.pinchBaseScale = 0;
       state.scale = presetScale;
 
       var vw = viewport.clientWidth;
@@ -167,6 +171,49 @@
       applyTransform();
     }
 
+    // ---- pinch-to-zoom (customer, 2026-09-15: "не увеличивается
+    // пальцами" — GestureController now tracks a second finger and hands
+    // over a live distance-ratio + midpoint; this is where that becomes
+    // an actual camera scale/pan change).
+    //
+    // midX/midY are in the SAME coordinate space as tx/ty — the viewport
+    // element's own top-left origin (see setCameraTo's vw/2-focusX math
+    // above) — mount.js is responsible for converting raw clientX/clientY
+    // into that space (subtracting the viewport's own bounding-rect
+    // offset) before calling either of these, same as the existing
+    // hover-parallax handler already does.
+    //
+    // Standard "keep the point under your fingers fixed" pinch math: at
+    // pinch start, record which IMAGE-space point currently sits under
+    // the fingers' midpoint (pinchImgX/Y, in the stage's own unscaled
+    // pixel coordinates). On every subsequent move, recompute tx/ty so
+    // THAT SAME image point still lands under the CURRENT midpoint — this
+    // naturally handles the fingers panning while pinching too, not just
+    // spreading/pinching in place.
+    function pinchStart(midX, midY) {
+      state.pinchBaseScale = state.scale;
+      state.pinchImgX = (midX - state.tx) / state.scale;
+      state.pinchImgY = (midY - state.ty) / state.scale;
+    }
+
+    function pinchTo(distanceRatio, midX, midY) {
+      if (!state.pinchBaseScale) return; // pinchStart() was never called — nothing to do
+      var newScale = clamp(state.pinchBaseScale * distanceRatio, state.minScale, state.maxScale);
+      state.scale = newScale;
+      state.tx = midX - state.pinchImgX * newScale;
+      state.ty = midY - state.pinchImgY * newScale;
+      clampTranslate();
+      applyTransform();
+    }
+
+    function pinchEnd() {
+      // zoomFactor is informational (debug HUD) — keep it consistent
+      // with the real ratio now in effect relative to this zone's own
+      // preset scale, same meaning setCameraTo gives it.
+      state.zoomFactor = state.presetScale ? state.scale / state.presetScale : 1;
+      state.pinchBaseScale = 0;
+    }
+
     // ---- ResizeObserver on the viewport container itself ----
     var resizeObserver = null;
     if (typeof window.ResizeObserver === 'function') {
@@ -193,6 +240,9 @@
       setParallaxTarget: setParallaxTarget,
       resetParallaxTarget: resetParallaxTarget,
       panBy: panBy,
+      pinchStart: pinchStart,
+      pinchTo: pinchTo,
+      pinchEnd: pinchEnd,
       clampTranslate: clampTranslate,
       applyTransform: applyTransform,
       start: start,

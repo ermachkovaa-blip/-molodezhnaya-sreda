@@ -229,6 +229,7 @@
     // mouse/touch listeners — see core/gesture-controller.js) ----
     var dragBaseTx = 0, dragBaseTy = 0;
     var isDragging = false;
+    var pinching = false;
 
     var gesture = YHApp.createGestureController(sceneViewport, {
       onDragStart: function () {
@@ -246,6 +247,30 @@
         if (!isDragging) return;
         isDragging = false;
         sceneViewport.classList.remove('is-dragging');
+      },
+      // ---- pinch-to-zoom (customer, 2026-09-15) — see SceneEngine's
+      // pinchStart/pinchTo/pinchEnd for the actual scale/pan math. Only
+      // job here is converting the gesture's raw clientX/clientY midpoint
+      // into the viewport's own coordinate space (subtract its bounding-
+      // rect offset), same conversion the existing hover-parallax handler
+      // below already does — SceneEngine's tx/ty are relative to the
+      // viewport's top-left, not the page. ----
+      onPinchStart: function (midX, midY) {
+        if (panDisabled) return;
+        var rect = sceneViewport.getBoundingClientRect();
+        sceneEngine.pinchStart(midX - rect.left, midY - rect.top);
+        sceneEngine.resetParallaxTarget();
+        pinching = true;
+      },
+      onPinchMove: function (ratio, midX, midY) {
+        if (!pinching) return;
+        var rect = sceneViewport.getBoundingClientRect();
+        sceneEngine.pinchTo(ratio, midX - rect.left, midY - rect.top);
+      },
+      onPinchEnd: function () {
+        if (!pinching) return;
+        pinching = false;
+        sceneEngine.pinchEnd();
       },
       onTap: function (x, y, e) {
         // Fires for EVERY tap inside sceneViewport, including ones that
