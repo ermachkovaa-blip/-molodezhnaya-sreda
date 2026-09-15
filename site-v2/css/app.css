@@ -404,18 +404,25 @@
    Production-ТЗ explicitly allows a small code-drawn one here. Subtle at
    rest, matching "визуальный язык должен оставаться частью архитектурной
    сцены" — not a bold UI chip. */
+/* --yh-counter-scale is set from JS (core/hotspot-layer.js, opt-in via
+   config.counterScaleDot) to cancel out the scene's own camera zoom —
+   customer (2026-09-15): this dot was down to ~2.5px on a real phone.
+   Defaults to 1 (no-op) for any layer that doesn't opt in. Exposed as a
+   custom property rather than a plain JS-set transform so it composes
+   with the :hover scale below instead of an inline style overriding it. */
 .yh-object-hotspot__dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.55);
   border: 1.5px solid rgba(28, 26, 23, 0.55);
+  transform: scale(var(--yh-counter-scale, 1));
   transition: transform 150ms ease, background 150ms ease;
 }
 
 .yh-object-hotspot__item:hover .yh-object-hotspot__dot,
 .yh-object-hotspot__item:focus-visible .yh-object-hotspot__dot {
-  transform: scale(1.6);
+  transform: scale(calc(var(--yh-counter-scale, 1) * 1.6));
   background: #fff;
 }
 
@@ -605,8 +612,16 @@
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85);
 }
 
-.yh-zone00-hotspot--current .yh-zone00-hotspot__label {
-  opacity: 1;
+/* customer (2026-09-15): "именно на мобильной версии убрать постоянно
+   горящую табличку" — the always-on label was permanently occupying
+   space right on top of the already-tightly-packed mobile map; kept on
+   desktop (plenty of room there, and it's the map's only always-visible
+   "you are here" cue) but hidden by default on mobile, where hover/tap
+   reveals it like every other marker's label instead. */
+@media (min-width: 768px) {
+  .yh-zone00-hotspot--current .yh-zone00-hotspot__label {
+    opacity: 1;
+  }
 }
 
 .yh-zone00-hotspot__label {
@@ -2150,9 +2165,16 @@
    another ~1.5x desktop-only multiplier on top) into sizes far past
    comfortable reading size. Reset to a size actually meant for a small
    on-screen card, tuned for real reading distance on both phone and
-   desktop rather than "as large as will fit". */
+   desktop rather than "as large as will fit".
+   SECOND follow-up (2026-09-15): these BASE values are what mobile
+   actually renders (desktop gets its own separate, later ~1.5x bump via
+   the @media block below) — customer found mobile "очень мелкий текст",
+   now that the banner itself counter-scales to a constant real size
+   (core/zone-07-cta.js) instead of shrinking further with the camera, a
+   modest ~1.25x mobile-only bump fits comfortably without repeating the
+   earlier "too big" mistake. */
 .yh-apply-banner__eyebrow {
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -2161,7 +2183,7 @@
 }
 
 .yh-apply-banner__heading {
-  font-size: 1.5rem;
+  font-size: 1.9rem;
   font-weight: 800;
   letter-spacing: 0.01em;
   text-transform: uppercase;
@@ -2170,7 +2192,7 @@
 }
 
 .yh-apply-banner__lead {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   line-height: 1.3;
   color: rgba(28, 26, 23, 0.75);
   margin: 0 0 11px;
@@ -2192,8 +2214,8 @@
   align-items: center;
   justify-content: center;
   align-self: flex-start;
-  min-height: 44px;
-  font-size: 0.95rem;
+  min-height: 50px;
+  font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -2227,13 +2249,13 @@
 }
 .yh-apply-banner__subheading-row .yh-apply-banner__eyebrow {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: rgba(28, 26, 23, 0.85);
 }
 
 .yh-apply-banner__subheading {
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   text-transform: uppercase;
@@ -2271,7 +2293,7 @@
 }
 
 .yh-apply-banner__field-label {
-  font-size: 0.68rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2286,7 +2308,7 @@
   border-bottom: 1px solid rgba(28, 26, 23, 0.25);
   border-radius: 0;
   color: var(--yh-ink);
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-family: inherit;
   padding: 1px 2px;
   outline: none;
@@ -2315,7 +2337,7 @@ textarea.yh-apply-banner__field-input { min-height: 2.4em; }
   border: 1px solid var(--yh-ink);
   border-radius: 0;
   color: var(--yh-ink);
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -2327,7 +2349,7 @@ textarea.yh-apply-banner__field-input { min-height: 2.4em; }
 .yh-apply-banner__submit:disabled { opacity: 0.5; cursor: default; }
 
 .yh-apply-banner__status {
-  font-size: 0.82rem;
+  font-size: 1rem;
   line-height: 1.3;
   min-height: 1em;
   margin-top: 2px;

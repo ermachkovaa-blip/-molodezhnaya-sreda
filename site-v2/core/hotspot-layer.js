@@ -97,6 +97,7 @@
 
     var elements = {};
     var labels = {};
+    var dots = {};
     config.items.forEach(function (item) {
       // Real <a> when there's somewhere to navigate (native target=_blank
       // + rel=noopener/noreferrer — the browser handles the new tab and
@@ -112,6 +113,7 @@
 
       var dot = el('span', layerClass + '__dot');
       node.appendChild(dot);
+      dots[item.id] = dot;
       var label = null;
       if (item.hoverLabel) {
         label = el('span', layerClass + '__label');
@@ -164,18 +166,75 @@
       // via config.counterScaleLabel so callers that want the dot/label
       // to genuinely scale WITH the scene (e.g. Zone 03's baked-in AI-
       // link "+", which has no separate label anyway) are unaffected.
-      if (config.counterScaleLabel) {
+      if (config.counterScaleLabel || config.counterScaleItem || config.counterScaleDot) {
         var stageRect = sceneStage.getBoundingClientRect();
         var liveScale = sceneStage.offsetWidth ? (stageRect.width / sceneStage.offsetWidth) : 1;
         var inverse = liveScale ? 1 / liveScale : 1;
-        Object.keys(labels).forEach(function (id) {
-          labels[id].style.transform = 'translateX(-50%) scale(' + inverse + ')';
-        });
+        if (config.counterScaleDot) {
+          // customer (2026-09-15): "в зоне 01 тоже следует увеличить в
+          // мобильной версии размеры кружочков" — the visible dot graphic
+          // (app.css .yh-object-hotspot__dot, a small circle centered
+          // inside the already percent-sized item box) was down to ~2.5px
+          // on a real phone, same shrink-with-camera-zoom bug as the
+          // label/item above, but here the item's own box must NOT be
+          // touched (it's deliberately percent-of-card-sized, unlike
+          // Zone 00's fixed-px map markers) — only the small dot graphic
+          // inside it. Exposed as a CSS custom property rather than a
+          // direct transform, so it composes with the existing :hover
+          // scale(1.6) rule (app.css) instead of an inline style
+          // silently overriding it.
+          Object.keys(dots).forEach(function (id) {
+            dots[id].style.setProperty('--yh-counter-scale', inverse);
+          });
+        }
+        if (config.counterScaleItem) {
+          // customer (2026-09-15): on Zone 00's mobile map, the 44px CSS
+          // touch target (app.css .yh-zone00-hotspot__item) shrinks right
+          // along with the map's own camera zoom, same underlying bug as
+          // counterScaleLabel below but on the tappable AREA itself, not
+          // just its text — down to ~13px on a real phone, both hard to
+          // see and hard to hit precisely ("невозможно выбрать точку").
+          // Counter-scale the whole item back to its real declared 44px;
+          // its label child needs no separate scale of its own then — it
+          // inherits the correct real size from this same transform, so
+          // it is deliberately NOT ALSO run through the counterScaleLabel
+          // branch below (that would double-apply the inverse). Only for
+          // items that have a label (the 8 nav dots) — the CTA hotspot
+          // has none (see zone-00-map.js) and must keep scaling WITH the
+          // scene, since it's sized to match a graphic baked into the
+          // BASE image itself, not a fixed UI size.
+          Object.keys(labels).forEach(function (id) {
+            elements[id].style.transform = 'translate(-50%, -50%) scale(' + inverse + ')';
+          });
+        } else {
+          Object.keys(labels).forEach(function (id) {
+            labels[id].style.transform = 'translateX(-50%) scale(' + inverse + ')';
+          });
+        }
       }
+    }
+
+    // counterScaleLabel/counterScaleItem need the STAGE's real rendered
+    // size (getBoundingClientRect vs. offsetWidth) to compute liveScale
+    // correctly — but the very first synchronous layout() call (fired by
+    // the caller right after creation, before the scene <img> has
+    // finished loading; it has no width/height attribute, see
+    // core/mount.js) always races that, reading a bogus liveScale of 1
+    // (stage has no real layout size yet) and leaving the item/label at
+    // its shrunk, un-counter-scaled size — found first on Zone 07's
+    // apply banner (core/zone-07-cta.js), same root cause here. Retrying
+    // this internally means every caller gets it for free instead of
+    // each one having to remember its own rAF + image-load retry.
+    var sceneImgEl = null;
+    if (config.counterScaleLabel || config.counterScaleItem || config.counterScaleDot) {
+      window.requestAnimationFrame(layout);
+      sceneImgEl = sceneStage.querySelector('img');
+      if (sceneImgEl) sceneImgEl.addEventListener('load', layout);
     }
 
     function destroy() {
       hideCaption();
+      if (sceneImgEl) sceneImgEl.removeEventListener('load', layout);
       layer.remove(); // removes every child node (buttons/links/dots/labels/caption) and their listeners in one step
     }
 

@@ -218,7 +218,7 @@
       // shows BOTH physical stands (intro ~x:26-45,y:52-72 and
       // "КАРТА ХАКАТОНА" ~x:48-70,y:50-73) at once, with headroom for pan
       // in every direction — not a perimeter-tight crop.
-      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 48, y: 62, scale: 1.3 }, hotspots: [] }
+      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 48, y: 62, scale: 1.9 }, hotspots: [] }
     },
     '01': {
       // FAST MODE production pass: own dedicated BASE (was sharing

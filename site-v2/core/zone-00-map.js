@@ -61,12 +61,16 @@
       layerClass: 'yh-zone00-hotspot',
       items: items,
       isMobile: isMobile,
-      // customer (2026-09-14): the title+description label was shrinking
-      // along with the map illustration's own camera zoom, unreadable at
-      // real viewport sizes — keep it a constant legible size regardless
-      // of zoom (the dot/marker itself still scales with the map,
-      // unaffected — see core/hotspot-layer.js).
-      counterScaleLabel: true,
+      // customer (2026-09-14, follow-up 2026-09-15): the title+description
+      // label was shrinking along with the map illustration's own camera
+      // zoom, unreadable at real viewport sizes. First pass only
+      // counter-scaled the label; the dot/touch-target itself had the
+      // exact same problem ("на карте... невозможно выбрать точку") — on
+      // mobile the 44px CSS touch target was rendering at ~13px. Now
+      // counter-scales the WHOLE item (dot + label together) — see
+      // core/hotspot-layer.js for why counterScaleLabel is NOT also set
+      // here (would double-scale the label).
+      counterScaleItem: true,
       getCoords: function (item, isMobileNow) {
         if (item.id === cta.id) return isMobileNow ? cta.mobileCoords : cta.desktopCoords;
         var h = navHotspots.filter(function (x) { return x.id === item.id; })[0];

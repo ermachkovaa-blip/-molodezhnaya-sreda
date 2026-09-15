@@ -47,9 +47,19 @@
       // customer (2026-09-14): "ОТКРЫТЬ МАТЕРИАЛЫ" was shrinking along
       // with the BASE image's own camera zoom, unreadable at real
       // viewport sizes — keep the label a constant legible size
-      // regardless of zoom (the dot itself still scales with the scene,
-      // unaffected — see core/hotspot-layer.js).
+      // regardless of zoom.
       counterScaleLabel: true,
+      // customer follow-up (2026-09-15): "в зоне 01 тоже следует
+      // увеличить в мобильной версии размеры кружочков чтобы было
+      // понятно куда тыкать" — measured the dot at ~2.5px on a real
+      // phone (~4.8px on desktop too), same shrink-with-zoom bug as the
+      // label above. Reverses the earlier "dot scales WITH the scene"
+      // decision recorded here — that convention didn't survive contact
+      // with a real device. The invisible tap AREA (percent-of-card
+      // sized, see ZONE_01_HOTSPOT_SIZE) is untouched and already a
+      // reasonable size — only the visible dot graphic itself needed
+      // this.
+      counterScaleDot: true,
       getCoords: function (item, mobile) {
         var obj = objects.filter(function (o) { return o.id === item.id; })[0];
         return mobile ? obj.mobileCoords : obj.desktopCoords;
