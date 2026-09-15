@@ -120,17 +120,29 @@
   // window at this breakpoint (image-x 15.7-74.3%, image-y 24.3-95.7%,
   // header bottom at image-y ~29.7%, bottom-nav top at image-y ~89.1%),
   // with margin, and keep each page's original depth/rotation.
+  // PERFORMANCE PASS (customer, 2026-09-15: "сделай сайт быстрым"): these
+  // 10 pages render as a permanent ambient animation (see core/zone-05-
+  // gallery.js's rising/falling lifecycle) at a TINY on-screen footprint
+  // (4.6% of stage width max — measured on a real render: ~92x135px on a
+  // 1512px-wide desktop window, ~25x37px on a 390px phone), yet were
+  // loading their full 900-1690px JPG originals (300-400KB each, 3.5MB
+  // total) eagerly on every Zone 05 visit. thumbSrc is a purpose-sized
+  // 450px-wide WebP (~50KB each, ~0.5MB total) used for that ambient
+  // display; src (now WebP too, still full-res) is unchanged and still
+  // only loads on demand — the reader lightbox (see openReader in
+  // zone-05-gallery.js) already set readerImg.src lazily, only at the
+  // moment a page is actually clicked open, so it needed no code change.
   YHApp.ZONE_05_PAGES = [
-    { id: 'page-16', number: 16, src: ASSETS_BASE + 'zone-05-page-16.jpg', w: 978, h: 1428, alt: 'Страница 16 — «Третье место» для молодежи', depth: 0, x: 8, y: 26, mobileX: 25, mobileY: 38, rotation: -4 },
-    { id: 'page-36', number: 36, src: ASSETS_BASE + 'zone-05-page-36.jpg', w: 1068, h: 1651, alt: 'Страница 36 — Целевая аудитория молодежного центра', depth: 1, x: 30, y: 21, mobileX: 55, mobileY: 35, rotation: 3 },
-    { id: 'page-28', number: 28, src: ASSETS_BASE + 'zone-05-page-28.jpg', w: 1135, h: 1690, alt: 'Страница 28 — Карта социальной инфраструктуры', depth: 2, x: 56, y: 27, mobileX: 40, mobileY: 44, rotation: -2 },
-    { id: 'page-44', number: 44, src: ASSETS_BASE + 'zone-05-page-44.jpg', w: 1082, h: 1618, alt: 'Страница 44 — Портрет целевой аудитории', depth: 0, x: 74, y: 22, mobileX: 62, mobileY: 48, rotation: 5 },
-    { id: 'page-49', number: 49, src: ASSETS_BASE + 'zone-05-page-49.jpg', w: 1048, h: 1535, alt: 'Страница 49 — Проведение общественных обсуждений', depth: 1, x: 14, y: 46, mobileX: 22, mobileY: 55, rotation: 2 },
-    { id: 'page-62', number: 62, src: ASSETS_BASE + 'zone-05-page-62.jpg', w: 1026, h: 1498, alt: 'Страница 62 — Гипотеза и программирование', depth: 2, x: 38, y: 42, mobileX: 48, mobileY: 58, rotation: -5 },
-    { id: 'page-74', number: 74, src: ASSETS_BASE + 'zone-05-page-74.jpg', w: 1010, h: 1532, alt: 'Страница 74 — Инкубатор социальных проектов', depth: 0, x: 62, y: 55, mobileX: 30, mobileY: 66, rotation: 4 },
-    { id: 'page-88', number: 88, src: ASSETS_BASE + 'zone-05-page-88.jpg', w: 889, h: 1358, alt: 'Страница 88 — Кейсы программной работы', depth: 1, x: 80, y: 48, mobileX: 58, mobileY: 70, rotation: -3 },
-    { id: 'page-79', number: 79, src: ASSETS_BASE + 'zone-05-page-79.jpg', w: 1020, h: 1448, alt: 'Страница 79 — Центр психолого-педагогической службы', depth: 2, x: 26, y: 74, mobileX: 42, mobileY: 78, rotation: 5 },
-    { id: 'page-87', number: 87, src: ASSETS_BASE + 'zone-05-page-87.jpg', w: 995, h: 1450, alt: 'Страница 87 — Работа с аудиторией', depth: 1, x: 59, y: 76, mobileX: 65, mobileY: 82, rotation: -4 }
+    { id: 'page-16', number: 16, src: ASSETS_BASE + 'zone-05-page-16.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-16-thumb.webp', w: 978, h: 1428, alt: 'Страница 16 — «Третье место» для молодежи', depth: 0, x: 8, y: 26, mobileX: 25, mobileY: 38, rotation: -4 },
+    { id: 'page-36', number: 36, src: ASSETS_BASE + 'zone-05-page-36.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-36-thumb.webp', w: 1068, h: 1651, alt: 'Страница 36 — Целевая аудитория молодежного центра', depth: 1, x: 30, y: 21, mobileX: 55, mobileY: 35, rotation: 3 },
+    { id: 'page-28', number: 28, src: ASSETS_BASE + 'zone-05-page-28.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-28-thumb.webp', w: 1135, h: 1690, alt: 'Страница 28 — Карта социальной инфраструктуры', depth: 2, x: 56, y: 27, mobileX: 40, mobileY: 44, rotation: -2 },
+    { id: 'page-44', number: 44, src: ASSETS_BASE + 'zone-05-page-44.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-44-thumb.webp', w: 1082, h: 1618, alt: 'Страница 44 — Портрет целевой аудитории', depth: 0, x: 74, y: 22, mobileX: 62, mobileY: 48, rotation: 5 },
+    { id: 'page-49', number: 49, src: ASSETS_BASE + 'zone-05-page-49.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-49-thumb.webp', w: 1048, h: 1535, alt: 'Страница 49 — Проведение общественных обсуждений', depth: 1, x: 14, y: 46, mobileX: 22, mobileY: 55, rotation: 2 },
+    { id: 'page-62', number: 62, src: ASSETS_BASE + 'zone-05-page-62.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-62-thumb.webp', w: 1026, h: 1498, alt: 'Страница 62 — Гипотеза и программирование', depth: 2, x: 38, y: 42, mobileX: 48, mobileY: 58, rotation: -5 },
+    { id: 'page-74', number: 74, src: ASSETS_BASE + 'zone-05-page-74.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-74-thumb.webp', w: 1010, h: 1532, alt: 'Страница 74 — Инкубатор социальных проектов', depth: 0, x: 62, y: 55, mobileX: 30, mobileY: 66, rotation: 4 },
+    { id: 'page-88', number: 88, src: ASSETS_BASE + 'zone-05-page-88.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-88-thumb.webp', w: 889, h: 1358, alt: 'Страница 88 — Кейсы программной работы', depth: 1, x: 80, y: 48, mobileX: 58, mobileY: 70, rotation: -3 },
+    { id: 'page-79', number: 79, src: ASSETS_BASE + 'zone-05-page-79.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-79-thumb.webp', w: 1020, h: 1448, alt: 'Страница 79 — Центр психолого-педагогической службы', depth: 2, x: 26, y: 74, mobileX: 42, mobileY: 78, rotation: 5 },
+    { id: 'page-87', number: 87, src: ASSETS_BASE + 'zone-05-page-87.webp', thumbSrc: ASSETS_BASE + 'zone-05-page-87-thumb.webp', w: 995, h: 1450, alt: 'Страница 87 — Работа с аудиторией', depth: 1, x: 59, y: 76, mobileX: 65, mobileY: 82, rotation: -4 }
   ];
 
   // ---- 3. fabric banner ----

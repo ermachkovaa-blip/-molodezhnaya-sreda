@@ -93,11 +93,24 @@
       img.dataset.frameIdx = '0';
       sceneStage.appendChild(img);
     });
-    // preload every rotation frame up front — otherwise the first time a
-    // given frame is reached, assigning its src to the (until-then-blank)
-    // back layer could show a brief blank/loading gap instead of a clean
-    // crossfade, on anything slower than a local file.
-    rotation.frames.forEach(function (f) { var pre = new Image(); pre.src = f.src; });
+    // preload every rotation frame — otherwise the first time a given
+    // frame is reached, assigning its src to the (until-then-blank) back
+    // layer could show a brief blank/loading gap instead of a clean
+    // crossfade, on anything slower than a local file. Deferred via
+    // requestIdleCallback (customer, 2026-09-15: "сделай сайт быстрым")
+    // so these ~1.5MB of frames don't compete on the network with the
+    // zone's own critical images (base + shelf + flying-page thumbs) —
+    // they finish well before a real user has had time to hover/click
+    // the shelf anyway. Falls back to a short setTimeout where
+    // requestIdleCallback doesn't exist (Safari).
+    var preloadRotationFrames = function () {
+      rotation.frames.forEach(function (f) { var pre = new Image(); pre.src = f.src; });
+    };
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(preloadRotationFrames, { timeout: 2000 });
+    } else {
+      window.setTimeout(preloadRotationFrames, 600);
+    }
 
     // shelfImg — the current front-facing layer, used by layoutBookLink()
     // for its own on-screen box measurement (both layers share one box,
@@ -468,7 +481,11 @@
         type: 'button',
         'aria-label': p.alt
       });
-      var img = el('img', 'yh-gallery-page__img', { src: p.src, alt: '', draggable: 'false' });
+      // customer (2026-09-15): "сделай сайт быстрым" — this ambient img
+      // renders at a few dozen px on screen (see config/zone-05-content.js
+      // ZONE_05_PAGES comment), so it uses the small thumbSrc, not the
+      // full-res src the reader lightbox opens (see openReader below).
+      var img = el('img', 'yh-gallery-page__img', { src: p.thumbSrc || p.src, alt: '', draggable: 'false' });
       btn.appendChild(img);
       // mobile scene is a different (portrait) image/composition than
       // desktop, so a shared x/y would put several pages off-screen or

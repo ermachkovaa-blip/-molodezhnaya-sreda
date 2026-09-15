@@ -93,6 +93,7 @@
   padding: 10px 16px;
   border-radius: 999px;
   min-height: 44px;
+  cursor: pointer;
 }
 
 .yh-header__map-return:hover { background: rgba(28, 26, 23, 0.12); }
@@ -125,6 +126,7 @@
   min-height: 44px;
   min-width: 44px;
   line-height: 1;
+  cursor: pointer;
 }
 
 .yh-header__content-nav-list {
@@ -274,6 +276,7 @@
   border-radius: 18px;
   min-height: 44px;
   font-size: 0.65rem;
+  cursor: pointer;
   transition: background 150ms ease, color 150ms ease;
 }
 
@@ -328,6 +331,7 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.35);
   pointer-events: auto;
+  cursor: pointer;
   transition: opacity 200ms ease, box-shadow 200ms ease;
 }
 
@@ -394,6 +398,7 @@
   border: none;
   background: transparent;
   pointer-events: auto;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -562,6 +567,17 @@
    language matches that existing Map view (visible ring marker, tooltip
    label on hover/focus) rather than inventing a third convention. ================= */
 
+/* UX PASS (customer, 2026-09-15: "более наживным... куда нажимать" —
+   more obvious where to click). Found via a CSS audit: every hotspot
+   layer here renders its clickable item as a plain <button> (not an
+   <a href>, which browsers already show a pointer cursor for by
+   default) whenever the item has no outbound url — a bare <button> gets
+   the normal arrow cursor from the browser's own default stylesheet, not
+   a pointer, unless CSS says so explicitly. That was missing on this and
+   four other hotspot types below (Zone 00/01/06/passage, the material-
+   link hotspot, and Zone 07's baked CTA) — added cursor:pointer to all
+   of them; already-correct hotspot types (Zone 03's AI link, Zone 04's
+   drawers, Zone 05's rotate button) are untouched. */
 .yh-zone00-hotspot__item {
   position: absolute;
   width: 44px;
@@ -570,6 +586,7 @@
   border: none;
   background: transparent;
   pointer-events: auto;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -861,6 +878,7 @@
   border: none;
   background: transparent;
   pointer-events: auto;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2005,6 +2023,7 @@
   border: none;
   background: transparent;
   pointer-events: auto;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2096,6 +2115,7 @@
   border: none;
   background: transparent;
   pointer-events: auto;
+  cursor: pointer;
 }
 
 .yh-apply-hotspot__item:hover,
