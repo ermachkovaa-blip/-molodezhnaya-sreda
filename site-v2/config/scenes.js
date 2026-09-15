@@ -218,7 +218,13 @@
       // shows BOTH physical stands (intro ~x:26-45,y:52-72 and
       // "КАРТА ХАКАТОНА" ~x:48-70,y:50-73) at once, with headroom for pan
       // in every direction — not a perimeter-tight crop.
-      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 48, y: 62, scale: 1.9 }, hotspots: [] }
+      // customer (2026-09-15): "картинка мелко" on a real phone — bumped
+      // scale 1.9 -> 2.1 for a visibly bigger starting composition
+      // (verified the intro panel's own heading still isn't clipped at
+      // this scale — 2.5 already was). See config/zone-00-content.js
+      // ZONE_00_NAV_HOTSPOTS for the counterScaleItem fix that keeps the
+      // map's 8 dots a real, constant tap size regardless of this zoom.
+      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 48, y: 62, scale: 2.1 }, hotspots: [] }
     },
     '01': {
       // FAST MODE production pass: own dedicated BASE (was sharing
@@ -303,21 +309,21 @@
       // was only PARTLY cropped away by cover-fit's pan range at scale
       // 1.0 — the sponsor logos ended up sitting well above the nav with
       // a large dead-black gap between them, reading as if the whole
-      // scene had been "hiked up". Proved via Playwright measurement
-      // (comparing the real content/padding boundary's screen position
-      // against .yh-bottom-nav's own top) that at scale 1.0 the gap floor
-      // is a hard ~68-83px no matter the y focus, because covering the
-      // full width forces a fixed real-content display height that's
-      // shorter than any real phone viewport. A small scale increase
-      // raises that floor (verified 1.0/1.1/1.15/1.2/1.35 against
-      // iPhone 15/15 Pro Max, Pixel, Galaxy S ratios) but ALSO crops the
-      // sides — 1.2 already clips "УРБАНИСТ"'s card text, so 1.15 is the
-      // most zoom this can take without cropping any of the 5 role
-      // cards. Paired with y 50->45 (a pure vertical pan, zero side-crop
-      // effect, unlike scale) to spend that small zoom fully on closing
-      // the gap: brings it down to ~4-21px across every tested ratio
-      // (imperceptible) instead of ~90-113px.
-      mobile: { asset: sceneAsset('zone-06-mobile'), cameraPreset: { x: 50, y: 45, scale: 1.15 }, hotspots: [] }
+      // scene had been "hiked up". First fix (scale 1.15, y 45) closed
+      // that gap to ~4-21px, but follow-up real-device testing
+      // (2026-09-15) found it went too far the other way — cropping the
+      // "06 ТЕБЕ СЮДА, ЕСЛИ ТЫ..." wall header off the TOP. Covering the
+      // full width forces a fixed real-content display height shorter
+      // than any real phone viewport, so *something* always has to give
+      // (top content, or the bottom gap) — customer's explicit priority
+      // this time: "уменьшить зум, чтобы текст на картинке был виден и
+      // логотип" (both ends of the content visible matters more than
+      // fully closing the gap). Backed off to scale 1.02/y 46.5 — top
+      // header now fully visible (only ~3px crop, imperceptible), gap
+      // reopens to ~55px (down from the original ~90-113px, just not
+      // all the way to ~0) — the best balance found for this image's
+      // real content height vs. a real phone viewport.
+      mobile: { asset: sceneAsset('zone-06-mobile'), cameraPreset: { x: 50, y: 46.5, scale: 1.02 }, hotspots: [] }
     },
     '07': {
       // FAST MODE production pass: own dedicated BASE (was sharing

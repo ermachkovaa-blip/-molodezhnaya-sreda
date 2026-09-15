@@ -209,19 +209,26 @@
       var stageRect = sceneStage.getBoundingClientRect();
       var imgRect = shelfImg.getBoundingClientRect();
       if (!stageRect.width || !imgRect.width) return;
-      // counter-scale the label back to a true, legible on-screen size —
+      // counter-scale the link back to a true, legible on-screen size —
       // the classic "fixed CSS px shrinks with the stage's own camera-
       // scale transform" bug already found/fixed elsewhere in this
       // project (see e.g. Zone 01's ZONE_01_HOTSPOT_SIZE comment), except
       // here it's TEXT, which can't be sized as percent-of-image the way
-      // a hotspot box can — so instead the label is scaled by the
-      // inverse of the stage's live transform scale (offsetWidth is the
-      // stage's UNSCALED layout width; the ratio to its actual rendered
-      // width IS that live scale), keeping it a constant real size
-      // (~intended font-size/padding) at any zoom level, mobile's small
-      // camera scale included.
+      // a hotspot box can — so instead it's scaled by the inverse of the
+      // stage's live transform scale (offsetWidth is the stage's
+      // UNSCALED layout width; the ratio to its actual rendered width IS
+      // that live scale), keeping it a constant real size (~intended
+      // font-size/padding) at any zoom level, mobile's small camera
+      // scale included. Applied to bookLink itself (not just the label
+      // child) since bookLink no longer has its own explicit width/
+      // height (shrink-wraps to the label) — scaling only the child
+      // would visually enlarge the label WITHOUT growing the parent
+      // <a>'s actual hit area to match (transform doesn't affect layout
+      // size), leaving a real, counter-scaled-looking pill with a tiny
+      // unscaled tap target underneath it. One scale on the parent
+      // covers both correctly.
       var liveScale = sceneStage.offsetWidth ? (stageRect.width / sceneStage.offsetWidth) : 1;
-      bookLinkLabel.style.transform = 'scale(' + (liveScale ? 1 / liveScale : 1) + ')';
+      var inverseScale = liveScale ? 1 / liveScale : 1;
       // layoutFabricLabel (defined below) has its own bookkeeping but no
       // reliable trigger of its own that's guaranteed to fire AFTER the
       // stage is actually laid out (unlike this function, whose early
@@ -243,10 +250,27 @@
       var bookRight = content.left + BOOK_FRAC.right * content.width;
       var bookTop = content.top + BOOK_FRAC.top * content.height;
       var bookBottom = content.top + BOOK_FRAC.bottom * content.height;
-      bookLink.style.left = ((bookLeft - stageRect.left) / stageRect.width * 100) + '%';
-      bookLink.style.top = ((bookTop - stageRect.top) / stageRect.height * 100) + '%';
-      bookLink.style.width = ((bookRight - bookLeft) / stageRect.width * 100) + '%';
-      bookLink.style.height = ((bookBottom - bookTop) / stageRect.height * 100) + '%';
+      // customer (2026-09-15): "зона 05 периодически вылетает" — root
+      // cause found via repeated real clicks, not a guess: this link used
+      // to be sized to the BOOK's whole rectangle, which sits centered
+      // inside shelfRotateBtn's own (much larger) hit area — see
+      // config/zone-05-content.js hotspotDesktopSize/hotspotMobileSize.
+      // Since a tap naturally lands center-of-shelf, and the link is
+      // active whenever the book faces front (i.e. most of the time),
+      // that center tap kept winning over the rotate button underneath
+      // and silently opening an external link instead of rotating —
+      // exactly the "site kicked me to a different page" feeling she
+      // described. Shrinking the link down to just its own visible label
+      // pill (positioned at the book's center, sized to its own content
+      // rather than stretched to the whole book) leaves the rest of the
+      // book's area — which is most of it — to the rotate button
+      // beneath, same as the rest of the shelf; only a deliberate tap on
+      // the small "+"-style label still opens the link.
+      var bookCenterX = (bookLeft + bookRight) / 2;
+      var bookCenterY = (bookTop + bookBottom) / 2;
+      bookLink.style.left = ((bookCenterX - stageRect.left) / stageRect.width * 100) + '%';
+      bookLink.style.top = ((bookCenterY - stageRect.top) / stageRect.height * 100) + '%';
+      bookLink.style.transform = 'translate(-50%, -50%) scale(' + inverseScale + ')';
     }
 
     function updateBookLink() {

@@ -38,7 +38,7 @@
     // (bottom-padded both to keep the nav off the logo strip AND to fix
     // the same width-crop-on-real-phones issue as Zone 02/03's mobile);
     // X-axis values are untouched since only height was padded.
-    mobile: { left: 53, top: 23.2, width: 25, height: 27.8 },
+    mobile: { left: 53, top: 25.5, width: 25, height: 27.8 },
     hotspotDesktopCoords: { x: 52, y: 72 },
     hotspotDesktopSize: { w: 14, h: 34 },
     hotspotMobileCoords: { x: 65, y: 40.2 },
