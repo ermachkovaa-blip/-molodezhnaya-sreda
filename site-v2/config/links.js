@@ -38,16 +38,19 @@
     // confirmed "sent") > both null (no fake submission — shows "КОНТАКТ
     // ДЛЯ ОБРАТНОЙ СВЯЗИ БУДЕТ ДОБАВЛЕН").
     // customer (2026-09-16): "нужно чтобы сообщения приходили мне на
-    // почту" — set her real address as the mailto fallback so something
-    // real happens right away. This is NOT full automatic delivery: it
-    // opens the VISITOR's own mail app pre-filled, and depends on them
-    // pressing send — same honest limitation the header comment above
-    // already documents. The real fix (server-side auto-send, no
-    // visitor action needed) is CONTACT_FORM_ENDPOINT — same Google Apps
-    // Script /exec pattern she already used for APPLICATION_FORM_ENDPOINT
-    // below; still null until she sets one up and sends the URL.
+    // почту" — deployed her own Google Apps Script Web App (doPost calls
+    // MailApp.sendEmail to her address, same JSON shape this form already
+    // posts) and sent the real /exec URL below, so CONTACT_FORM_ENDPOINT
+    // now wins the branch in core/zone-07-cta.js and every submission
+    // sends automatically — no visitor action needed. CONTACT_EMAIL is
+    // kept filled in too, but NOTE it is NOT a live runtime fallback: the
+    // branch below picks ONE path when the form is built (endpoint if
+    // set, else mailto, else neither) — a failed fetch to the endpoint at
+    // submit time just shows the error message, it does not fall through
+    // to mailto. CONTACT_EMAIL only matters again if CONTACT_FORM_ENDPOINT
+    // is ever cleared back to null.
     CONTACT_EMAIL: 'ermachkova.a@gmail.com',
-    CONTACT_FORM_ENDPOINT: null,
+    CONTACT_FORM_ENDPOINT: 'https://script.google.com/macros/s/AKfycbzpEcuF_hgh4j7jtIGwTPPkpAOBCKb8z_ZB_Wg4RKdt1wMzsKi3xZlRdMNIzZ92H0xk0A/exec',
 
     // site-v2/apply.html — the full multi-step hackathon APPLICATION form
     // (distinct from CONTACT_FORM_ENDPOINT above, which is Zone 07's small

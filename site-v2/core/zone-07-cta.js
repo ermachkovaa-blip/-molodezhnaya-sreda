@@ -208,7 +208,17 @@
         setStatus('', 'pending');
         window.fetch(links.CONTACT_FORM_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          // 'text/plain', not 'application/json' — this is a Google Apps
+          // Script Web App (see config/links.js), and 'application/json'
+          // is a non-simple content-type that makes the browser send a
+          // CORS preflight (OPTIONS) request first; Apps Script Web Apps
+          // don't answer OPTIONS unless you add a doOptions handler, so
+          // that preflight fails and the real POST never goes out. Same
+          // fix already proven working for APPLICATION_FORM_ENDPOINT
+          // (see js/apply-form.js) — the body is still the same JSON
+          // string, doPost's own JSON.parse(e.postData.contents) doesn't
+          // care what the header said.
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ name: name, email: emailVal, message: message })
         }).then(function (res) {
           if (!res.ok) throw new Error('bad status');
