@@ -293,17 +293,33 @@ html, body {
   border-bottom: 1.5px solid rgba(28,26,23,0.3);
   background: transparent;
   /* customer (2026-09-16): "строчки слетают" — the ruled-paper lines
-     didn't line up with the actual text. background-position is measured
-     from the PADDING box's top edge, not the content box the text sits
-     in, so it needs to account for padding-top (8px) itself: the first
-     line of text occupies content-top .. content-top+line-height, i.e.
-     padding-top(8) .. padding-top(8)+line-height(30) = 38px from the
-     padding box's own top — that's where the first ruled line has to
-     sit for the two to coincide. It was hardcoded to 28px (a 10px
-     mismatch, constant across every line since line-height already
-     matches the pattern's own 30px repeat). */
-  background-image: repeating-linear-gradient(rgba(28,26,23,0.12) 0 1px, transparent 1px 30px);
-  background-position: 0 38px;
+     didn't line up with the actual text. The first line of text occupies
+     content-top .. content-top+line-height, i.e. padding-top(8px) ..
+     padding-top(8px)+line-height(30px) — a ruled line has to sit at that
+     boundary (38px from the padding box's own top) for the two to
+     coincide, repeating every line-height(30px) after.
+     THIRD fix (same day, "первая строчка состоит из 2 линий" — a SECOND
+     attempt at this, using background-position to shift a plain
+     repeating-linear-gradient, still produced a genuine extra
+     mispositioned line — confirmed via an isolated Playwright test
+     sweeping background-position values: this specific combination
+     (box-sizing:border-box on this page + a border-bottom + a non-zero
+     background-position-y ≥ 7px) reliably makes Chromium paint a SECOND
+     copy of the line, shifted 7px off — a real rendering bug in that
+     combination, not a math error). Fixed by not using background-
+     position at all: the padding offset is baked directly into the
+     gradient's own color-stop list instead (one 30px-tall tile, opaque
+     only across its own 8px-9px band), leaving background-position at
+     its default (0, always clean in the same test) — mathematically the
+     same repeating pattern, verified line-for-line clean afterward. */
+  background-image: repeating-linear-gradient(
+    transparent 0,
+    transparent 8px,
+    rgba(28,26,23,0.12) 8px,
+    rgba(28,26,23,0.12) 9px,
+    transparent 9px,
+    transparent 30px
+  );
   padding: 8px 2px 10px;
   font-size: 1rem;
   line-height: 30px;
