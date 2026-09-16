@@ -36,9 +36,17 @@
     // priority: CONTACT_FORM_ENDPOINT (real POST) > CONTACT_EMAIL (mailto
     // fallback — opens the visitor's own mail client, never claimed as a
     // confirmed "sent") > both null (no fake submission — shows "КОНТАКТ
-    // ДЛЯ ОБРАТНОЙ СВЯЗИ БУДЕТ ДОБАВЛЕН"). Neither invented — null until
-    // the заказчик provides one.
-    CONTACT_EMAIL: null,
+    // ДЛЯ ОБРАТНОЙ СВЯЗИ БУДЕТ ДОБАВЛЕН").
+    // customer (2026-09-16): "нужно чтобы сообщения приходили мне на
+    // почту" — set her real address as the mailto fallback so something
+    // real happens right away. This is NOT full automatic delivery: it
+    // opens the VISITOR's own mail app pre-filled, and depends on them
+    // pressing send — same honest limitation the header comment above
+    // already documents. The real fix (server-side auto-send, no
+    // visitor action needed) is CONTACT_FORM_ENDPOINT — same Google Apps
+    // Script /exec pattern she already used for APPLICATION_FORM_ENDPOINT
+    // below; still null until she sets one up and sends the URL.
+    CONTACT_EMAIL: 'ermachkova.a@gmail.com',
     CONTACT_FORM_ENDPOINT: null,
 
     // site-v2/apply.html — the full multi-step hackathon APPLICATION form
