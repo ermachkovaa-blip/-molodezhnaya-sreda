@@ -9,12 +9,76 @@
 <body>
 
 <div class="apply-topbar">
-  <a class="apply-back" href="embed/demo.html">&#8592; Вернуться в пространство</a>
+  <a class="apply-back" href="embed/tilda.html">&#8592; Вернуться в пространство</a>
   <span class="apply-topbar__title">Молодёжная среда — заявка на хакатон</span>
 </div>
 
 <main class="sheet-page">
   <div class="sheet-shell">
+
+    <!-- customer (2026-09-19): "отдельная форма заявки чтобы я могла
+         отправлять заявку ссылкой" — this page was already a fully
+         standalone document (own <script> tags for config/links.js and
+         js/apply-form.js, no dependency on being embedded inside
+         tilda.html), so it needed no new plumbing — just a real intro
+         explaining what the hackathon IS, since someone opening this
+         page cold (from a shared link, not having gone through the
+         scene first) has no other context for what they're applying to. -->
+    <section class="apply-intro">
+      <span class="apply-intro__eyebrow">АРХИТЕКТУРНЫЙ ХАКАТОН · 2026</span>
+      <h1 class="apply-intro__title">«Молодёжная среда»</h1>
+      <p class="apply-intro__lead">Архитектурный хакатон для студентов и молодых архитекторов. Молодые проектируют для молодых.</p>
+
+      <div class="apply-intro__stats">
+        <div class="apply-intro__stat">
+          <span class="apply-intro__stat-num">5</span>
+          <span class="apply-intro__stat-label">дней</span>
+        </div>
+        <div class="apply-intro__stat">
+          <span class="apply-intro__stat-num">5</span>
+          <span class="apply-intro__stat-label">объектов</span>
+        </div>
+        <div class="apply-intro__stat">
+          <span class="apply-intro__stat-num">17–21</span>
+          <span class="apply-intro__stat-label">октября 2026</span>
+        </div>
+        <div class="apply-intro__stat">
+          <span class="apply-intro__stat-num">Казань</span>
+          <span class="apply-intro__stat-label">место проведения</span>
+        </div>
+      </div>
+
+      <p class="apply-intro__objects">
+        <span class="apply-intro__objects-label">Объекты:</span>
+        Бугульма, Елабуга, Шемордан, Лаишево, Столбище — молодёжные центры и центры психолого-педагогической помощи.
+      </p>
+
+      <div class="apply-intro__program">
+        <h2 class="apply-intro__program-title">Программа — 5 дней</h2>
+        <ol class="apply-intro__days">
+          <li class="apply-intro__day">
+            <span class="apply-intro__day-num">День 1</span>
+            <span class="apply-intro__day-text">Открытие, знакомство участников, формирование команд</span>
+          </li>
+          <li class="apply-intro__day">
+            <span class="apply-intro__day-num">День 2</span>
+            <span class="apply-intro__day-text">Выезд на объекты, общественные обсуждения с жителями — формируем задание на проектирование</span>
+          </li>
+          <li class="apply-intro__day">
+            <span class="apply-intro__day-num">Дни 3–4</span>
+            <span class="apply-intro__day-text">Работа в проектных группах, разработка концепций</span>
+          </li>
+          <li class="apply-intro__day">
+            <span class="apply-intro__day-num">День 5</span>
+            <span class="apply-intro__day-text">Защита проектов, подведение итогов, закрытие</span>
+          </li>
+        </ol>
+      </div>
+
+      <p class="apply-intro__note">Участие бесплатное, количество мест ограничено. Проходит в рамках программы «Регион для молодых» национального проекта «Молодежь и дети», при поддержке Росмолодежи и Министерства по делам молодежи Республики Татарстан.</p>
+
+      <a class="apply-intro__cta" href="#apply-form">Перейти к заявке ↓</a>
+    </section>
 
     <div class="sheet-progress" id="sheet-progress" aria-label="Шаги анкеты" role="tablist"></div>
 
