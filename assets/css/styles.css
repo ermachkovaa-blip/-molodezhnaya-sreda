@@ -8,12 +8,15 @@
    ШРИФТЫ
 
    Основные шрифты бренда — Druk Cond Cy Super (заголовки) и Apercu Pro
-   (текст/интерфейс). Druk Cond Cy Super подключен как настоящий webfont
-   (assets/fonts/DrukCondensed-Super.woff2). Apercu Pro пока физически
-   отсутствует в проекте — как только появится файл, достаточно
-   раскомментировать блок ниже, --font-body уже ссылается на это имя.
-   До этого момента вместо него используется Inter — нейтральный
-   текстовый гротеск (JetBrains Mono — для координат и подписей).
+   (текст/интерфейс) — оба подключены как настоящие webfont-файлы
+   (assets/fonts/). У Apercu Pro исходники Thin/Light/Black поставлялись
+   как отдельные "семьи" (внутреннее имя шрифта — Apercu Pro Thin и т.д.,
+   привычно для олдскульных дистрибутивов с 4 начертаниями на семью);
+   ниже все начертания намеренно объявлены под одним font-family:
+   'Apercu Pro' с нужным font-weight/font-style, чтобы var(--font-body)
+   работал как обычная веб-шкала начертаний. Medium/SemiBold (600)
+   не поставлялся — при font-weight:600 браузер берёт ближайшее
+   начертание (Bold), это штатное поведение CSS font-matching.
    -------------------------------------------------------------------------- */
 
 @font-face{
@@ -24,18 +27,24 @@
   font-display: swap;
 }
 
-/*
 @font-face{
   font-family:'Apercu Pro';
-  src: url('../fonts/ApercuPro-Regular.woff2') format('woff2');
-  font-weight: 400;
+  src: url('../fonts/ApercuPro-Thin.woff2') format('woff2');
+  font-weight: 100;
   font-style: normal;
   font-display: swap;
 }
 @font-face{
   font-family:'Apercu Pro';
-  src: url('../fonts/ApercuPro-Medium.woff2') format('woff2');
-  font-weight: 600;
+  src: url('../fonts/ApercuPro-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face{
+  font-family:'Apercu Pro';
+  src: url('../fonts/ApercuPro-Regular.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
@@ -46,7 +55,20 @@
   font-style: normal;
   font-display: swap;
 }
-*/
+@font-face{
+  font-family:'Apercu Pro';
+  src: url('../fonts/ApercuPro-BoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face{
+  font-family:'Apercu Pro';
+  src: url('../fonts/ApercuPro-BlackItalic.woff2') format('woff2');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 :root{
   /* ---- палитра: белый + фирменные цвета Молодежных центров РТ ---- */
