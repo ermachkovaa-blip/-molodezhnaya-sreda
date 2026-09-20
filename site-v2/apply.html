@@ -3,18 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Подать заявку — Молодёжная среда</title>
+<title>Подать заявку на хакатон</title>
 <link rel="stylesheet" href="css/apply-form.css">
 </head>
 <body>
 
 <div class="apply-topbar">
   <a class="apply-back" href="embed/tilda.html">&#8592; Вернуться в пространство</a>
-  <span class="apply-topbar__title">Молодёжная среда — заявка на хакатон</span>
+  <span class="apply-topbar__title">Заявка на хакатон</span>
 </div>
 
 <main class="sheet-page">
   <div class="sheet-shell">
+
+    <!-- customer (2026-09-21): "убеpем архитектурный хакатон как заголовок,
+         оставим только в виде некого колонтитула" — demoted from the big
+         eyebrow inside .apply-intro to a thin standalone strip at the very
+         top of the page. -->
+    <div class="apply-kicker">Архитектурный хакатон · 2026</div>
+
+    <!-- customer (2026-09-21): "выведем основным блоком... нижнюю бегущую
+         строку" — the marquee is now the primary hero block at the top of
+         the page (moved up from between .apply-intro and the form), same
+         content/behavior, just promoted in the visual hierarchy. -->
+    <div class="apply-hero">
+      <div class="apply-hero__left">
+        <span class="apply-divider__static">Создаём пространства для</span>
+        <div class="apply-marquee" aria-hidden="true">
+          <div class="apply-marquee__track">
+            <span class="apply-marquee__item">будущего_творчества_самореализации_развития_</span>
+            <span class="apply-marquee__item">будущего_творчества_самореализации_развития_</span>
+            <span class="apply-marquee__item">будущего_творчества_самореализации_развития_</span>
+          </div>
+        </div>
+      </div>
+      <div class="apply-hero__panel">
+        <!-- customer (2026-09-21): "убери 3 треугольника" — removed. -->
+        <div class="apply-hero__panel-content">
+          <div class="apply-hero__stats">
+            <div class="apply-hero__stat">
+              <span class="apply-hero__stat-num">5</span>
+              <span class="apply-hero__stat-label">дней</span>
+            </div>
+            <div class="apply-hero__stat">
+              <span class="apply-hero__stat-num">5</span>
+              <span class="apply-hero__stat-label">объектов</span>
+            </div>
+            <div class="apply-hero__stat">
+              <span class="apply-hero__stat-num">17–21</span>
+              <span class="apply-hero__stat-label">октября 2026</span>
+            </div>
+            <div class="apply-hero__stat">
+              <span class="apply-hero__stat-num">Казань</span>
+              <span class="apply-hero__stat-label">место проведения</span>
+            </div>
+          </div>
+          <!-- customer (2026-09-21): "убери дублирующую информацию (2 раза
+               объекты)" — this was the only "объекты" line, the fuller
+               one from .apply-intro below was removed. -->
+          <p class="apply-hero__objects">
+            <span class="apply-hero__objects-label">Объекты:</span>
+            Бугульма, Елабуга, Шемордан, Лаишево, Столбище — молодёжные пространства.
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- customer (2026-09-19): "отдельная форма заявки чтобы я могла
          отправлять заявку ссылкой" — this page was already a fully
@@ -24,53 +77,45 @@
          explaining what the hackathon IS, since someone opening this
          page cold (from a shared link, not having gone through the
          scene first) has no other context for what they're applying to. -->
+    <!-- customer (2026-09-19): "попробуем твоё предложение... цвета
+         взять отсюда [mctatarstan.ru] и бегущую строку" — orange/pink/
+         green sampled from her screenshot of the real site (logo green,
+         the orange running-text ticker over the hero photo, the pink
+         accent circle behind it); reused here as --mc-orange/--mc-pink/
+         --mc-green (see :root above), only inside .apply-intro — the
+         form itself keeps its existing blue --accent untouched. -->
     <section class="apply-intro">
-      <span class="apply-intro__eyebrow">АРХИТЕКТУРНЫЙ ХАКАТОН · 2026</span>
-      <h1 class="apply-intro__title">«Молодёжная среда»</h1>
+      <div class="apply-intro__content">
       <p class="apply-intro__lead">Архитектурный хакатон для студентов и молодых архитекторов. Молодые проектируют для молодых.</p>
-
-      <div class="apply-intro__stats">
-        <div class="apply-intro__stat">
-          <span class="apply-intro__stat-num">5</span>
-          <span class="apply-intro__stat-label">дней</span>
-        </div>
-        <div class="apply-intro__stat">
-          <span class="apply-intro__stat-num">5</span>
-          <span class="apply-intro__stat-label">объектов</span>
-        </div>
-        <div class="apply-intro__stat">
-          <span class="apply-intro__stat-num">17–21</span>
-          <span class="apply-intro__stat-label">октября 2026</span>
-        </div>
-        <div class="apply-intro__stat">
-          <span class="apply-intro__stat-num">Казань</span>
-          <span class="apply-intro__stat-label">место проведения</span>
-        </div>
-      </div>
-
-      <p class="apply-intro__objects">
-        <span class="apply-intro__objects-label">Объекты:</span>
-        Бугульма, Елабуга, Шемордан, Лаишево, Столбище — молодёжные центры и центры психолого-педагогической помощи.
-      </p>
 
       <div class="apply-intro__program">
         <h2 class="apply-intro__program-title">Программа — 5 дней</h2>
-        <ol class="apply-intro__days">
-          <li class="apply-intro__day">
-            <span class="apply-intro__day-num">День 1</span>
-            <span class="apply-intro__day-text">Открытие, знакомство участников, формирование команд</span>
+        <!-- customer (2026-09-21): "таймлайн по дням оформить так чтобы
+             были блоки, поиграть с размером шрифтов, или сделать
+             поинтерактивнее эту зону" — replaced the thin connecting-line
+             layout with real card blocks: a huge day number, a smaller
+             label, small body text, colors cycling orange/pink/blue/
+             orange same as before, plus a hover lift for interactivity. -->
+        <ol class="apply-intro__timeline">
+          <li class="apply-intro__tl-card">
+            <span class="apply-intro__tl-num">01</span>
+            <span class="apply-intro__tl-label">День 1</span>
+            <span class="apply-intro__tl-text">Открытие, знакомство участников, формирование команд</span>
           </li>
-          <li class="apply-intro__day">
-            <span class="apply-intro__day-num">День 2</span>
-            <span class="apply-intro__day-text">Выезд на объекты, общественные обсуждения с жителями — формируем задание на проектирование</span>
+          <li class="apply-intro__tl-card">
+            <span class="apply-intro__tl-num">02</span>
+            <span class="apply-intro__tl-label">День 2</span>
+            <span class="apply-intro__tl-text">Выезд на объекты, общественные обсуждения с жителями — формируем задание на проектирование</span>
           </li>
-          <li class="apply-intro__day">
-            <span class="apply-intro__day-num">Дни 3–4</span>
-            <span class="apply-intro__day-text">Работа в проектных группах, разработка концепций</span>
+          <li class="apply-intro__tl-card">
+            <span class="apply-intro__tl-num">03–04</span>
+            <span class="apply-intro__tl-label">Дни 3–4</span>
+            <span class="apply-intro__tl-text">Работа в проектных группах, разработка концепций</span>
           </li>
-          <li class="apply-intro__day">
-            <span class="apply-intro__day-num">День 5</span>
-            <span class="apply-intro__day-text">Защита проектов, подведение итогов, закрытие</span>
+          <li class="apply-intro__tl-card">
+            <span class="apply-intro__tl-num">05</span>
+            <span class="apply-intro__tl-label">День 5</span>
+            <span class="apply-intro__tl-text">Защита проектов, подведение итогов, закрытие</span>
           </li>
         </ol>
       </div>
@@ -78,6 +123,7 @@
       <p class="apply-intro__note">Участие бесплатное, количество мест ограничено. Проходит в рамках программы «Регион для молодых» национального проекта «Молодежь и дети», при поддержке Росмолодежи и Министерства по делам молодежи Республики Татарстан.</p>
 
       <a class="apply-intro__cta" href="#apply-form">Перейти к заявке ↓</a>
+      </div>
     </section>
 
     <div class="sheet-progress" id="sheet-progress" aria-label="Шаги анкеты" role="tablist"></div>

@@ -15,9 +15,77 @@
 :root {
   --ink: #1c1a17;
   --accent: #3f6fd1;
-  --paper: #faf6ee;
+  /* customer (2026-09-19): "не на бежевом а на белом фоне" — was cream
+     (#faf6ee); real mctatarstan.ru reference is white. Global variable,
+     so this affects the whole page (form included), not just the intro. */
+  --paper: #ffffff;
   --panel-bg: rgba(28, 26, 23, 0.88);
   --panel-fg: #f4efe8;
+  /* customer (2026-09-19): "давай попробуем... цвета взять отсюда"
+     (mctatarstan.ru) — sampled directly from her screenshot of the real
+     site (logo green, the orange running-text ticker, the pink accent
+     circle behind the hero photo), used only in .apply-intro below —
+     the form itself (.sheet-*) keeps its existing --accent blue
+     untouched, she didn't ask to change that. */
+  --mc-orange: #fc7d54;
+  --mc-pink: #fd95ec;
+  --mc-green: #39b076;
+  --druk: 'Druk Cond Cy Super', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* customer (2026-09-20): sent the real Apercu Pro files (Regular/Bold/
+     Light/Thin) — closes the other half of the same FONT NOTE gap Druk
+     closed above. Used for all body text on this page. */
+  --apercu: 'Apercu Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* customer (2026-09-19): sent the real font file — this is literally the
+   "Druk Cond Cy Super" font the original visual spec called for (see
+   core/zone-07-cta.js's long-standing "FONT NOTE": neither this nor
+   Apercu Pro ever had a licensed file in the repo, so V2 fell back to
+   the system stack everywhere — that gap is now closed for THIS page's
+   display type, not retroactively applied to the embedded scene, which
+   she hasn't asked to touch). woff2 first (58KB, this exact font
+   re-encoded losslessly via fontTools) with the original .otf (171KB)
+   as a fallback for anything that can't parse woff2. */
+@font-face {
+  font-family: 'Druk Cond Cy Super';
+  src: url('../assets/fonts/DrukCondCy-Super.woff2') format('woff2'),
+       url('../assets/fonts/DrukCondCy-Super.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Apercu Pro';
+  src: url('../assets/fonts/ApercuPro-Thin.woff2') format('woff2'),
+       url('../assets/fonts/ApercuPro-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Apercu Pro';
+  src: url('../assets/fonts/ApercuPro-Light.woff2') format('woff2'),
+       url('../assets/fonts/ApercuPro-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Apercu Pro';
+  src: url('../assets/fonts/ApercuPro-Regular.woff2') format('woff2'),
+       url('../assets/fonts/ApercuPro-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Apercu Pro';
+  src: url('../assets/fonts/ApercuPro-Bold.woff2') format('woff2'),
+       url('../assets/fonts/ApercuPro-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 * { box-sizing: border-box; }
@@ -27,7 +95,7 @@ html, body {
   padding: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--apercu);
 }
 
 .apply-topbar {
@@ -73,12 +141,171 @@ html, body {
 
 /* ---------- intro (customer, 2026-09-19): standalone-share context ---------- */
 
+/* customer (2026-09-21): "убеpем архитектурный хакатон как заголовок,
+   оставим только в виде некого колонтитула" — thin running-header strip,
+   not a headline anymore. */
+.apply-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(28, 26, 23, 0.5);
+  padding: 14px 28px 0;
+}
+
+/* ---------- section divider: static lead-in + running-text ticker
+   (customer ref: mctatarstan.ru) ---------- */
+
+.apply-divider {
+  margin: 0 0 40px;
+}
+
+/* ---------- hero: marquee (left) + colored info panel (right, in the
+   photo's place from mctatarstan.ru's hero) ---------- */
+
+.apply-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+  margin: 10px 0 44px;
+  padding: 10px 0 0;
+}
+
+.apply-hero__left {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.apply-hero__left .apply-divider__static {
+  font-size: 2.2rem;
+}
+
+.apply-hero__panel {
+  position: relative;
+  overflow: hidden;
+  background: var(--accent);
+  color: var(--paper);
+  border-radius: 4px;
+  padding: 30px 28px;
+}
+
+.apply-hero__panel-content {
+  position: relative;
+  z-index: 1;
+}
+
+.apply-hero__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 16px;
+}
+
+.apply-hero__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.apply-hero__stat-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.apply-hero__stat-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.apply-hero__objects {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.9;
+}
+.apply-hero__objects-label {
+  font-weight: 800;
+  opacity: 1;
+  margin-right: 4px;
+}
+
+@media (max-width: 860px) {
+  .apply-hero {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .apply-hero__left .apply-divider__static { font-size: 1.5rem; }
+}
+
+.apply-divider__static {
+  display: block;
+  /* customer (2026-09-20): "Создаем пространства для - шрифт аперку" */
+  font-family: var(--apercu);
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  padding: 0 28px;
+  margin-bottom: 4px;
+}
+
+/* customer (2026-09-19): "размер строки бегущей на нашем сайте... прям
+   как на нем" — matched her screenshot directly: no background band,
+   one flat orange (their real ticker is solid orange, not multi-color),
+   and MUCH bigger — on her phone screenshot a single word nearly fills
+   the viewport width. */
+.apply-marquee {
+  overflow: hidden;
+  padding: 6px 0;
+  margin-bottom: 0;
+}
+
+.apply-marquee__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: apply-marquee-scroll 32s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apply-marquee__track { animation: none; }
+}
+
+.apply-marquee__item {
+  font-family: var(--druk);
+  font-size: 5.5rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--mc-orange);
+  white-space: nowrap;
+  padding: 0 30px;
+}
+
+@keyframes apply-marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- intro card ---------- */
+
 .apply-intro {
   position: relative;
   padding: 40px 36px 36px;
   margin-bottom: 40px;
   border: 1px solid rgba(28,26,23,0.12);
+  border-top: none;
   background: var(--paper);
+  overflow: hidden;
 }
 .apply-intro::before,
 .apply-intro::after {
@@ -88,26 +315,18 @@ html, body {
   height: 16px;
   border: 2px solid var(--ink);
   opacity: 0.35;
+  z-index: 2;
 }
 .apply-intro::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
 .apply-intro::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 
-.apply-intro__eyebrow {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 10px;
-}
+/* customer (2026-09-21): "удали все элементы которые мы с тобой не
+   согласовывали" / "убери 3 треугольника" — the decorative circles
+   (never actually requested) and the triangle trio are both removed. */
 
-.apply-intro__title {
-  font-size: 2.4rem;
-  font-weight: 800;
-  letter-spacing: 0.01em;
-  margin: 0 0 10px;
-  line-height: 1.1;
+.apply-intro__content {
+  position: relative;
+  z-index: 1;
 }
 
 .apply-intro__lead {
@@ -118,47 +337,10 @@ html, body {
   opacity: 0.85;
 }
 
-.apply-intro__stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 28px;
-  padding: 20px 0;
-  border-top: 1px solid rgba(28,26,23,0.15);
-  border-bottom: 1px solid rgba(28,26,23,0.15);
-  margin-bottom: 20px;
-}
-
-.apply-intro__stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.apply-intro__stat-num {
-  font-size: 1.7rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.apply-intro__stat-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  opacity: 0.55;
-}
-
-.apply-intro__objects {
-  font-size: 0.92rem;
-  line-height: 1.6;
-  margin: 0 0 30px;
-  opacity: 0.8;
-}
-.apply-intro__objects-label {
-  font-weight: 800;
-  opacity: 1;
-  margin-right: 4px;
-}
+/* customer (2026-09-21): "убери дублирующую информацию (2 раза объекты)"
+   — the stats grid and objects line now live only once, in
+   .apply-hero__stats / .apply-hero__objects (the colored panel), so
+   their .apply-intro__* equivalents are gone. */
 
 .apply-intro__program-title {
   font-size: 0.78rem;
@@ -169,32 +351,59 @@ html, body {
   opacity: 0.6;
 }
 
-.apply-intro__days {
+/* customer (2026-09-21): "таймлайн по дням оформить так чтобы были
+   блоки, поиграть с размером шрифтов, или сделать поинтерактивнее эту
+   зону" — real card blocks (border + own background) instead of the
+   thin connecting-line layout, a much bigger day number as the visual
+   anchor, and a hover lift for interactivity. */
+.apply-intro__timeline {
   list-style: none;
   margin: 0 0 28px;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+  gap: 14px;
 }
 
-.apply-intro__day {
+.apply-intro__tl-card {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
-  padding-top: 12px;
-  border-top: 2px solid var(--ink);
+  padding: 18px 16px 20px;
+  border: 1px solid rgba(28, 26, 23, 0.12);
+  border-radius: 6px;
+  background: var(--paper);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.apply-intro__tl-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(28, 26, 23, 0.1);
 }
 
-.apply-intro__day-num {
+/* customer (2026-09-19): "использование розового синего и оранжевого"
+   — each card gets its own accent (orange/pink/blue cycling) rather
+   than one flat color for the whole timeline. */
+.apply-intro__tl-num { color: var(--mc-orange); }
+.apply-intro__tl-card:nth-child(2) .apply-intro__tl-num { color: var(--mc-pink); }
+.apply-intro__tl-card:nth-child(3) .apply-intro__tl-num { color: var(--accent); }
+
+.apply-intro__tl-num {
+  font-family: var(--druk);
+  font-size: 2.6rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.apply-intro__tl-label {
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--accent);
+  opacity: 0.6;
 }
 
-.apply-intro__day-text {
+.apply-intro__tl-text {
   font-size: 0.86rem;
   line-height: 1.45;
   opacity: 0.85;
@@ -212,22 +421,22 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--mc-orange);
+  color: var(--ink);
   font-size: 0.9rem;
   font-weight: 700;
   text-decoration: none;
   padding: 14px 26px;
   border-radius: 999px;
 }
-.apply-intro__cta:hover { background: var(--accent); }
+.apply-intro__cta:hover { background: var(--ink); color: var(--paper); }
 
 @media (max-width: 720px) {
   .apply-intro { padding: 28px 20px 26px; }
-  .apply-intro__title { font-size: 1.8rem; }
   .apply-intro__lead { font-size: 1rem; }
-  .apply-intro__stats { gap: 20px; }
-  .apply-intro__days { grid-template-columns: repeat(2, 1fr); }
+  .apply-intro__timeline { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+  .apply-marquee__item { font-size: 4.2rem; padding: 0 16px; }
+  .apply-divider__static { font-size: 1.3rem; padding: 0 20px; }
 }
 
 /* ---------- progress rail ---------- */
@@ -338,18 +547,35 @@ html, body {
   opacity: 0.4;
 }
 
+/* customer (2026-09-20): "поправь шрифты в самой заявке тоже. для
+   заголовков используй druk" — extends the same Druk Cond Cy Super
+   already wired up for the intro (see :root --druk / @font-face) to
+   every real heading in the form itself: the giant step number, the
+   step title, and the success-screen stamp below. */
 .sheet-aside__num {
+  font-family: var(--druk);
   font-size: 7.5rem;
   line-height: 0.85;
-  font-weight: 800;
+  font-weight: 400;
   color: var(--ink);
   opacity: 0.92;
   margin: 6px 0 4px;
 }
+/* customer (2026-09-21): "в самом опросе цифры блоков - нужно сделать
+   цветными" — the giant step number was still plain black; cycles the
+   same orange/pink/blue/green palette used everywhere else, one color
+   per step. */
+[data-step="1"] .sheet-aside__num { color: var(--mc-orange); opacity: 1; }
+[data-step="2"] .sheet-aside__num { color: var(--mc-pink); opacity: 1; }
+[data-step="3"] .sheet-aside__num { color: var(--accent); opacity: 1; }
+[data-step="4"] .sheet-aside__num { color: var(--mc-green); opacity: 1; }
+[data-step="5"] .sheet-aside__num { color: var(--mc-orange); opacity: 1; }
+[data-step="6"] .sheet-aside__num { color: var(--mc-pink); opacity: 1; }
 
 .sheet-aside__title {
-  font-size: 1.3rem;
-  font-weight: 800;
+  font-family: var(--druk);
+  font-size: 1.6rem;
+  font-weight: 400;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   margin: 0 0 14px;
@@ -411,8 +637,15 @@ html, body {
   font-family: 'SF Mono', 'Consolas', monospace;
   font-size: 0.7rem;
   color: var(--accent);
-  opacity: 0.7;
+  opacity: 0.85;
 }
+/* customer (2026-09-21): "цифры обозначающие порядковые номера вопросов
+   - тоже разными цветами выдели" — cycles orange/pink/blue/accent across
+   each field's own index number within a step, same palette used
+   elsewhere on this page. */
+.sheet-field:nth-of-type(4n+2) .sheet-field__index { color: var(--mc-orange); }
+.sheet-field:nth-of-type(4n+3) .sheet-field__index { color: var(--mc-pink); }
+.sheet-field:nth-of-type(4n+4) .sheet-field__index { color: var(--mc-green); }
 
 .sheet-field input,
 .sheet-field select {
@@ -680,8 +913,10 @@ html, body {
 .sheet-success { text-align: center; padding: 40px 20px; position: relative; }
 .sheet-success__stamp {
   display: inline-block;
-  font-size: 2.6rem;
-  font-weight: 800;
+  font-family: var(--druk);
+  font-size: 3.2rem;
+  font-weight: 400;
+  text-transform: uppercase;
   color: var(--accent);
   border: 4px solid var(--accent);
   padding: 10px 30px;
