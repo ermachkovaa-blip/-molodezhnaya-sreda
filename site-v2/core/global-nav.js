@@ -78,7 +78,12 @@
     document.addEventListener('pointerdown', onDocumentPointerDown);
 
     var actions = el('div', 'yh-header__actions');
-    var ctaLink = el('a', 'yh-cta', { href: links.APPLICATION_URL || '#' });
+    // customer (2026-09-21): "чтобы я могла отдельно отправлять ссылку
+    // только на форму" — apply.html was always its own standalone page,
+    // but opening it from inside the embedded scene navigated the SAME
+    // iframe, so it read as "just a form glued to the site" rather than
+    // a separate page. target=_blank makes that separateness visible.
+    var ctaLink = el('a', 'yh-cta', { href: links.APPLICATION_URL || '#', target: '_blank', rel: 'noopener' });
     ctaLink.textContent = strings.applyCta;
     if (!links.APPLICATION_URL) {
       ctaLink.setAttribute('aria-disabled', 'true');

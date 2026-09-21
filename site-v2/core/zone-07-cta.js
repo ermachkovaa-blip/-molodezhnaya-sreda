@@ -81,7 +81,9 @@
     heading.textContent = content.primaryHeading;
     var lead = el('p', 'yh-apply-banner__lead');
     lead.textContent = content.primaryLead;
-    var ctaLink = el('a', 'yh-apply-banner__cta', { href: links.APPLICATION_URL || '#' });
+    // customer (2026-09-21): same target=_blank treatment as global-nav's
+    // CTA — apply.html is its own page, this just makes that visible.
+    var ctaLink = el('a', 'yh-apply-banner__cta', { href: links.APPLICATION_URL || '#', target: '_blank', rel: 'noopener' });
     ctaLink.textContent = content.primaryCta;
     if (!links.APPLICATION_URL) {
       ctaLink.setAttribute('aria-disabled', 'true');
