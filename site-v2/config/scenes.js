@@ -87,7 +87,13 @@
     // height-bound instead, showing the FULL width (all baked-in text)
     // with no crop, at the cost of a bit of decorative
     // ceiling/floor being replaced by soft blur. h updated (3840 -> 4968).
-    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-cards-baked-v3-2160x3840.webp', w: 2160, h: 4968 },
+    // v4 (customer, 2026-09-21): sent a new raw base ("02 m", redrawn
+    // artwork), still the same problematic raw 2160x3840 — re-applied the
+    // IDENTICAL blur-pad fix (same pad_top/pad_bottom=564, same 45px
+    // Gaussian blur of each edge's own 220px strip) so this new artwork
+    // doesn't reintroduce the width-crop bug the v3 padding fixed. w/h
+    // unchanged (2160x4968); old v3 file removed.
+    'zone-02-mobile': { src: ASSETS_BASE + 'zone-02-mobile-base-cards-baked-v4-2160x4968.webp', w: 2160, h: 4968 },
     // customer sent a SECOND replacement background for zone 03 (2026-09-14,
     // "замени пожалуйста базу для зоны 3 ... поправить размещение кнопки
     // плюс") — new artwork, same baked-in card layout convention as before.
@@ -241,7 +247,20 @@
       // this scale — 2.5 already was). See config/zone-00-content.js
       // ZONE_00_NAV_HOTSPOTS for the counterScaleItem fix that keeps the
       // map's 8 dots a real, constant tap size regardless of this zoom.
-      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 48, y: 62, scale: 2.1 }, hotspots: [] }
+      // customer (2026-09-21): new redrawn mobile BASE (see zone-00-mobile
+      // above) shifted the two stands' actual position in-frame — at the
+      // old scale 2.1 the "КАРТА ХАКАТОНА" stand's right edge/caption was
+      // clipped. "нужно уменьшить зум чтобы обе стелы было видно" — swept
+      // 2.1/1.9/1.7/1.5/1.35 via Playwright screenshots against the NEW
+      // art; 1.9 still crowded the right stand against the frame edge,
+      // 1.7 is the first value with both stands fully in view with real
+      // margin, so that's the new value (was 2.1).
+      // "справа и слева от стелл одинаковое расстояние воздуха, камеру
+      // сместить чуть-чуть вправо" — swept x 44..56 at scale 1.7; 48 (old)
+      // left almost no margin on the left stand and a visibly bigger gap
+      // on the right one, 52 evened the two margins out. Customer then
+      // asked "чуть-чуть левее" — nudged back down to 50.
+      mobile: { asset: sceneAsset('zone-00-mobile'), cameraPreset: { x: 50, y: 62, scale: 1.7 }, hotspots: [] }
     },
     '01': {
       // FAST MODE production pass: own dedicated BASE (was sharing
