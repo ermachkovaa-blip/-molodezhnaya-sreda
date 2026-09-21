@@ -4,11 +4,12 @@
 // НИКОГДА не хардкодят URL — только читают их отсюда через config,
 // переданный в YHApp.mount(root, config).
 //
-// APPLICATION_URL сейчас указывает на существующую прототипную форму V1
-// (../apply.html) — это сознательный, временный prototype-destination:
-// он реально работает и переиспользуется до появления собственной формы
-// V2 / Tilda-страницы. Замена этого одного поля не требует переписывать
-// ни одну зону 00–07 — таков и есть весь смысл централизации.
+// customer (2026-09-21): "но когда переходишь с основного сайта
+// перекидывает на заявку на гитхаб" — APPLICATION_URL used to point at
+// the relative ../apply.html (resolves to the raw GitHub Pages address).
+// She built a real Tilda page (Zero Block, iframe of apply.html) at her
+// own domain and wants every on-site CTA to go there instead, so the
+// visible destination is always her domain, never the github.io URL.
 //
 // Остальные поля — null, пока заказчик не передал точные ссылки. Ничего
 // не выдумываем (см. Production-ТЗ п.21 и решения по аудиту от 05.09).
@@ -17,7 +18,7 @@
   'use strict';
 
   YHApp.LINKS = {
-    APPLICATION_URL: '../apply.html',
+    APPLICATION_URL: 'https://mctatarstan.ru/hakaton2026/form',
 
     // Стандарт деятельности молодёжных центров (зона 05, розовая книга на шкафу).
     STANDARD_URL: 'https://mctatarstan.ru/standart',
