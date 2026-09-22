@@ -265,6 +265,11 @@
     nextBtn.textContent = n === TOTAL_STEPS ? 'Отправить заявку →' : 'Далее →';
     errorNote.hidden = true;
     refreshProgress();
+    // customer (2026-09-22): "перед первым блоком не нужно дублировать
+    // создаем пространства для и бегущую строку, там уже есть" — the
+    // hero at the top of the page already covers step 1's view, so this
+    // compact repeat only exists from step 2 onward.
+    if (stepAnchor) stepAnchor.hidden = (n === 1 || isSuccess);
     // customer (2026-09-22): opening the link cold should still show the
     // title page + first question together (scroll to the very top) —
     // but every step change after that used to ALSO jump to (0,0), which

@@ -28,7 +28,7 @@
          content/behavior, just promoted in the visual hierarchy. -->
     <div class="apply-hero">
       <div class="apply-hero__left">
-        <span class="apply-divider__static">Создаём пространства для</span>
+        <span class="apply-divider__static">Создаём<br>пространства для</span>
         <div class="apply-marquee" aria-hidden="true">
           <div class="apply-marquee__track">
             <span class="apply-marquee__item">будущего_творчества_самореализации_развития_</span>
@@ -133,7 +133,12 @@
          past step 1, so advancing lands right above the new question
          instead of leaving the visitor scrolled to wherever they were
          (or, before this, snapping to the very top of the whole page). -->
-    <div class="apply-step-anchor" id="apply-step-anchor" aria-hidden="true">
+    <!-- customer (2026-09-22): "перед первым блоком не нужно дублировать
+         создаем пространства для и бегущую строку, там уже есть [в hero
+         сверху]. то что мы с тобой придумали - начиная со второй
+         страницы" — hidden by default (step 1), showStep() in
+         js/apply-form.js reveals it only from step 2 onward. -->
+    <div class="apply-step-anchor" id="apply-step-anchor" aria-hidden="true" hidden>
       <!-- customer (2026-09-22): "перед бегущей строкой оставь создаем
            пространства для" — same static lead-in as the hero marquee,
            just compact. -->
