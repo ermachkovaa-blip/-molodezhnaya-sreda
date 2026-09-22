@@ -296,6 +296,30 @@ html, body {
   to { transform: translateX(-50%); }
 }
 
+/* customer (2026-09-22): compact per-step divider (see apply.html
+   #apply-step-anchor) — same marquee, much smaller, just enough to read
+   as "you're between sections" when scrolled to on every step change. */
+.apply-step-anchor {
+  scroll-margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(28, 26, 23, 0.1);
+}
+.apply-divider__static.apply-divider__static--compact {
+  font-size: 0.55rem;
+  padding: 0 28px;
+}
+.apply-marquee--compact {
+  padding: 4px 0 10px;
+}
+.apply-marquee--compact .apply-marquee__item {
+  font-size: 1.6rem;
+  padding: 0 16px;
+}
+@media (max-width: 720px) {
+  .apply-divider__static.apply-divider__static--compact { font-size: 0.45rem; padding: 0 20px; }
+  .apply-marquee--compact .apply-marquee__item { font-size: 1.2rem; padding: 0 12px; }
+}
+
 /* ---------- intro card ---------- */
 
 .apply-intro {
@@ -772,6 +796,13 @@ html, body {
   opacity: 0.4;
   font-family: 'SF Mono', 'Consolas', monospace;
   letter-spacing: 0.03em;
+}
+
+.sheet-field__or {
+  text-align: center;
+  font-size: 0.78rem;
+  opacity: 0.5;
+  margin: -6px 0 20px;
 }
 
 /* ---------- error state ---------- */

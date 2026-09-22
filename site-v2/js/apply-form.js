@@ -22,6 +22,8 @@
   var navEl = document.getElementById('sheet-nav');
   var errorNote = document.getElementById('sheet-error-note');
   var toastEl = document.getElementById('toast');
+  var portfolioFileInput = document.getElementById('f-portfolioFile');
+  var PORTFOLIO_FILE_MAX_BYTES = 15 * 1024 * 1024;
 
   var current = 1;
   var submitting = false;
@@ -108,6 +110,37 @@
   }
   if (statusOtherCheck) statusOtherCheck.addEventListener('change', syncStatusOtherReveal);
 
+  // customer (2026-09-22): "на вопрос какими программами владеете можно
+  // было в ответ другое дописать текстом" — same reveal pattern as
+  // statusOther above, just for the software question's "Другие".
+  var softwareOtherCheck = document.getElementById('softwareOther-check');
+  var softwareOtherReveal = document.getElementById('softwareOther-reveal');
+  function syncSoftwareOtherReveal() {
+    if (!softwareOtherCheck || !softwareOtherReveal) return;
+    softwareOtherReveal.classList.toggle('is-open', softwareOtherCheck.checked);
+  }
+  if (softwareOtherCheck) softwareOtherCheck.addEventListener('change', syncSoftwareOtherReveal);
+
+  // customer (2026-09-22): file upload alternative to the portfolio link
+  // — reject an oversized file right away instead of only finding out
+  // after "Отправить заявку" fails against the endpoint's own limit.
+  var portfolioFileHint = document.getElementById('portfolioFile-hint');
+  var PORTFOLIO_FILE_HINT_DEFAULT = portfolioFileHint ? portfolioFileHint.textContent : '';
+  if (portfolioFileInput) {
+    portfolioFileInput.addEventListener('change', function () {
+      var file = portfolioFileInput.files[0];
+      if (file && file.size > PORTFOLIO_FILE_MAX_BYTES) {
+        portfolioFileInput.value = '';
+        if (portfolioFileHint) {
+          portfolioFileHint.textContent = 'Файл больше 15 МБ — выбери файл поменьше или укажи ссылку выше.';
+        }
+        setError('portfolioFile', true);
+      } else if (portfolioFileHint) {
+        portfolioFileHint.textContent = PORTFOLIO_FILE_HINT_DEFAULT;
+      }
+    });
+  }
+
   form.addEventListener('change', function (e) {
     var el = e.target;
     if (!el.name) return;
@@ -132,6 +165,9 @@
     var data = {};
     Array.prototype.forEach.call(form.elements, function (el) {
       if (!el.name) return;
+      // file inputs: .value is just a fake path, not useful/persistable —
+      // the real content is read separately (see submitApplication).
+      if (el.type === 'file') return;
       if (el.type === 'checkbox') {
         if (BOOLEAN_FIELDS.indexOf(el.name) !== -1) {
           data[el.name] = el.checked;
@@ -163,6 +199,7 @@
     ARRAY_FIELDS.concat(['age', 'messenger', 'teamRole'], SCALE_FIELDS).forEach(syncControlState);
     document.querySelectorAll('.sheet-tags[data-max]').forEach(enforceTagLimit);
     syncStatusOtherReveal();
+    syncSoftwareOtherReveal();
   }
 
   function persist() { saveState(collectFormData()); }
@@ -198,7 +235,12 @@
     } else if (n === 3) {
       req('motivationText', !!val('motivationText'));
     } else if (n === 4) {
-      req('portfolioUrl', URL_RE.test(val('portfolioUrl')));
+      // customer (2026-09-22): "не только прикрепить ссылку но и сам
+      // документ" — either one satisfies this step now.
+      var hasUrl = URL_RE.test(val('portfolioUrl'));
+      var hasFile = portfolioFileInput && portfolioFileInput.files && portfolioFileInput.files.length > 0;
+      req('portfolioUrl', hasUrl || hasFile);
+      setError('portfolioFile', !(hasUrl || hasFile));
     } else if (n === 5) {
       SCALE_FIELDS.forEach(function (f) { req(f, !!checkedVal(f)); });
     } else if (n === 6) {
@@ -209,6 +251,8 @@
   }
 
   // ---------------- navigation ----------------
+
+  var stepAnchor = document.getElementById('apply-step-anchor');
 
   function showStep(n) {
     form.querySelectorAll('.sheet-layout').forEach(function (s) {
@@ -221,7 +265,17 @@
     nextBtn.textContent = n === TOTAL_STEPS ? 'Отправить заявку →' : 'Далее →';
     errorNote.hidden = true;
     refreshProgress();
-    window.scrollTo(0, 0);
+    // customer (2026-09-22): opening the link cold should still show the
+    // title page + first question together (scroll to the very top) —
+    // but every step change after that used to ALSO jump to (0,0), which
+    // on a phone put the new question below the fold with no visual cue
+    // it was there. Past step 1, scroll to the compact marquee anchor
+    // right above the question card instead.
+    if (n === 1 || isSuccess || !stepAnchor) {
+      window.scrollTo(0, 0);
+    } else {
+      stepAnchor.scrollIntoView({ block: 'start' });
+    }
   }
 
   function goToStep(n, skipValidation) {
@@ -256,11 +310,44 @@
     return 'MS-2026-' + rand;
   }
 
+  // customer (2026-09-22): a chosen portfolio FILE (not just a link) is
+  // read client-side as base64 and sent inline in the same JSON POST —
+  // her Apps Script endpoint (APPLICATION_FORM_ENDPOINT) is the one that
+  // actually decodes it and saves it into her Drive; see the code sample
+  // handed to her separately, since this repo has no access to that
+  // script. Returns a Promise so submitApplication can wait on it
+  // without making every submission async for no reason.
+  function readPortfolioFileAsBase64() {
+    var file = portfolioFileInput && portfolioFileInput.files && portfolioFileInput.files[0];
+    if (!file) return Promise.resolve(null);
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var result = reader.result || '';
+        var commaIndex = result.indexOf(',');
+        resolve({
+          portfolioFileName: file.name,
+          portfolioFileMimeType: file.type || 'application/octet-stream',
+          portfolioFileBase64: commaIndex === -1 ? result : result.slice(commaIndex + 1)
+        });
+      };
+      reader.onerror = function () { reject(reader.error); };
+      reader.readAsDataURL(file);
+    });
+  }
+
   function buildPayload() {
     var data = collectFormData();
     data.applicationId = genApplicationId();
     data.timestamp = new Date().toISOString();
-    return data;
+    return readPortfolioFileAsBase64().then(function (fileFields) {
+      if (fileFields) {
+        data.portfolioFileName = fileFields.portfolioFileName;
+        data.portfolioFileMimeType = fileFields.portfolioFileMimeType;
+        data.portfolioFileBase64 = fileFields.portfolioFileBase64;
+      }
+      return data;
+    });
   }
 
   function submitApplication() {
@@ -269,19 +356,34 @@
     nextBtn.textContent = 'Отправляем...';
     errorNote.hidden = true;
 
-    var payload = buildPayload();
-    saveState(payload);
+    buildPayload().then(function (payload) {
+      // не сохраняем base64 файла в localStorage — только реальные поля
+      // ответа, чтобы не забить лимит хранилища браузера крупным файлом.
+      var toPersist = {};
+      Object.keys(payload).forEach(function (k) { if (k !== 'portfolioFileBase64') toPersist[k] = payload[k]; });
+      saveState(toPersist);
 
-    var endpoint = window.YHApp && YHApp.LINKS && YHApp.LINKS.APPLICATION_FORM_ENDPOINT;
-    if (!endpoint) {
-      // Реальный адрес приёма заявок ещё не подключён — не изображаем
-      // фальшивую отправку, честно показываем экран "готово" только
-      // локально и предупреждаем в консоли для разработки/QA.
-      console.warn('APPLICATION_FORM_ENDPOINT не задан — заявка сохранена только локально.');
-      finishSuccess(payload);
-      return;
-    }
+      var endpoint = window.YHApp && YHApp.LINKS && YHApp.LINKS.APPLICATION_FORM_ENDPOINT;
+      if (!endpoint) {
+        // Реальный адрес приёма заявок ещё не подключён — не изображаем
+        // фальшивую отправку, честно показываем экран "готово" только
+        // локально и предупреждаем в консоли для разработки/QA.
+        console.warn('APPLICATION_FORM_ENDPOINT не задан — заявка сохранена только локально.');
+        finishSuccess(payload);
+        return;
+      }
 
+      submitToEndpoint(endpoint, payload);
+    }).catch(function () {
+      submitting = false;
+      nextBtn.disabled = false;
+      nextBtn.textContent = 'Повторить отправку →';
+      errorNote.hidden = false;
+      errorNote.textContent = 'НЕ УДАЛОСЬ ПРОЧИТАТЬ ФАЙЛ ПОРТФОЛИО. ПОПРОБУЙТЕ ЕЩЁ РАЗ ИЛИ УКАЖИТЕ ССЫЛКУ.';
+    });
+  }
+
+  function submitToEndpoint(endpoint, payload) {
     fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },

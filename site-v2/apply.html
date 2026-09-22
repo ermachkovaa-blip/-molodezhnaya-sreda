@@ -126,6 +126,27 @@
       </div>
     </section>
 
+    <!-- customer (2026-09-22): "когда нажимаешь на далее - уже были только
+         часть с бегущей строкой и сразу следующий блок с вопросом (иначе
+         с телефона на экране не видно что вопрос ниже есть)" — a compact
+         marquee anchor js/apply-form.js scrolls to on every step change
+         past step 1, so advancing lands right above the new question
+         instead of leaving the visitor scrolled to wherever they were
+         (or, before this, snapping to the very top of the whole page). -->
+    <div class="apply-step-anchor" id="apply-step-anchor" aria-hidden="true">
+      <!-- customer (2026-09-22): "перед бегущей строкой оставь создаем
+           пространства для" — same static lead-in as the hero marquee,
+           just compact. -->
+      <span class="apply-divider__static apply-divider__static--compact">Создаём<br>пространства для</span>
+      <div class="apply-marquee apply-marquee--compact">
+        <div class="apply-marquee__track">
+          <span class="apply-marquee__item">будущего_творчества_самореализации_развития_</span>
+          <span class="apply-marquee__item">будущего_творчества_самореализации_развития_</span>
+          <span class="apply-marquee__item">будущего_творчества_самореализации_развития_</span>
+        </div>
+      </div>
+    </div>
+
     <div class="sheet-progress" id="sheet-progress" aria-label="Шаги анкеты" role="tablist"></div>
 
     <form id="apply-form" novalidate>
@@ -254,7 +275,13 @@
               <label class="sheet-tag"><input type="checkbox" value="Illustrator"><span>Illustrator</span></label>
               <label class="sheet-tag"><input type="checkbox" value="Figma"><span>Figma</span></label>
               <label class="sheet-tag"><input type="checkbox" value="GIS-программы"><span>GIS-программы</span></label>
-              <label class="sheet-tag"><input type="checkbox" value="Другие"><span>Другие</span></label>
+              <label class="sheet-tag"><input type="checkbox" id="softwareOther-check" value="Другие"><span>Другие</span></label>
+            </div>
+            <!-- customer (2026-09-22): "на вопрос какими программами
+                 владеете можно было в ответ другое дописать текстом" —
+                 same reveal-on-check pattern as statusOther above. -->
+            <div class="sheet-field__reveal" id="softwareOther-reveal">
+              <input type="text" id="f-softwareOtherText" name="softwareOtherText" placeholder="Какими программами?">
             </div>
           </div>
 
@@ -340,10 +367,27 @@
           <p class="sheet-aside__desc">Приложи ссылку на своё проектное досье.</p>
         </aside>
         <div class="sheet-card">
+          <!-- customer (2026-09-22): "можно было не только прикрепить
+               ссылку но и сам документ" — either a link OR an uploaded
+               file now satisfies this step; whichever one is filled in
+               is what gets sent (see js/apply-form.js validateStep(4)
+               and submitApplication's file-upload branch). The file
+               itself is uploaded to the customer's own Google Drive by
+               her Apps Script endpoint, which returns the resulting
+               Drive link — same one the spreadsheet row ends up showing,
+               same as a pasted link would. -->
           <div class="sheet-field" data-field="portfolioUrl">
             <label class="sheet-field__label" for="f-portfolioUrl"><span class="sheet-field__index">01.</span> Ссылка на портфолио <span class="req">*</span></label>
-            <input type="url" id="f-portfolioUrl" name="portfolioUrl" placeholder="https://" required>
+            <input type="url" id="f-portfolioUrl" name="portfolioUrl" placeholder="https://">
             <p class="sheet-field__hint">Google Drive / сайт / другое — укажи корректную ссылку.</p>
+          </div>
+
+          <p class="sheet-field__or">— или —</p>
+
+          <div class="sheet-field" data-field="portfolioFile">
+            <label class="sheet-field__label" for="f-portfolioFile">Прикрепить файл</label>
+            <input type="file" id="f-portfolioFile" name="portfolioFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png">
+            <p class="sheet-field__hint" id="portfolioFile-hint">PDF, Word, PowerPoint или изображение, до 15 МБ.</p>
           </div>
         </div>
       </div>
