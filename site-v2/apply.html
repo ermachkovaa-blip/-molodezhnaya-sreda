@@ -120,9 +120,53 @@
         </ol>
       </div>
 
-      <p class="apply-intro__note">Участие бесплатное, количество мест ограничено. Проходит в рамках программы «Регион для молодых» национального проекта «Молодежь и дети», при поддержке Росмолодежи и Министерства по делам молодежи Республики Татарстан.</p>
+      <!-- customer (2026-09-23): "уберем кнопку перейти к заявке (она
+           сейчас нелогична)" — removed; the intro already sits directly
+           above the form, the button wasn't pointing anywhere new. -->
+      <!-- customer (2026-09-23): "примечание участие бесплатное... на
+           десктопе унесем вправо от блока задать вопрос" — side by side
+           on desktop (ask block left, note right), stacked on mobile
+           (see .apply-intro__footer media query in apply-form.css). -->
+      <div class="apply-intro__footer">
+        <!-- customer (2026-09-23): "чтобы если есть вопросы человек мог
+             там его написать и этот вопрос пришел ко мне на почту" —
+             same mechanism already proven for Zone 07's contact banner
+             (core/zone-07-cta.js): POST to the customer's own
+             CONTACT_FORM_ENDPOINT Apps Script, which emails her — not a
+             new delivery path. Customer (2026-09-23): "очень большой,
+             хочется куда-то встроить" — folded into the intro card
+             itself (was its own bordered section) and collapsed behind
+             a toggle by default, so it costs one line until someone
+             actually wants to ask something. -->
+        <div class="apply-ask">
+          <button type="button" class="apply-ask__toggle" id="apply-ask-toggle" aria-expanded="false">Остались вопросы? Написать →</button>
+          <form class="apply-ask__form" id="apply-ask-form" novalidate hidden>
+            <div class="apply-ask__row">
+              <label class="apply-ask__field">
+                <span class="apply-ask__field-label">Имя</span>
+                <input type="text" name="name" required autocomplete="name">
+              </label>
+              <label class="apply-ask__field">
+                <span class="apply-ask__field-label">Email</span>
+                <input type="email" name="email" required autocomplete="email">
+              </label>
+            </div>
+            <label class="apply-ask__field">
+              <span class="apply-ask__field-label">Вопрос</span>
+              <textarea name="message" required rows="2"></textarea>
+            </label>
+            <button type="submit" class="apply-ask__submit">Отправить вопрос</button>
+            <p class="apply-ask__status" id="apply-ask-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <p class="apply-intro__note">Участие бесплатное, количество мест ограничено. Проходит в рамках программы «Регион для молодых» национального проекта «Молодежь и дети», при поддержке Росмолодежи и Министерства по делам молодежи Республики Татарстан.</p>
+      </div>
 
-      <a class="apply-intro__cta" href="#apply-form">Перейти к заявке ↓</a>
+      <!-- customer (2026-09-23): "верни заголовок перейти к заявке" —
+           back as a plain heading (not the removed clickable button —
+           that was called "нелогична"; this is just a section label,
+           the progress rail + step 1 already sit right below it). -->
+      <p class="apply-intro__next">Перейти к заявке ↓</p>
       </div>
     </section>
 

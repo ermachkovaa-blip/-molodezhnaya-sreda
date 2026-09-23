@@ -418,6 +418,74 @@
     showStep(current);
   }
 
+  // ---------------- "остались вопросы?" contact form ----------------
+  // customer (2026-09-23): "чтобы если есть вопросы человек мог там его
+  // написать и этот вопрос пришел ко мне на почту" — same endpoint/shape
+  // (name, email, message) already proven for Zone 07's contact banner
+  // in core/zone-07-cta.js, not a new delivery path.
+
+  var askToggle = document.getElementById('apply-ask-toggle');
+  var askForm = document.getElementById('apply-ask-form');
+  if (askToggle && askForm) {
+    askToggle.addEventListener('click', function () {
+      var willOpen = askForm.hidden;
+      askForm.hidden = !willOpen;
+      askToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      if (willOpen) askForm.querySelector('input[name="name"]').focus();
+    });
+  }
+  if (askForm) {
+    var askStatus = document.getElementById('apply-ask-status');
+    var askSubmitBtn = askForm.querySelector('.apply-ask__submit');
+    var ASK_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function setAskStatus(text, kind) {
+      askStatus.textContent = text;
+      askStatus.className = 'apply-ask__status apply-ask__status--' + kind;
+    }
+
+    askForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = askForm.elements['name'].value.trim();
+      var emailVal = askForm.elements['email'].value.trim();
+      var message = askForm.elements['message'].value.trim();
+
+      if (!name || !message || !ASK_EMAIL_RE.test(emailVal)) {
+        setAskStatus('Проверьте, что все поля заполнены и email указан верно.', 'error');
+        return;
+      }
+
+      var links = window.YHApp && YHApp.LINKS;
+      if (links && links.CONTACT_FORM_ENDPOINT) {
+        askSubmitBtn.disabled = true;
+        setAskStatus('Отправляем...', 'pending');
+        fetch(links.CONTACT_FORM_ENDPOINT, {
+          method: 'POST',
+          // text/plain, не application/json — та же CORS-preflight
+          // причина, что и в core/zone-07-cta.js / js/apply-form.js
+          // submitApplication выше.
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ name: name, email: emailVal, message: message })
+        }).then(function (res) {
+          if (!res.ok) throw new Error('bad status');
+          setAskStatus('Спасибо! Ответим вам на почту.', 'success');
+          askForm.reset();
+        }).catch(function () {
+          setAskStatus('Не удалось отправить. Проверьте соединение и попробуйте ещё раз.', 'error');
+        }).finally(function () {
+          askSubmitBtn.disabled = false;
+        });
+      } else if (links && links.CONTACT_EMAIL) {
+        var subject = encodeURIComponent('Вопрос с сайта хакатона от ' + name);
+        var body = encodeURIComponent(message + '\n\n' + emailVal);
+        window.location.href = 'mailto:' + links.CONTACT_EMAIL + '?subject=' + subject + '&body=' + body;
+        setAskStatus('Открываем почтовый клиент...', 'info');
+      } else {
+        setAskStatus('Контакт для обратной связи будет добавлен позже.', 'info');
+      }
+    });
+  }
+
   // ---------------- init ----------------
 
   applyStateToForm(loadState());

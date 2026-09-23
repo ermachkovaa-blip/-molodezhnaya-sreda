@@ -433,27 +433,117 @@ html, body {
   opacity: 0.85;
 }
 
+/* customer (2026-09-23): "примечание... на десктопе унесем вправо от
+   блока задать вопрос" — side by side on desktop, stacked on mobile
+   (see media query below). */
+.apply-intro__footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+}
+.apply-intro__footer .apply-ask {
+  flex: 0.8;
+  margin-top: 0;
+}
+
+/* customer (2026-09-23): "уменьшим количество строк в примечании...
+   можем немного растянуть, а то дофига места съедает" — was capped at
+   40ch, which wrapped to far more lines than the column actually had
+   room for; widening it (and giving it more of the flex row than the
+   ask block) lets it sit on fewer lines. */
 .apply-intro__note {
   font-size: 0.78rem;
   line-height: 1.6;
   opacity: 0.55;
-  max-width: 72ch;
-  margin: 0 0 26px;
+  max-width: 60ch;
+  flex: 1.4;
+  margin: 0;
 }
 
-.apply-intro__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.apply-intro__next {
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.6;
+  margin: 28px 0 0;
+}
+
+/* customer (2026-09-23): "чтобы если есть вопросы человек мог там его
+   написать" — folded into the intro card, collapsed behind a toggle
+   ("очень большой, хочется куда-то встроить") so it's one line by
+   default instead of its own full-size section. */
+.apply-ask {
+  margin-top: 22px;
+}
+.apply-ask__toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+}
+.apply-ask__toggle:hover { text-decoration: underline; }
+.apply-ask__form {
+  margin-top: 16px;
+  max-width: 520px;
+}
+.apply-ask__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.apply-ask__field {
+  display: block;
+  margin-bottom: 16px;
+}
+.apply-ask__field-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+.apply-ask__field input,
+.apply-ask__field textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 1.5px solid rgba(28, 26, 23, 0.3);
+  background: transparent;
+  padding: 6px 2px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--ink);
+  border-radius: 0;
+  resize: vertical;
+}
+.apply-ask__field input:focus,
+.apply-ask__field textarea:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+.apply-ask__submit {
   background: var(--mc-orange);
   color: var(--ink);
-  font-size: 0.9rem;
+  border: none;
+  font-size: 0.88rem;
   font-weight: 700;
-  text-decoration: none;
-  padding: 14px 26px;
+  padding: 12px 24px;
   border-radius: 999px;
+  cursor: pointer;
 }
-.apply-intro__cta:hover { background: var(--ink); color: var(--paper); }
+.apply-ask__submit:hover { background: var(--ink); color: var(--paper); }
+.apply-ask__submit:disabled { opacity: 0.6; cursor: default; }
+.apply-ask__status {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+}
+.apply-ask__status--error { color: #c0392b; }
+.apply-ask__status--success { color: #2f8a4b; }
+.apply-ask__status--pending,
+.apply-ask__status--info { opacity: 0.65; }
 
 @media (max-width: 720px) {
   .apply-intro { padding: 28px 20px 26px; }
@@ -461,6 +551,9 @@ html, body {
   .apply-intro__timeline { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
   .apply-marquee__item { font-size: 4.2rem; padding: 0 16px; }
   .apply-divider__static { font-size: 1.3rem; padding: 0 20px; }
+  .apply-ask__row { grid-template-columns: 1fr; gap: 0; }
+  .apply-intro__footer { flex-direction: column; gap: 22px; }
+  .apply-intro__note { max-width: none; }
 }
 
 /* ---------- progress rail ---------- */
